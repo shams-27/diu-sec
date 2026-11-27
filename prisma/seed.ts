@@ -1,8 +1,21 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { db } from "../src/lib/db";
 import { renderCertificatePdf } from "../src/lib/certs";
 import { saveGeneratedPdf } from "../src/lib/storage";
 import { Prisma, type Wing } from "@prisma/client";
 import { PDFDocument, StandardFonts } from "pdf-lib";
+
+/** Local SVG placeholders keep seeded logos/photos demoable without external hosts. */
+async function seedImage(name: string, label: string): Promise<string> {
+  const dir = path.join(process.cwd(), "public", "uploads");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="${label}"><rect width="800" height="600" fill="#0f172a"/><text x="400" y="310" fill="#e2e8f0" font-family="sans-serif" font-size="40" text-anchor="middle">${label}</text></svg>`;
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, name), svg, { flag: "wx" }).catch((error: NodeJS.ErrnoException) => {
+    if (error.code !== "EEXIST") throw error;
+  });
+  return `/uploads/${name}`;
+}
 
 const WINGS = [
   {
@@ -276,17 +289,108 @@ async function main() {
     update: { pinned: true },
   });
 
-  await db.resource.upsert({
-    where: { id: "seed-resource-cp-sheet" },
-    create: {
+  for (const resource of [
+    {
       id: "seed-resource-cp-sheet",
-      type: "CP_SHEET",
+      type: "CP_SHEET" as const,
       title: "DIU SEC CP problem sheet",
-      url: "https://github.com/",
+      url: "https://github.com/diu-sec/cp-sheet",
       tags: ["cp", "beginner"],
     },
-    update: {},
-  });
+    {
+      id: "seed-resource-roadmap",
+      type: "ROADMAP" as const,
+      title: "Freshers' software engineering roadmap",
+      url: "https://github.com/diu-sec/roadmap",
+      tags: ["freshers", "roadmap"],
+    },
+    {
+      id: "seed-resource-github",
+      type: "GITHUB_REPO" as const,
+      title: "Club open-source repositories",
+      url: "https://github.com/diu-sec",
+      tags: ["open-source", "projects"],
+    },
+    {
+      id: "seed-resource-interview",
+      type: "INTERVIEW_GUIDE" as const,
+      title: "Technical interview guide",
+      url: "https://github.com/diu-sec/interview-guide",
+      tags: ["interview", "career"],
+    },
+  ]) {
+    await db.resource.upsert({ where: { id: resource.id }, create: resource, update: resource });
+  }
+
+  for (const sponsor of [
+    {
+      id: "seed-sponsor-partner",
+      kind: "PARTNER" as const,
+      name: "Daffodil Software",
+      websiteUrl: "https://www.daffodilsoft.com/",
+      tier: "Gold",
+      bio: "Industry partner supporting club workshops and project mentoring.",
+      order: 0,
+    },
+    {
+      id: "seed-sponsor-sponsor",
+      kind: "SPONSOR" as const,
+      name: "DevTools Bangladesh",
+      websiteUrl: "https://example.com/devtools",
+      tier: "Silver",
+      bio: "Sponsors contest prizes and community meetups.",
+      order: 1,
+    },
+    {
+      id: "seed-sponsor-advisor",
+      kind: "FACULTY_ADVISOR" as const,
+      name: "Dr. SWE Advisor",
+      websiteUrl: "https://swe.diu.edu.bd/",
+      tier: "Advisor",
+      bio: "Faculty advisor from the Department of Software Engineering (code 35).",
+      order: 2,
+    },
+  ]) {
+    const logoUrl = await seedImage(`${sponsor.id}.svg`, sponsor.name);
+    await db.sponsor.upsert({ where: { id: sponsor.id }, create: { ...sponsor, logoUrl }, update: { ...sponsor, logoUrl } });
+  }
+
+  for (const album of [
+    {
+      id: "seed-album-orientation",
+      title: "Orientation 2026",
+      category: "ORIENTATION" as const,
+      photos: ["Welcome session", "Lab walkthrough"],
+    },
+    {
+      id: "seed-album-contest",
+      title: "Intra-university CP contest",
+      category: "CONTEST" as const,
+      photos: ["Opening round", "Awards ceremony"],
+    },
+    {
+      id: "seed-album-techfest",
+      title: "Tech fest builds",
+      category: "TECH_FEST" as const,
+      photos: ["Project demo", "Mentoring desk"],
+    },
+  ]) {
+    const coverUrl = await seedImage(`${album.id}-cover.svg`, album.title);
+    await db.galleryAlbum.upsert({
+      where: { id: album.id },
+      create: { id: album.id, title: album.title, category: album.category, coverUrl },
+      update: { title: album.title, category: album.category, coverUrl },
+    });
+    for (const [index, caption] of album.photos.entries()) {
+      const id = `${album.id}-photo-${index}`;
+      const url = await seedImage(`${id}.svg`, caption);
+      await db.galleryPhoto.upsert({
+        where: { id },
+        create: { id, albumId: album.id, url, caption, order: index },
+        update: { url, caption, order: index },
+      });
+    }
+  }
 
   for (const [i, question] of [
     "Who can apply for DIU SEC membership?",
@@ -297,7 +401,10 @@ async function main() {
       create: {
         id: `seed-faq-${i}`,
         question,
-        answer: i === 0 ? "Any DIU SWE student with a valid XXX-35-XXX ID." : "The SWE labs in the DIU campus.",
+        answer:
+          i === 0
+            ? "Any DIU SWE student with a valid XXX-35-XXX ID and an institutional email."
+            : "The SWE labs are on the DIU campus; check the latest notice for the room number.",
         order: i,
       },
       update: {},

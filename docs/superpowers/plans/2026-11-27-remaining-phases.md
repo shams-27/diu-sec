@@ -27,9 +27,9 @@ Each phase ends with `pnpm lint && pnpm typecheck && pnpm test && pnpm build`, a
 - [x] Admin CRUD/moderation pages with RBAC, GitHub URL verification, schedule/pin/expire; seed content; verify + commit.
 
 ## Phase 7 — Supporting modules (11–14 + A-11)
-- [ ] Validators + tests for resources, sponsors, gallery albums/photos, contact.
-- [ ] Public `/resources`, `/partners`, `/gallery` (lightbox), `/faq`, `/contact` (audited form).
-- [ ] Admin `/admin/resources`, `/admin/sponsors`, `/admin/gallery`; seed data; verify + commit.
+- [x] Validators + tests for resources, sponsors, gallery albums/photos, contact.
+- [x] Public `/resources`, `/partners`, `/gallery` (lightbox), `/faq`, `/contact` (audited form).
+- [x] Admin `/admin/resources`, `/admin/sponsors`, `/admin/gallery`; seed data; verify + commit.
 
 ## Phase 8 — Landing page & Dashboard (01 + A-01)
 - [ ] Replace placeholder hero: mission, manifesto, 1,200+/25+/80+/150+ metrics, CTAs, live upcoming events/wings.

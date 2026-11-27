@@ -294,7 +294,7 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 - [x] Magazine, Hall of Fame, Projects (with GitHub link check), Notices (schedule/expire/pin)
 
 ### Phase 7 — Supporting modules (11–14 + A-11)
-- [ ] Resources, Partners/Sponsors/Faculty, Gallery, FAQ & Contact
+- [x] Resources, Partners/Sponsors/Faculty, Gallery, FAQ & Contact
 
 ### Phase 8 — Landing page & Dashboard (01 + A-01)
 - [ ] Intro page with metrics + CTAs

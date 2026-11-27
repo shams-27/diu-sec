@@ -41,6 +41,7 @@ export const githubRepoSchema = z
 const emptyToUndefined = (value: unknown) => (value === "" ? undefined : value);
 
 export type SubmitState = { error?: string; memberId?: string };
+export type ContactState = { error?: string; sent?: boolean };
 
 export const memberApplicationSchema = z.object({
   name: z.string().trim().min(2).max(100),
@@ -359,4 +360,50 @@ export const noticeSchema = z
 
 export const noticeFilterSchema = z.object({
   category: z.preprocess(emptyToUndefined, z.enum(NOTICE_CATEGORIES).optional()),
+});
+
+// ───────── Supporting modules (Phase 7) ─────────
+export const RESOURCE_TYPES = ["CP_SHEET", "ROADMAP", "GITHUB_REPO", "INTERVIEW_GUIDE"] as const;
+export const SPONSOR_KINDS = ["PARTNER", "SPONSOR", "FACULTY_ADVISOR"] as const;
+export const ALBUM_CATEGORIES = ["ORIENTATION", "CONTEST", "TECH_FEST", "OTHER"] as const;
+
+export const resourceSchema = z.object({
+  id: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  type: z.enum(RESOURCE_TYPES),
+  title: z.string().trim().min(3).max(150),
+  url: httpUrl,
+  tags: z.preprocess(linesToArray, z.array(z.string().trim().min(1).max(50)).min(1).max(20)),
+});
+
+export const resourceFilterSchema = z.object({
+  type: z.preprocess(emptyToUndefined, z.enum(RESOURCE_TYPES).optional()),
+});
+
+export const sponsorSchema = z.object({
+  id: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  kind: z.enum(SPONSOR_KINDS),
+  name: z.string().trim().min(2).max(150),
+  logoUrl: z.preprocess(emptyToUndefined, photoUrlSchema.optional()),
+  websiteUrl: z.preprocess(emptyToUndefined, httpUrl.optional()),
+  tier: z.preprocess(emptyToUndefined, z.string().trim().max(50).optional()),
+  bio: z.preprocess(emptyToUndefined, z.string().trim().max(500).optional()),
+  order: z.coerce.number().int().min(0).max(9999).default(0),
+});
+
+export const galleryAlbumSchema = z.object({
+  id: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  title: z.string().trim().min(3).max(150),
+  category: z.enum(ALBUM_CATEGORIES),
+  coverUrl: z.preprocess(emptyToUndefined, photoUrlSchema.optional()),
+});
+
+export const galleryPhotoSchema = z.object({
+  albumId: z.string().min(1),
+  url: z.preprocess(emptyToUndefined, photoUrlSchema.optional()),
+  caption: z.preprocess(emptyToUndefined, z.string().trim().max(200).optional()),
+  order: z.coerce.number().int().min(0).max(9999).default(0),
+});
+
+export const galleryFilterSchema = z.object({
+  category: z.preprocess(emptyToUndefined, z.enum(ALBUM_CATEGORIES).optional()),
 });
