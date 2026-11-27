@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { requireActor } from "@/backend/shared/admin-guard";
 import { writeAudit } from "@/backend/shared/audit";
 import { db } from "@/backend/shared/db";
-import { saveUpload } from "@/backend/shared/storage";
+import { removeUploadedAsset, saveUpload } from "@/backend/shared/storage";
 import {
   committeeDeleteSchema,
   committeeMemberSchema,
@@ -68,31 +68,36 @@ export async function saveCommitteeMemberAction(formData: FormData): Promise<voi
   const actor = await requireActor("committee", "write");
   const input = committeeMemberSchema.parse(Object.fromEntries(formData));
   const photoUrl = await saveUpload(formData.get("photo"), "image");
-  await db.$transaction(async (tx) => {
-    const before = input.id ? await tx.committeeMember.findUnique({ where: { id: input.id } }) : null;
-    const data = {
-      ...input,
-      id: input.id ?? randomUUID(),
-      photoUrl: photoUrl ?? input.photoUrl,
-      socialLinks: (input.socialLinks ?? null) as Prisma.InputJsonValue,
-    };
-    const saved = await tx.committeeMember.upsert({
-      where: { id: data.id },
-      create: data,
-      update: { ...input, photoUrl: data.photoUrl, socialLinks: data.socialLinks },
-    });
-    await writeAudit(
-      {
-        actorId: actor.id,
-        action: before ? "UPDATE" : "CREATE",
-        entity: "CommitteeMember",
-        entityId: saved.id,
-        before: before as Prisma.InputJsonValue | null,
-        after: data as Prisma.InputJsonValue,
-      },
-      tx,
-    );
-  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  try {
+    await db.$transaction(async (tx) => {
+      const before = input.id ? await tx.committeeMember.findUnique({ where: { id: input.id } }) : null;
+      const data = {
+        ...input,
+        id: input.id ?? randomUUID(),
+        photoUrl: photoUrl ?? input.photoUrl,
+        socialLinks: (input.socialLinks ?? null) as Prisma.InputJsonValue,
+      };
+      const saved = await tx.committeeMember.upsert({
+        where: { id: data.id },
+        create: data,
+        update: { ...input, photoUrl: data.photoUrl, socialLinks: data.socialLinks },
+      });
+      await writeAudit(
+        {
+          actorId: actor.id,
+          action: before ? "UPDATE" : "CREATE",
+          entity: "CommitteeMember",
+          entityId: saved.id,
+          before: before as Prisma.InputJsonValue | null,
+          after: data as Prisma.InputJsonValue,
+        },
+        tx,
+      );
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  } catch (error) {
+    if (photoUrl) await removeUploadedAsset(photoUrl);
+    throw error;
+  }
   await refresh();
 }
 

@@ -219,6 +219,19 @@ describe("certificate actions", () => {
     );
   });
 
+  it("returns a retryable error when revocation conflicts", async () => {
+    e.certFindUnique.mockResolvedValue({
+      id: "cert1",
+      certId: "DIU-SEC-CERT-A1B2C3",
+      status: "VALID",
+      event: { wingId: null },
+    });
+    e.transaction.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError("conflict", { code: "P2034", clientVersion: "6.19.3" }),
+    );
+    await expect(revokeCertificateAction(fd([["certId", "DIU-SEC-CERT-A1B2C3"]]))).rejects.toThrow(/retry|again/i);
+  });
+
   it("does not re-audit an already revoked certificate", async () => {
     e.certFindUnique.mockResolvedValue({
       id: "cert1",

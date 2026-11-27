@@ -6,6 +6,9 @@ import { saveGeneratedPdf } from "../src/backend/shared/storage";
 import { Prisma, type Wing } from "@prisma/client";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 
+/** cuid-shaped IDs keep seeded committee rows editable by the admin validators. */
+const demoCommitteeId = (label: string) => `c${label.toLowerCase().replace(/[^a-z0-9]/g, "").padEnd(24, "0").slice(0, 24)}`;
+
 /** Local SVG placeholders keep seeded logos/photos demoable without external hosts. */
 async function seedImage(name: string, label: string): Promise<string> {
   const dir = path.join(process.cwd(), "public", "uploads");
@@ -86,10 +89,11 @@ async function main() {
   });
 
   for (const [i, title] of ["President", "General Secretary"].entries()) {
+    const id = demoCommitteeId(`${title}${current.year}${i}`);
     await db.committeeMember.upsert({
-      where: { id: `seed-committee-${current.year}-${i}` },
+      where: { id },
       create: {
-        id: `seed-committee-${current.year}-${i}`,
+        id,
         sessionId: current.id,
         name: title === "President" ? "DIU SEC President" : "DIU SEC General Secretary",
         title,
@@ -104,17 +108,19 @@ async function main() {
     { name: "Demo Vice President", title: "Vice President", batch: "2023" },
     { name: "Demo Technical Lead", title: "Technical Lead", batch: "2023" },
   ].entries()) {
+    const id = demoCommitteeId(`${entry.title}${i}`);
     await db.committeeMember.upsert({
-      where: { id: `seed-committee-extra-${i}` },
-      create: { id: `seed-committee-extra-${i}`, sessionId: current.id, ...entry, order: i + 2 },
+      where: { id },
+      create: { id, sessionId: current.id, ...entry, order: i + 2 },
       update: { title: entry.title },
     });
   }
 
+  const previousId = demoCommitteeId("formerpresident");
   await db.committeeMember.upsert({
-    where: { id: "seed-committee-previous" },
+    where: { id: previousId },
     create: {
-      id: "seed-committee-previous",
+      id: previousId,
       sessionId: previous.id,
       name: "Former President",
       title: "President",

@@ -117,35 +117,42 @@ export async function revokeCertificateAction(formData: FormData): Promise<void>
   const actor = await requireActor("certificates", "write", "own");
   const { certId, reason } = certRevokeSchema.parse(Object.fromEntries(formData));
 
-  await db.$transaction(
-    async (tx) => {
-      const before = await tx.certificate.findUnique({
-        where: { certId },
-        select: { id: true, certId: true, status: true, event: { select: { wingId: true } } },
-      });
-      if (!before) throw new Error("Certificate not found");
-      if (!can(actor, "certificates", "write", before.event?.wingId)) throw new ForbiddenError();
-      if (before.status === "REVOKED") return;
+  try {
+    await db.$transaction(
+      async (tx) => {
+        const before = await tx.certificate.findUnique({
+          where: { certId },
+          select: { id: true, certId: true, status: true, event: { select: { wingId: true } } },
+        });
+        if (!before) throw new Error("Certificate not found");
+        if (!can(actor, "certificates", "write", before.event?.wingId)) throw new ForbiddenError();
+        if (before.status === "REVOKED") return;
 
-      const revokedAt = new Date();
-      await tx.certificate.update({
-        where: { id: before.id },
-        data: { status: "REVOKED", revokedAt, revokeReason: reason },
-      });
-      await writeAudit(
-        {
-          actorId: actor.id,
-          action: "REVOKE",
-          entity: "Certificate",
-          entityId: before.id,
-          before: { certId: before.certId, status: before.status } as Prisma.InputJsonValue,
-          after: { certId, status: "REVOKED", revokedAt, revokeReason: reason ?? null } as Prisma.InputJsonValue,
-        },
-        tx,
-      );
-    },
-    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
-  );
+        const revokedAt = new Date();
+        await tx.certificate.update({
+          where: { id: before.id },
+          data: { status: "REVOKED", revokedAt, revokeReason: reason },
+        });
+        await writeAudit(
+          {
+            actorId: actor.id,
+            action: "REVOKE",
+            entity: "Certificate",
+            entityId: before.id,
+            before: { certId: before.certId, status: before.status } as Prisma.InputJsonValue,
+            after: { certId, status: "REVOKED", revokedAt, revokeReason: reason ?? null } as Prisma.InputJsonValue,
+          },
+          tx,
+        );
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    );
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
+      throw new Error("Revocation conflicted with another request; please retry.");
+    }
+    throw error;
+  }
 
   revalidatePath("/admin/certificates");
   revalidatePath(`/verify/${certId}`);

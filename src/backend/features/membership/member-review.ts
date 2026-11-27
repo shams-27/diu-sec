@@ -13,41 +13,48 @@ export async function reviewMemberAction(formData: FormData): Promise<void> {
   const actor = await requireActor("members", "write");
   const { memberId, decision } = memberReviewSchema.parse(Object.fromEntries(formData));
 
-  await db.$transaction(
-    async (tx) => {
-      const before = await tx.member.findUnique({
-        where: { id: memberId },
-        select: { status: true, memberCardNo: true, cardIssuedAt: true, wingPrefId: true },
-      });
-      if (!before) throw new Error("Member not found");
-      if (!can(actor, "members", "write", before.wingPrefId)) throw new ForbiddenError();
+  try {
+    await db.$transaction(
+      async (tx) => {
+        const before = await tx.member.findUnique({
+          where: { id: memberId },
+          select: { status: true, memberCardNo: true, cardIssuedAt: true, wingPrefId: true },
+        });
+        if (!before) throw new Error("Member not found");
+        if (!can(actor, "members", "write", before.wingPrefId)) throw new ForbiddenError();
 
-      const target: MemberStatus = decision === "REJECT" ? "REJECTED" : decision === "REVOKE" ? "REVOKED" : "APPROVED";
-      if (before.status === target) return;
+        const target: MemberStatus = decision === "REJECT" ? "REJECTED" : decision === "REVOKE" ? "REVOKED" : "APPROVED";
+        if (before.status === target) return;
 
-      const now = new Date();
-      // Keep the same card number across reissues: recycling an old number would make revoked cards valid again.
-      const cardNo = before.memberCardNo ?? (await nextMemberCardNo(tx, now));
-      const after =
-        target === "APPROVED"
-          ? { status: target, memberCardNo: cardNo, cardIssuedAt: now }
-          : { status: target };
+        const now = new Date();
+        // Keep the same card number across reissues: recycling an old number would make revoked cards valid again.
+        const cardNo = before.memberCardNo ?? (await nextMemberCardNo(tx, now));
+        const after =
+          target === "APPROVED"
+            ? { status: target, memberCardNo: cardNo, cardIssuedAt: now }
+            : { status: target };
 
-      await tx.member.update({ where: { id: memberId }, data: after });
-      await writeAudit(
-        {
-          actorId: actor.id,
-          action: decision,
-          entity: "Member",
-          entityId: memberId,
-          before: before as Prisma.InputJsonValue,
-          after: after as Prisma.InputJsonValue,
-        },
-        tx,
-      );
-    },
-    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
-  );
+        await tx.member.update({ where: { id: memberId }, data: after });
+        await writeAudit(
+          {
+            actorId: actor.id,
+            action: decision,
+            entity: "Member",
+            entityId: memberId,
+            before: before as Prisma.InputJsonValue,
+            after: after as Prisma.InputJsonValue,
+          },
+          tx,
+        );
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    );
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
+      throw new Error("Review conflicted with another request; please retry.");
+    }
+    throw error;
+  }
   revalidatePath("/admin/members");
   revalidatePath(`/join/${memberId}`);
 }

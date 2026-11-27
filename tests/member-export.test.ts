@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ForbiddenError } from "@/backend/shared/rbac";
 
-const m = vi.hoisted(() => ({ requireActor: vi.fn(), findMany: vi.fn(), connection: vi.fn() }));
+const m = vi.hoisted(() => ({ requireActor: vi.fn(), findMany: vi.fn(), connection: vi.fn(), writeAudit: vi.fn() }));
 vi.mock("@/backend/shared/admin-guard", () => ({ requireActor: m.requireActor }));
+vi.mock("@/backend/shared/audit", () => ({ writeAudit: m.writeAudit }));
 vi.mock("@/backend/shared/db", () => ({ db: { member: { findMany: m.findMany } } }));
 vi.mock("next/server", () => ({ connection: m.connection }));
 
@@ -14,7 +15,7 @@ const request = (url: string) => ({ nextUrl: new URL(url) }) as never;
 describe("member CSV export", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    m.findMany.mockResolvedValue([]);
+    m.findMany.mockReset().mockResolvedValue([]);
   });
 
   it("denies a role-less session before reading members", async () => {
@@ -39,6 +40,34 @@ describe("member CSV export", () => {
     await GET(request(`http://localhost/api/admin/members/export?status=PENDING&wingPrefId=${WING}`));
 
     expect(m.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { status: "PENDING", wingPrefId: WING } }));
+  });
+
+  it("audits the export with the actor and row count", async () => {
+    m.requireActor.mockResolvedValue({ id: "u1", role: "SUPER_ADMIN", wingId: null });
+    m.findMany.mockResolvedValue([
+      {
+        name: "A",
+        studentId: "221-35-100",
+        email: "a@diu.edu.bd",
+        batch: null,
+        phone: null,
+        status: "PENDING",
+        memberCardNo: null,
+        createdAt: new Date("2026-01-01T00:00:00Z"),
+        wingPref: null,
+      },
+    ]);
+
+    await GET(request("http://localhost/api/admin/members/export?status=PENDING"));
+
+    expect(m.writeAudit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actorId: "u1",
+        action: "EXPORT",
+        entity: "Member",
+        after: expect.objectContaining({ rows: 1, status: "PENDING" }),
+      }),
+    );
   });
 
   it("escapes quotes and spreadsheet formulas in exported cells", async () => {

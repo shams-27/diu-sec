@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Prisma } from "@prisma/client";
 import { ForbiddenError } from "@/backend/shared/rbac";
 
 const e = vi.hoisted(() => ({
@@ -178,6 +179,18 @@ describe("event check-in", () => {
     expect(result.checkedIn).toBe("Jane Doe");
     expect(e.requireActor).toHaveBeenCalledWith("events", "write", "own");
     expect(e.writeAudit).toHaveBeenCalledWith(expect.objectContaining({ action: "APPROVE", entity: "Registration" }), tx);
+  });
+});
+
+describe("check-in under contention", () => {
+  it("returns a retry message instead of a server error on a serialization conflict", async () => {
+    vi.clearAllMocks();
+    e.requireActor.mockResolvedValue({ id: "u1", role: "SUPER_ADMIN" });
+    e.transaction.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError("conflict", { code: "P2034", clientVersion: "6.19.3" }),
+    );
+    const result = await checkInAction({}, fd([["eventId", EVENT], ["qrToken", "token"]]));
+    expect(result.error).toMatch(/retry|again/i);
   });
 });
 

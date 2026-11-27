@@ -86,30 +86,38 @@ export async function registerForEventAction(
 export async function checkInAction(_previous: CheckInState, formData: FormData): Promise<CheckInState> {
   const actor = await requireActor("events", "write", "own");
   const { eventId, qrToken } = checkInSchema.parse(Object.fromEntries(formData));
-  const result = await db.$transaction(
-    async (tx) => {
-      const event = await tx.event.findUnique({ where: { id: eventId }, select: { wingId: true } });
-      if (!event) throw new Error("Event not found");
-      if (!can(actor, "events", "write", event.wingId)) throw new ForbiddenError();
-      const registration = await tx.registration.findUnique({ where: { qrToken } });
-      if (!registration || registration.eventId !== eventId) return { error: "Unknown QR token for this event." };
-      if (registration.checkedInAt) return { error: "Already checked in." };
-      const checkedInAt = new Date();
-      await tx.registration.update({ where: { id: registration.id }, data: { checkedInAt } });
-      await writeAudit(
-        {
-          actorId: actor.id,
-          action: "APPROVE",
-          entity: "Registration",
-          entityId: registration.id,
-          after: { checkedInAt } as Prisma.InputJsonValue,
-        },
-        tx,
-      );
-      return { checkedIn: registration.name };
-    },
-    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
-  );
+  let result: CheckInState;
+  try {
+    result = await db.$transaction(
+      async (tx) => {
+        const event = await tx.event.findUnique({ where: { id: eventId }, select: { wingId: true } });
+        if (!event) throw new Error("Event not found");
+        if (!can(actor, "events", "write", event.wingId)) throw new ForbiddenError();
+        const registration = await tx.registration.findUnique({ where: { qrToken } });
+        if (!registration || registration.eventId !== eventId) return { error: "Unknown QR token for this event." };
+        if (registration.checkedInAt) return { error: "Already checked in." };
+        const checkedInAt = new Date();
+        await tx.registration.update({ where: { id: registration.id }, data: { checkedInAt } });
+        await writeAudit(
+          {
+            actorId: actor.id,
+            action: "APPROVE",
+            entity: "Registration",
+            entityId: registration.id,
+            after: { checkedInAt } as Prisma.InputJsonValue,
+          },
+          tx,
+        );
+        return { checkedIn: registration.name };
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    );
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
+      return { error: "Check-in just changed — please retry." };
+    }
+    throw error;
+  }
   revalidatePath(`/admin/events/${eventId}`);
   return result;
 }

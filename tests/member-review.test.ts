@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { Prisma } from "@prisma/client";
 import { ForbiddenError } from "@/backend/shared/rbac";
 
 const m = vi.hoisted(() => ({
@@ -106,6 +107,16 @@ describe("reviewMemberAction", () => {
       );
     },
   );
+
+  it("returns a retryable error on a serialization conflict", async () => {
+    m.requireActor.mockResolvedValue({ id: "u1", role: "SUPER_ADMIN", wingId: null });
+    m.transaction.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError("conflict", { code: "P2034", clientVersion: "6.19.3" }),
+    );
+
+    await expect(reviewMemberAction(form("APPROVE"))).rejects.toThrow(/retry|again/i);
+    expect(m.writeAudit).not.toHaveBeenCalled();
+  });
 
   it("does not re-approve an already approved member", async () => {
     m.requireActor.mockResolvedValue({ id: "u1", role: "SUPER_ADMIN", wingId: null });

@@ -8,11 +8,14 @@ const a = vi.hoisted(() => ({
   upsert: vi.fn(),
   create: vi.fn(),
   update: vi.fn(),
+  saveUpload: vi.fn(),
+  removeAsset: vi.fn(),
   transaction: vi.fn(),
 }));
 vi.mock("@/backend/shared/admin-guard", () => ({ requireActor: a.requireActor }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 vi.mock("@/backend/shared/audit", () => ({ writeAudit: a.writeAudit }));
+vi.mock("@/backend/shared/storage", () => ({ saveUpload: a.saveUpload, removeUploadedAsset: a.removeAsset }));
 vi.mock("@/backend/shared/db", () => ({
   db: {
     committeeMember: { findUnique: a.findUnique, upsert: a.upsert },
@@ -149,6 +152,23 @@ describe("committee and wing actions", () => {
     );
     expect(a.upsert).toHaveBeenCalled();
     expect(a.writeAudit).toHaveBeenCalledWith(expect.objectContaining({ entity: "CommitteeMember" }), tx);
+  });
+
+  it("removes only a newly uploaded photo when the upsert fails", async () => {
+    a.requireActor.mockResolvedValue({ id: "u1", role: "SUPER_ADMIN" });
+    a.saveUpload.mockResolvedValue("/uploads/new-photo.png");
+    a.transaction.mockRejectedValueOnce(new Error("DB down"));
+    const data = fd([
+      ["sessionId", WING],
+      ["name", "Test"],
+      ["title", "Lead"],
+      ["order", "0"],
+      ["photoUrl", "/uploads/old-photo.png"],
+    ]);
+    data.set("photo", new File(["png"], "photo.png", { type: "image/png" }));
+    await expect(saveCommitteeMemberAction(data)).rejects.toThrow("DB down");
+    expect(a.removeAsset).toHaveBeenCalledTimes(1);
+    expect(a.removeAsset).toHaveBeenCalledWith("/uploads/new-photo.png");
   });
 
   it("denies a wing lead editing another wing", async () => {

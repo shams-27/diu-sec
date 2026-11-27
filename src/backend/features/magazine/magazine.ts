@@ -15,6 +15,9 @@ export async function saveMagazineIssueAction(formData: FormData): Promise<void>
   const pdfUrl = input.pdfUrl ?? (await saveUpload(formData.get("pdf"), "pdf"));
   if (!pdfUrl) throw new Error("An issue PDF is required");
   const coverUrl = input.coverUrl ?? (await saveUpload(formData.get("cover"), "image"));
+  const uploaded = [input.pdfUrl ? null : pdfUrl, input.coverUrl ? null : coverUrl].filter(
+    (url): url is string => Boolean(url),
+  );
 
   const data = {
     number: input.number,
@@ -43,9 +46,7 @@ export async function saveMagazineIssueAction(formData: FormData): Promise<void>
       );
     }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
   } catch (error) {
-    await Promise.all(
-      [pdfUrl, coverUrl].filter((url): url is string => Boolean(url)).map((url) => removeUploadedAsset(url)),
-    );
+    await Promise.all(uploaded.map((url) => removeUploadedAsset(url)));
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       throw new Error(`Magazine issue number ${input.number} already exists`);
     }

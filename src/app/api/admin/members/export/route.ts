@@ -1,6 +1,7 @@
 import { getMembersForExport } from "@/backend/features/membership/queries";
 import { connection, type NextRequest } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
+import { writeAudit } from "@/backend/shared/audit";
 import { memberFilterSchema } from "@/backend/shared/validators";
 
 const COLUMNS = ["Name", "Student ID", "Email", "Batch", "Phone", "Preferred wing", "Status", "Card no.", "Applied at"];
@@ -13,6 +14,13 @@ export async function GET(request: NextRequest) {
   const wingId = actor.role === "WING_LEAD" ? actor.wingId : filters.wingPrefId;
 
   const members = await getMembersForExport(filters.status, wingId);
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "EXPORT",
+    entity: "Member",
+    after: { rows: members.length, status: filters.status ?? null, wingId: wingId ?? null },
+  });
 
   const escape = (value: string | null | undefined) => {
     let text = String(value ?? "");

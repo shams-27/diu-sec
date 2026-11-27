@@ -80,6 +80,22 @@ describe("magazine actions", () => {
     );
   });
 
+  it("keeps existing files when an edit conflicts", async () => {
+    e.saveUpload.mockResolvedValue(undefined);
+    e.transaction.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError("duplicate", { code: "P2002", clientVersion: "6.19.3" }),
+    );
+    const data = fd([
+      ["id", "issue1"],
+      ["number", "8"],
+      ["title", "Issue Eight"],
+      ["pdfUrl", "/uploads/existing.pdf"],
+      ["coverUrl", "/uploads/existing.png"],
+    ]);
+    await expect(saveMagazineIssueAction(data)).rejects.toThrow(/number/i);
+    expect(e.removeAsset).not.toHaveBeenCalled();
+  });
+
   it("removes uploads when a duplicate issue number conflicts", async () => {
     e.saveUpload.mockResolvedValueOnce("/uploads/issue.pdf").mockResolvedValueOnce("/uploads/cover.png");
     e.transaction.mockRejectedValueOnce(
