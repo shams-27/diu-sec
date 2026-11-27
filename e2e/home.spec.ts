@@ -21,7 +21,7 @@ test("keeps homepage layout shift below the Lighthouse threshold", async ({ page
   expect(cls).toBeLessThan(0.1);
 });
 
-test("staggers card grids and disables motion for reduced-motion users", async ({ page }) => {
+test("staggers cards, fills the viewport with pattern, scales type and disables motion", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
 
   const firstCard = page.locator("dl.grid > div").first();
@@ -30,9 +30,28 @@ test("staggers card grids and disables motion for reduced-motion users", async (
     "0s",
   );
 
-  const pattern = await page.locator("main").evaluate((el) => getComputedStyle(el).backgroundImage);
+  const pattern = await page.locator(".pattern-surface").evaluate((el) => getComputedStyle(el).backgroundImage);
   expect(pattern).toContain("radial-gradient");
   expect(pattern).toContain("linear-gradient");
+
+  const paddingLeft = (selector: string) =>
+    page.locator(selector).first().evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft));
+  const titleSize = () =>
+    page.locator(".display-title").first().evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  const hasNoOverflow = () =>
+    page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
+
+  const mainGutter = await paddingLeft("main");
+  expect(await paddingLeft("header > div")).toBe(mainGutter);
+  expect(await paddingLeft("footer > div:first-child")).toBe(mainGutter);
+  expect(await titleSize()).toBeGreaterThanOrEqual(60);
+  expect(await hasNoOverflow()).toBe(true);
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  expect(await titleSize()).toBeGreaterThanOrEqual(96);
+  const patternWidth = await page.locator(".pattern-surface").evaluate((el) => el.getBoundingClientRect().width);
+  expect(patternWidth).toBe(await page.evaluate(() => window.innerWidth));
+  expect(await hasNoOverflow()).toBe(true);
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.reload({ waitUntil: "networkidle" });
