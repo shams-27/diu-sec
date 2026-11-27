@@ -105,6 +105,33 @@ test("adds an asymmetric hero callout and ruled impact grid", async ({ page }) =
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
+test("gives impact cards the shared hard shadow and bigger numbers", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  const impact = page.locator(".brutal-stats > div").first();
+  const other = page.locator('section[aria-labelledby="manifesto-heading"] .card-lift').first();
+  expect(await impact.evaluate((el) => getComputedStyle(el).boxShadow)).toBe(
+    await other.evaluate((el) => getComputedStyle(el).boxShadow),
+  );
+
+  const stat = page.locator(".brutal-stats dd").first();
+  const fontSize = async () => stat.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  const noClipping = async () => stat.evaluate((el) => el.scrollWidth <= el.clientWidth);
+  const noPageOverflow = async () => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
+
+  expect(await fontSize()).toBeGreaterThanOrEqual(40);
+  expect(await noClipping()).toBe(true);
+  expect(await noPageOverflow()).toBe(true);
+
+  await page.setViewportSize({ width: 768, height: 900 });
+  expect(await noClipping()).toBe(true);
+  expect(await noPageOverflow()).toBe(true);
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  expect(await fontSize()).toBeGreaterThanOrEqual(60);
+  expect(await noPageOverflow()).toBe(true);
+});
+
 test("staggers cards, fills the viewport with pattern, scales type and disables motion", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
 

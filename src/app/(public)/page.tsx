@@ -188,7 +188,7 @@ export default function HomePage() {
         <SectionTitle id="impact-heading">Our impact</SectionTitle>
         <dl className="brutal-stats stagger-in grid grid-cols-2 gap-4 md:grid-cols-4">
           {IMPACT.map((item) => (
-            <div key={item.label} className="card-lift rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <div key={item.label} className="card-lift rounded-2xl border border-border bg-card p-4 shadow-sm">
               <dt className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{item.label}</dt>
               <dd className="stat-value mt-3">{item.value}</dd>
             </div>
