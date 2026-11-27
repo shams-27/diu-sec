@@ -276,8 +276,8 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 - [x] A-12 pages (roles, audit viewer with filters)
 
 ### Phase 2 — Membership (04 + A-02)
-- [ ] Public `/join` form + ID card generation
-- [ ] Admin review queue, approve/reject/revoke/reissue, CSV export
+- [x] Public `/join` form + ID card generation
+- [x] Admin review queue, approve/reject/revoke/reissue, CSV export
 
 ### Phase 3 — Committee & Wings (02, 03 + A-03, A-04)
 - [ ] Sessions, committee CRUD with reorder + portrait upload

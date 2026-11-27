@@ -7,10 +7,11 @@ export type AdminActor = Actor & { id: string };
 export async function requireActor(
   module: AdminModule,
   action: Action,
-  resourceWingId?: string | null,
+  resourceWingId?: string | null | "own",
 ): Promise<AdminActor> {
   const session = await auth();
   const actor = sessionToActor(session);
-  assertCan(actor, module, action, resourceWingId);
+  const wingId = resourceWingId === "own" ? actor.wingId : resourceWingId;
+  assertCan(actor, module, action, wingId);
   return { ...actor, id: session?.user?.id ?? "" };
 }

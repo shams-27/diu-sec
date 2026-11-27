@@ -38,16 +38,29 @@ export const githubRepoSchema = z
   .trim()
   .regex(GITHUB_REPO_REGEX, "Must be a github.com/owner/repo URL");
 
+const emptyToUndefined = (value: unknown) => (value === "" ? undefined : value);
+
+export type SubmitState = { error?: string; memberId?: string };
+
 export const memberApplicationSchema = z.object({
   name: z.string().trim().min(2).max(100),
   studentId: studentIdSchema,
   email: diuEmailSchema,
-  batch: z.string().trim().max(10).optional(),
-  phone: z.string().trim().max(20).optional(),
-  wingPrefId: z.string().cuid().optional(),
+  batch: z.preprocess(emptyToUndefined, z.string().trim().max(10).optional()),
+  phone: z.preprocess(emptyToUndefined, z.string().trim().max(20).optional()),
+  wingPrefId: z.preprocess(emptyToUndefined, z.string().cuid().optional()),
 });
 
-const emptyToUndefined = (value: unknown) => (value === "" ? undefined : value);
+export const memberReviewSchema = z.object({
+  memberId: z.string().cuid(),
+  decision: z.enum(["APPROVE", "REJECT", "REVOKE", "REISSUE"]),
+});
+
+export const memberFilterSchema = z.object({
+  status: z.preprocess(emptyToUndefined, z.enum(["PENDING", "APPROVED", "REJECTED", "REVOKED"]).optional()),
+  wingPrefId: z.preprocess(emptyToUndefined, z.string().cuid().optional()),
+});
+
 const emptyToNull = (value: unknown) => (value === "" ? null : value);
 
 /** Exclusive upper bound for a UTC date-picker value. */

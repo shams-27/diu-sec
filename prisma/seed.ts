@@ -112,6 +112,24 @@ async function main() {
     update: {},
   });
 
+  // Pending applicants let A-02 review and wing-scoped reads be demoed without applying first.
+  for (const applicant of [
+    { studentId: "223-35-201", name: "Pending Applicant (Web)", email: "pending.web@diu.edu.bd", slug: "web-mobile-dev" },
+    { studentId: "223-35-202", name: "Pending Applicant (AI)", email: "pending.ai@diu.edu.bd", slug: "ai-ml" },
+  ]) {
+    await db.member.upsert({
+      where: { email: applicant.email },
+      create: {
+        studentId: applicant.studentId,
+        name: applicant.name,
+        email: applicant.email,
+        status: "PENDING",
+        wingPrefId: wings[applicant.slug].id,
+      },
+      update: { studentId: applicant.studentId, name: applicant.name, wingPrefId: wings[applicant.slug].id },
+    });
+  }
+
   const event = await db.event.upsert({
     where: { slug: "freshers-hackathon-2026" },
     create: {
