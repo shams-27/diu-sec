@@ -167,11 +167,34 @@ test("shuffles impact digits on visit and settles for reduced motion", async ({ 
   }
   await expect(visual).toHaveText("1,200+", { timeout: 2000 });
 
+  await page.addInitScript(() => {
+    (window as unknown as { __statTexts: string[] }).__statTexts = [];
+    document.addEventListener("DOMContentLoaded", () => {
+      const el = document.querySelector(".brutal-stats dd span[aria-hidden='true']");
+      if (!el) return;
+      new MutationObserver(() => {
+        (window as unknown as { __statTexts: string[] }).__statTexts.push(el.textContent ?? "");
+      }).observe(el, { childList: true, characterData: true, subtree: true });
+    });
+  });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.reload({ waitUntil: "networkidle" });
   await page.locator(".brutal-stats").scrollIntoViewIfNeeded();
   await page.waitForTimeout(600);
+  expect(await page.evaluate(() => (window as unknown as { __statTexts: string[] }).__statTexts)).toEqual([]);
   await expect(visual).toHaveText("1,200+");
+});
+
+test("keeps admin metric numbers on their original scale", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  const cookie = await superAdminCookie();
+  await page.context().addCookies([{ name: "authjs.session-token", value: cookie, domain: "localhost", path: "/" }]);
+  await page.goto("/admin", { waitUntil: "networkidle" });
+  const size = await page
+    .locator("main .stat-value")
+    .first()
+    .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  expect(size).toBe(48);
 });
 
 test("staggers cards, fills the viewport with pattern, scales type and disables motion", async ({ page }) => {
