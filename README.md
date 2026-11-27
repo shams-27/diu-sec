@@ -51,40 +51,79 @@ Targets **OpenCode 2**: ponytail uses the `plugins` key; superpowers is listed u
 
 ```
 diu-sec/
-├── README.md
-├── AGENTS.md                 # copy of Section 12 (agent rules) for OpenCode
+├── README.md                    # source of truth
+├── AGENTS.md                    # agent rules (Section 12)
+├── opencode.json                # OpenCode plugins + MCP servers
+├── next.config.ts               # Next 16: cache components, Turbopack + Tailwind loader
+├── eslint.config.mjs            # ESLint 9 + eslint-config-next
+├── vitest.config.mts            # Vitest 5 unit tests + @ aliases
+├── playwright.config.ts         # Playwright e2e (builds and starts :3003)
+├── components.json              # shadcn CLI aliases for local UI
+├── .env.example                 # env template; no secrets
 ├── docs/
-│   ├── DECISIONS.md          # log of every assumption/decision
-│   ├── design-system.md
-│   ├── deployment.md
-│   ├── requirements/         # website.md, admin-panel.md (source of truth)
-│   ├── superpowers/plans/
-│   └── archive/              # original PDFs (humans only)
+│   ├── DECISIONS.md             # decision log
+│   ├── design-system.md         # UI/UX Pro Max output
+│   ├── deployment.md            # single-instance self-hosting
+│   ├── requirements/            # canonical website/admin specs
+│   ├── superpowers/plans/       # phase plans
+│   └── archive/                 # source PDFs (agents: do not read)
 ├── prisma/
-│   ├── schema.prisma
-│   ├── migrations/
-│   ├── sql/                  # append-only audit trigger source
-│   └── seed.ts
+│   ├── schema.prisma            # Prisma 6 models/enums
+│   ├── migrations/              # Prisma Migrate SQL
+│   ├── sql/                     # raw Postgres append-only trigger source
+│   └── seed.ts                  # tsx seed; SEED_DEMO opt-in
+├── public/
+│   └── sec_logo.png             # Next static asset
 ├── src/
-│   ├── proxy.ts              # Next 16 request guard for /admin/*
-│   ├── app/                  # routing shell: thin page.tsx files with metadata + re-export
+│   ├── proxy.ts                 # Next 16 proxy: /admin RBAC guard
+│   ├── types/next-auth.d.ts     # Auth.js session type augmentation
+│   ├── app/                     # Next.js App Router (thin routes)
+│   │   ├── layout.tsx           # next/font + root metadata
+│   │   ├── globals.css          # Tailwind 4 + design tokens
+│   │   ├── opengraph-image.tsx  # Next OG image
+│   │   ├── sitemap.ts, robots.ts # Next metadata routes
 │   │   ├── (public)/
+│   │   │   ├── layout.tsx       # public shell
+│   │   │   ├── template.tsx     # React 19 ViewTransition
+│   │   │   └── page.tsx         # re-exports home feature
 │   │   ├── admin/
+│   │   │   └── layout.tsx       # admin shell (connection + auth)
 │   │   └── api/
-│   ├── frontend/
-│   │   ├── shared/           # ui/, shell/, form/, page-hero.tsx
-│   │   └── features/         # one folder per domain: page bodies + components
-│   │       └── <domain>/     # e.g. membership/, events/, certificates/
-│   └── backend/
-│       ├── shared/           # db, auth, rbac, audit, validators, storage, …
-│       └── features/         # one folder per domain
-│           └── <domain>/     # actions, queries.ts, generators
-├── tests/
-├── e2e/
-└── .env.example
+│   │       ├── auth/[...nextauth]/route.ts   # Auth.js handlers
+│   │       └── admin/members/export/route.ts # CSV export route handler
+│   ├── backend/                 # server-only; no React, no frontend imports
+│   │   ├── shared/
+│   │   │   ├── db.ts            # PrismaClient
+│   │   │   ├── auth.ts          # Auth.js v5 + Google provider
+│   │   │   ├── validators.ts    # Zod schemas + shared regexes
+│   │   │   ├── rbac.ts          # custom RBAC matrix
+│   │   │   ├── admin-guard.ts   # authenticate + authorize actions
+│   │   │   ├── audit.ts         # Prisma append-only writes
+│   │   │   ├── rate-limit.ts    # raw Postgres RateLimitBucket SQL
+│   │   │   ├── storage.ts       # local fs uploads (public/uploads)
+│   │   │   ├── cache-tags.ts    # Next use cache tags
+│   │   │   └── contracts.ts, session.ts, honeypot.ts
+│   │   └── features/<domain>/
+│   │       ├── <action>.ts      # server actions: Zod + Prisma + audit
+│   │       ├── queries.ts       # Prisma reads (home uses use cache)
+│   │       └── certs.ts         # certificates: pdf-lib + qrcode PDFs
+│   └── frontend/                # React 19 components; no Prisma
+│       ├── shared/
+│       │   ├── ui/              # shadcn-style: @base-ui/react + CVA + cn
+│       │   ├── shell/           # header/footer/nav drawer/admin sidebar
+│       │   ├── form/            # honeypot field
+│       │   └── page-hero.tsx
+│       └── features/<domain>/
+│           ├── *-page.tsx       # page bodies re-exported by routes
+│           ├── membership-form.tsx # native form + useActionState
+│           ├── check-in-scanner.tsx # html5-qrcode (dynamic import)
+│           ├── wing-distribution-chart.tsx # Recharts
+│           └── member-id-card.tsx # canvas PNG + pdf-lib PDF
+├── tests/                       # Vitest unit + layer-boundary tests
+└── e2e/                         # Playwright flows
 ```
 
-Each feature lives in one folder per layer: UI in `src/frontend/features/<domain>/`, data and mutations in `src/backend/features/<domain>/`. A route `page.tsx` only holds its `metadata` export and re-exports the feature's page body as default. Frontend files never import Prisma; backend files never import frontend. Adding a feature means adding one folder in each layer plus a thin route.
+Framework annotations name the primary library for each touchpoint. Each feature lives in one folder per layer: UI in `src/frontend/features/<domain>/`, data and mutations in `src/backend/features/<domain>/`. A route `page.tsx` only holds its `metadata` export and re-exports the feature's page body as default. Frontend files never import Prisma; backend files never import frontend. Adding a feature means adding one folder in each layer plus a thin route.
 
 ---
 
