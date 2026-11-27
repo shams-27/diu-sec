@@ -61,28 +61,23 @@ diu-sec/
 │   ├── schema.prisma
 │   └── seed.ts
 ├── src/
-│   ├── app/
-│   │   ├── (public)/         # public website routes
-│   │   ├── admin/            # admin panel routes (protected)
-│   │   ├── verify/[certId]/  # public certificate verification
+│   ├── app/                  # routing shell: thin page.tsx files with metadata + re-export
+│   │   ├── (public)/
+│   │   ├── admin/
 │   │   └── api/
-│   ├── components/
-│   │   ├── ui/               # shadcn primitives
-│   │   ├── public/
-│   │   └── admin/
-│   ├── lib/
-│   │   ├── db.ts             # Prisma client singleton
-│   │   ├── auth.ts           # Auth.js config
-│   │   ├── rbac.ts           # permission matrix + guards
-│   │   ├── audit.ts          # audit log writer
-│   │   ├── validators.ts     # Zod schemas, ID/email regexes
-│   │   ├── certs.ts          # cert ID generation + PDF
-│   │   ├── idcard.ts         # member ID card generation
-│   │   └── storage.ts
-│   └── server/actions/       # server actions per module
+│   ├── frontend/
+│   │   ├── shared/           # ui/, shell/, form/, utils.ts, page-hero.tsx
+│   │   └── features/         # one folder per domain: page bodies + components
+│   │       └── <domain>/     # e.g. membership/, events/, certificates/
+│   └── backend/
+│       ├── shared/           # db, auth, rbac, audit, validators, storage, …
+│       └── features/         # one folder per domain
+│           └── <domain>/     # actions, queries.ts, generators
 ├── tests/
 └── .env.example
 ```
+
+Each feature lives in one folder per layer: UI in `src/frontend/features/<domain>/`, data and mutations in `src/backend/features/<domain>/`. A route `page.tsx` only holds its `metadata` export and re-exports the feature's page body as default. Frontend files never import Prisma; backend files never import frontend. Adding a feature means adding one folder in each layer plus a thin route.
 
 ---
 
@@ -135,7 +130,7 @@ Never commit `.env`.
 
 ---
 
-## 5. Validation Rules (shared constants in `src/lib/validators.ts`)
+## 5. Validation Rules (shared constants in `src/backend/shared/validators.ts`)
 
 | Field | Rule |
 |---|---|
@@ -215,7 +210,7 @@ Global: responsive, accessible (WCAG AA), SEO metadata + OpenGraph, sitemap, `lo
 | A-11 | Resources, Sponsors & Media | `/admin/resources`, `/admin/sponsors`, `/admin/gallery` | CP sheets/roadmaps, sponsor logos, faculty profiles, photo albums |
 | A-12 | RBAC & Audit Logs | `/admin/access`, `/admin/audit` | Manage roles, view/filter immutable audit log |
 
-### RBAC Matrix (`src/lib/rbac.ts`)
+### RBAC Matrix (`src/backend/shared/rbac.ts`)
 
 | Module | Super Admin (President) | General Secretary | Wing Lead | Publication Editor |
 |---|:-:|:-:|:-:|:-:|
@@ -325,8 +320,8 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 
 - Read this README fully before writing code. Follow Build Order; one phase at a time.
 - Use only the stack in Section 1. Do not add major dependencies without logging why in `docs/DECISIONS.md`.
-- Keep ID/email/cert regexes in `src/lib/validators.ts` only — never duplicate them.
-- All mutations go through server actions in `src/server/actions/*`, which must: (1) authenticate, (2) authorize via `rbac.ts`, (3) validate via Zod, (4) write, (5) call `writeAudit()`.
+- Keep ID/email/cert regexes in `src/backend/shared/validators.ts` only — never duplicate them.
+- All mutations go through server actions in `src/backend/features/<domain>/*`, which must: (1) authenticate, (2) authorize via `rbac.ts`, (3) validate via Zod, (4) write, (5) call `writeAudit()`.
 - Never hard-delete audit logs; never expose an edit/delete path for them.
 - Never commit secrets. Use `.env.example` for new variables.
 - Fix the whole class of a bug, not just one instance (e.g., if a permission check is missing in one action, check all actions).

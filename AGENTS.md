@@ -25,8 +25,8 @@ Restart OpenCode after cloning so plugins install. Verify: ask "Tell me about yo
 Precedence when they conflict: this file and README > superpowers process > ponytail minimalism > UI/UX Pro Max style suggestions. Ponytail never removes anything required by README module tables.
 
 ## Hard rules
-1. **Validators live only in `src/lib/validators.ts`** (student ID `XXX-35-XXX`, `@diu.edu.bd` email, cert ID `DIU-SEC-CERT-XXXX`, GitHub URL). Never duplicate regexes.
-2. **Every mutation** is a server action in `src/server/actions/*` that does, in order: authenticate → authorize (`can()` from `src/lib/rbac.ts`) → Zod-validate → write (in a transaction when multi-step) → `writeAudit()`.
+1. **Validators live only in `src/backend/shared/validators.ts`** (student ID `XXX-35-XXX`, `@diu.edu.bd` email, cert ID `DIU-SEC-CERT-XXXX`, GitHub URL). Never duplicate regexes.
+2. **Every mutation** is a server action in `src/backend/features/<domain>/*` that does, in order: authenticate → authorize (`can()` from `src/backend/shared/rbac.ts`) → Zod-validate → write (in a transaction when multi-step) → `writeAudit()`.
 3. **Permissions are enforced server-side.** Hiding UI is never enough. Wing Leads are limited to their own wing's data.
 4. **AuditLog is append-only.** No update/delete code paths, ever.
 5. **Seat counts** change only inside a DB transaction (no overbooking).
@@ -35,6 +35,7 @@ Precedence when they conflict: this file and README > superpowers process > pony
 8. Every page/route group has loading, empty, and error states. Mobile-first (≥360px), keyboard accessible.
 9. Do not add features outside README. Do not add major dependencies without logging why.
 10. Keep commit messages and replies concise.
+11. **Feature-first layers:** UI in `src/frontend/features/<domain>/`, data and mutations in `src/backend/features/<domain>/`; route `page.tsx` files hold only metadata plus a re-export. Frontend never imports Prisma; backend never imports frontend.
 
 ## Definition of done
 Matches README module table · Zod-validated · RBAC-checked · audited · loading/empty/error states · responsive · lint+typecheck+tests pass · seed data allows a demo.
