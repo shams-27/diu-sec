@@ -3,11 +3,17 @@
 import { Prisma } from "@prisma/client";
 import { writeAudit } from "@/lib/audit";
 import { db } from "@/lib/db";
+import { isBot } from "@/lib/honeypot";
+import { rateLimited } from "@/lib/rate-limit";
 import { memberApplicationSchema, type SubmitState } from "@/lib/validators";
 
 const DUPLICATE = "An application with that student ID or email already exists.";
+const TOO_MANY = "Too many submissions. Please try again in a few minutes.";
 
 export async function submitMembershipAction(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
+  if (isBot(formData)) return {};
+  if (await rateLimited("join")) return { error: TOO_MANY };
+
   const parsed = memberApplicationSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "Check your student ID (XXX-35-XXX) and @diu.edu.bd email." };
 

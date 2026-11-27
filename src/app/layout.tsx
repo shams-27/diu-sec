@@ -22,6 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: { default: "DIU SEC — Software Engineering Club", template: "%s | DIU SEC" },
   description:
     "Daffodil International University Software Engineering Club — wings, events, projects and opportunities for SWE students.",
@@ -30,6 +31,7 @@ export const metadata: Metadata = {
     description: "Build, compete and grow with the DIU Software Engineering Club.",
     type: "website",
   },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

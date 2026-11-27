@@ -13,7 +13,7 @@ const m = vi.hoisted(() => ({
 
 vi.mock("@/lib/admin-guard", () => ({ requireActor: m.requireActor }));
 vi.mock("@/lib/audit", () => ({ writeAudit: m.writeAudit }));
-vi.mock("next/cache", () => ({ revalidatePath: m.revalidatePath }));
+vi.mock("next/cache", () => ({ revalidatePath: m.revalidatePath, updateTag: vi.fn() }));
 vi.mock("@/lib/db", () => ({
   db: {
     $transaction: (fn: (tx: unknown) => Promise<unknown>) => m.transaction(fn),

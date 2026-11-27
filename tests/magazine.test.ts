@@ -21,7 +21,7 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 vi.mock("@/lib/storage", () => ({ saveUpload: e.saveUpload, removeUploadedAsset: e.removeAsset }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { articleModerationSchema, magazineIssueSchema } from "@/lib/validators";
 import { moderateArticleAction, saveMagazineIssueAction } from "@/server/actions/magazine";

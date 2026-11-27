@@ -1,9 +1,10 @@
 "use server";
 
 import { Prisma } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { requireActor } from "@/lib/admin-guard";
 import { writeAudit } from "@/lib/audit";
+import { HOME_HIGHLIGHTS_TAG } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
 import { can, ForbiddenError } from "@/lib/rbac";
 import { wingRosterSchema, wingUpdateSchema } from "@/lib/validators";
@@ -53,6 +54,8 @@ export async function saveWingAction(formData: FormData): Promise<void> {
   revalidatePath("/admin/wings");
   revalidatePath("/wings");
   if (wingSlug) revalidatePath(`/wings/${wingSlug}`);
+  revalidatePath("/");
+  updateTag(HOME_HIGHLIGHTS_TAG);
 }
 
 export async function manageWingRosterAction(formData: FormData): Promise<void> {

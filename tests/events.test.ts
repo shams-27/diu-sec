@@ -10,10 +10,12 @@ const e = vi.hoisted(() => ({
   create: vi.fn(),
   findFirst: vi.fn(),
   transaction: vi.fn(),
+  rateLimited: vi.fn(),
 }));
+vi.mock("@/lib/rate-limit", () => ({ rateLimited: e.rateLimited }));
 vi.mock("@/lib/admin-guard", () => ({ requireActor: e.requireActor }));
 vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 vi.mock("@/lib/db", () => ({
   db: {
     event: { findUnique: e.findUnique, update: e.update, updateMany: e.updateMany },
@@ -88,6 +90,7 @@ describe("phase 4 validators", () => {
 describe("event registration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    e.rateLimited.mockResolvedValue(false);
     e.findUnique.mockResolvedValue({
       id: EVENT,
       capacity: 2,
@@ -98,6 +101,17 @@ describe("event registration", () => {
     });
     e.findFirst.mockResolvedValue(null);
     e.create.mockImplementation(async ({ data }) => ({ id: "r1", qrToken: data.qrToken }));
+  });
+
+  it("blocks an over-rate registration before touching a seat", async () => {
+    e.rateLimited.mockResolvedValue(true);
+
+    const result = await registerForEventAction({}, registrationForm);
+
+    expect(result.error).toMatch(/too many/i);
+    expect(e.findUnique).not.toHaveBeenCalled();
+    expect(e.update).not.toHaveBeenCalled();
+    expect(e.create).not.toHaveBeenCalled();
   });
 
   it("rejects a full event without creating a registration", async () => {

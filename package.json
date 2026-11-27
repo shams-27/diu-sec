@@ -32,6 +32,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@playwright/test": "1.66.0-alpha-2026-11-18",
     "@tailwindcss/turbopack": "4.3.3",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.6",

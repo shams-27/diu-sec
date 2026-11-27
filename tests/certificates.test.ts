@@ -24,7 +24,7 @@ vi.mock("@/lib/admin-guard", () => ({ requireActor: e.requireActor }));
 vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
 vi.mock("@/lib/certs", () => ({ renderCertificatePdf: e.render }));
 vi.mock("@/lib/storage", () => ({ saveGeneratedPdf: e.savePdf, removeUploadedAsset: e.removeAsset }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 vi.mock("@/lib/db", () => ({
   db: {
     event: { findUnique: e.eventFindUnique },

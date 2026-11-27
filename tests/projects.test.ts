@@ -13,7 +13,7 @@ vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
 vi.mock("@/lib/db", () => ({
   db: { project: { upsert: e.projectUpsert, update: e.projectUpdate }, $transaction: e.transaction },
 }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { projectReviewSchema, projectSchema } from "@/lib/validators";
 import { reviewProjectAction, saveProjectAction } from "@/server/actions/projects";

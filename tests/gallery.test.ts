@@ -21,7 +21,7 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 vi.mock("@/lib/storage", () => ({ saveUpload: e.saveUpload, removeUploadedAsset: e.removeAsset }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { galleryAlbumSchema, galleryFilterSchema, galleryPhotoSchema } from "@/lib/validators";
 import { addGalleryPhotoAction, saveGalleryAlbumAction } from "@/server/actions/gallery";

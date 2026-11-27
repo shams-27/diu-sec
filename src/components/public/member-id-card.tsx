@@ -30,7 +30,7 @@ export function MemberIdCard({ member }: { member: CardMember }) {
 
     const styles = getComputedStyle(document.documentElement);
     const token = (name: string, fallback: string) => styles.getPropertyValue(name).trim() || fallback;
-    const primary = token("--primary", "#dc2626");
+    const primary = token("--primary", "#b91c1c");
     const foreground = token("--foreground", "#7f1d1d");
     const muted = token("--muted-foreground", "#475569");
     const card = token("--card", "#ffffff");

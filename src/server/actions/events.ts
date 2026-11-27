@@ -2,11 +2,13 @@
 
 import { Prisma } from "@prisma/client";
 import { randomUUID } from "node:crypto";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import QRCode from "qrcode";
 import { requireActor } from "@/lib/admin-guard";
 import { writeAudit } from "@/lib/audit";
+import { HOME_HIGHLIGHTS_TAG } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
+import { rateLimited } from "@/lib/rate-limit";
 import { can, ForbiddenError } from "@/lib/rbac";
 import {
   checkInSchema,
@@ -23,6 +25,7 @@ export async function registerForEventAction(
   _previous: RegistrationState,
   formData: FormData,
 ): Promise<RegistrationState> {
+  if (await rateLimited("register")) return { error: "Too many submissions. Please try again in a few minutes." };
   const parsed = registrationSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "Check your name and email, then try again." };
   const input = parsed.data;
@@ -65,6 +68,8 @@ export async function registerForEventAction(
     if ("error" in result) return { error: result.error };
     revalidatePath("/events");
     revalidatePath(`/events/${result.slug}`);
+    revalidatePath("/");
+    updateTag(HOME_HIGHLIGHTS_TAG);
     return { qrToken, qrDataUrl };
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -148,6 +153,8 @@ export async function saveEventAction(formData: FormData): Promise<void> {
   }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
   revalidatePath("/admin/events");
   revalidatePath(`/events/${slug}`);
+  revalidatePath("/");
+  updateTag(HOME_HIGHLIGHTS_TAG);
 }
 
 export async function manageEventAction(formData: FormData): Promise<void> {
@@ -173,4 +180,6 @@ export async function manageEventAction(formData: FormData): Promise<void> {
   }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
   revalidatePath("/admin/events");
   revalidatePath("/events");
+  revalidatePath("/");
+  updateTag(HOME_HIGHLIGHTS_TAG);
 }

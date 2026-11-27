@@ -10,7 +10,7 @@ const e = vi.hoisted(() => ({
 vi.mock("@/lib/admin-guard", () => ({ requireActor: e.requireActor }));
 vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
 vi.mock("@/lib/db", () => ({ db: { notice: { upsert: e.noticeUpsert }, $transaction: e.transaction } }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { noticeSchema } from "@/lib/validators";
 import { saveNoticeAction } from "@/server/actions/notices";

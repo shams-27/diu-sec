@@ -18,7 +18,7 @@ vi.mock("@/lib/audit", () => ({ writeAudit: m.writeAudit }));
 vi.mock("@/lib/db", () => ({
   db: { user: { findUnique: m.findUnique, count: m.count }, $transaction: m.transaction },
 }));
-vi.mock("next/cache", () => ({ revalidatePath: m.revalidatePath }));
+vi.mock("next/cache", () => ({ revalidatePath: m.revalidatePath, updateTag: vi.fn() }));
 
 function form(role: string, wingId = ""): FormData {
   const data = new FormData();

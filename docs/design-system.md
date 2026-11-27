@@ -17,13 +17,13 @@ Generated 2026-11-27 with UI/UX Pro Max (`search.py "university student engineer
 | `--background` | `#FEF2F2` |
 | `--foreground` | `#7F1D1D` |
 | `--card` / `--card-foreground` | `#FFFFFF` / `#7F1D1D` |
-| `--primary` / `--primary-foreground` | `#DC2626` / `#FFFFFF` |
+| `--primary` / `--primary-foreground` | `#B91C1C` / `#FFFFFF` |
 | `--secondary` / `--secondary-foreground` | `#EF4444` / `#000000` |
 | `--muted` / `--muted-foreground` | `#F0EDF1` / `#475569` |
-| `--accent` / `--accent-foreground` | `#DC2626` / `#FFFFFF` |
-| `--border` / `--input` / `--ring` | `#FECACA` / `#FECACA` / `#DC2626` |
-| `--destructive` | `#DC2626` |
-| chart 1–5 | `#DC2626`, `#F59E0B`, `#EF4444`, `#7F1D1D`, `#475569` |
+| `--accent` / `--accent-foreground` | `#B91C1C` / `#FFFFFF` |
+| `--border` / `--input` / `--ring` | `#FECACA` / `#FECACA` / `#B91C1C` |
+| `--destructive` | `#B91C1C` |
+| chart 1–5 | `#B91C1C`, `#F59E0B`, `#EF4444`, `#7F1D1D`, `#475569` |
 
 Dark mode overrides every semantic token under `.dark` with dark red surfaces and light text; dark-mode contrast is checked separately.
 

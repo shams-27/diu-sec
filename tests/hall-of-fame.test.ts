@@ -12,7 +12,7 @@ vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
 vi.mock("@/lib/db", () => ({
   db: { hallOfFameEntry: { upsert: e.entryUpsert }, $transaction: e.transaction },
 }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { hallOfFameSchema } from "@/lib/validators";
 import { saveHallOfFameEntryAction } from "@/server/actions/hall-of-fame";

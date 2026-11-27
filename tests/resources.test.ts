@@ -12,7 +12,7 @@ vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
 vi.mock("@/lib/db", () => ({
   db: { resource: { upsert: e.resourceUpsert }, $transaction: e.transaction },
 }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { resourceFilterSchema, resourceSchema } from "@/lib/validators";
 import { saveResourceAction } from "@/server/actions/resources";

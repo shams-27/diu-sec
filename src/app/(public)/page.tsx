@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { connection } from "next/server";
+import { cacheLife, cacheTag } from "next/cache";
 import { SectionTitle } from "@/components/public/page-hero";
+import { HOME_HIGHLIGHTS_TAG } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
 
 export const metadata: Metadata = {
@@ -31,8 +33,10 @@ const MANIFESTO = [
   },
 ];
 
-export default async function HomePage() {
-  await connection();
+async function getHomeData() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(HOME_HIGHLIGHTS_TAG);
   const [upcoming, wings] = await Promise.all([
     db.event.findMany({
       where: { status: "PUBLISHED", startsAt: { gte: new Date() } },
@@ -53,70 +57,13 @@ export default async function HomePage() {
       select: { id: true, slug: true, name: true, description: true },
     }),
   ]);
+  return { upcoming, wings };
+}
 
+async function HomeHighlights() {
+  const { upcoming, wings } = await getHomeData();
   return (
-    <div className="space-y-16">
-      <section className="hero-surface relative overflow-hidden rounded-3xl border border-border px-6 py-12 sm:px-10 sm:py-16">
-        <div className="dot-grid pointer-events-none absolute -right-12 -top-12 size-56 opacity-40" aria-hidden="true" />
-        <div className="relative max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-            Daffodil International University · Software Engineering
-          </p>
-          <h1 className="mt-4 font-heading text-5xl leading-[1.05] tracking-wide sm:text-7xl">
-            Build. Compete. Belong.
-          </h1>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
-            We are DIU SEC — a student-led community turning coursework into real products, contest wins and lifelong
-            peers. Five wings, one club, open to every SWE student at DIU.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/join"
-              className="rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-primary/90 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              Join the club
-            </Link>
-            <Link
-              href="/events"
-              className="rounded-md border border-border bg-card px-6 py-3 text-sm font-semibold transition-colors duration-200 hover:bg-muted motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              Explore events
-            </Link>
-            <Link
-              href="/verify"
-              className="rounded-md border border-border bg-card px-6 py-3 text-sm font-semibold transition-colors duration-200 hover:bg-muted motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              Verify a certificate
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section aria-labelledby="impact-heading" className="space-y-5">
-        <SectionTitle id="impact-heading">Our impact</SectionTitle>
-        <dl className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {IMPACT.map((item) => (
-            <div key={item.label} className="card-lift rounded-2xl border border-border bg-card p-5 shadow-sm">
-              <dt className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{item.label}</dt>
-              <dd className="stat-value mt-3">{item.value}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section aria-labelledby="manifesto-heading" className="space-y-5">
-        <SectionTitle id="manifesto-heading">What we stand for</SectionTitle>
-        <div className="grid gap-4 md:grid-cols-3">
-          {MANIFESTO.map((item, index) => (
-            <article key={item.title} className="card-lift rounded-2xl border border-border bg-card p-6">
-              <p className="font-mono text-xs font-semibold text-primary tabular-nums">0{index + 1}</p>
-              <h3 className="mt-3 font-heading text-2xl tracking-wide">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
+    <>
       <section aria-labelledby="home-events-heading" className="space-y-5">
         <SectionTitle id="home-events-heading">Coming up next</SectionTitle>
         {upcoming.length === 0 ? (
@@ -185,6 +132,84 @@ export default async function HomePage() {
           </ul>
         )}
       </section>
+    </>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <div className="space-y-16">
+      <section className="hero-surface relative overflow-hidden rounded-3xl border border-border px-6 py-12 sm:px-10 sm:py-16">
+        <div className="dot-grid pointer-events-none absolute -right-12 -top-12 size-56 opacity-40" aria-hidden="true" />
+        <div className="relative max-w-3xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+            Daffodil International University · Software Engineering
+          </p>
+          <h1 className="mt-4 font-heading text-5xl leading-[1.05] tracking-wide sm:text-7xl">
+            Build. Compete. Belong.
+          </h1>
+          <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            We are DIU SEC — a student-led community turning coursework into real products, contest wins and lifelong
+            peers. Five wings, one club, open to every SWE student at DIU.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href="/join"
+              className="rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-primary/90 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              Join the club
+            </Link>
+            <Link
+              href="/events"
+              className="rounded-md border border-border bg-card px-6 py-3 text-sm font-semibold transition-colors duration-200 hover:bg-muted motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              Explore events
+            </Link>
+            <Link
+              href="/verify"
+              className="rounded-md border border-border bg-card px-6 py-3 text-sm font-semibold transition-colors duration-200 hover:bg-muted motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              Verify a certificate
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="impact-heading" className="space-y-5">
+        <SectionTitle id="impact-heading">Our impact</SectionTitle>
+        <dl className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {IMPACT.map((item) => (
+            <div key={item.label} className="card-lift rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <dt className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{item.label}</dt>
+              <dd className="stat-value mt-3">{item.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section aria-labelledby="manifesto-heading" className="space-y-5">
+        <SectionTitle id="manifesto-heading">What we stand for</SectionTitle>
+        <div className="grid gap-4 md:grid-cols-3">
+          {MANIFESTO.map((item, index) => (
+            <article key={item.title} className="card-lift rounded-2xl border border-border bg-card p-6">
+              <p className="font-mono text-xs font-semibold text-primary tabular-nums">0{index + 1}</p>
+              <h3 className="mt-3 font-heading text-2xl tracking-wide">{item.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* shortcut: fallback heights match the seeded highlights at these breakpoints; recheck if sections grow. */}
+      <Suspense
+        fallback={
+          <div role="status" aria-live="polite" className="min-h-[1130px] sm:min-h-[850px] lg:min-h-[630px]">
+            <span className="sr-only">Loading highlights</span>
+          </div>
+        }
+      >
+        <HomeHighlights />
+      </Suspense>
     </div>
   );
 }

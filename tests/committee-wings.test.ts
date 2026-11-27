@@ -11,7 +11,7 @@ const a = vi.hoisted(() => ({
   transaction: vi.fn(),
 }));
 vi.mock("@/lib/admin-guard", () => ({ requireActor: a.requireActor }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 vi.mock("@/lib/audit", () => ({ writeAudit: a.writeAudit }));
 vi.mock("@/lib/db", () => ({
   db: {

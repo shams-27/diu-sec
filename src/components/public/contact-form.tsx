@@ -2,6 +2,7 @@
 
 import { useActionState, useState, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
+import { HoneypotField } from "@/components/public/honeypot-field";
 import type { ContactState } from "@/lib/validators";
 import { submitContactAction } from "@/server/actions/contact";
 
@@ -24,6 +25,7 @@ export function ContactForm() {
 
   return (
     <form action={action} className="grid gap-5 rounded-xl border border-border bg-card p-5 sm:p-7">
+      <HoneypotField id="contact-website" />
       <div>
         <label htmlFor="name" className="text-sm font-medium">
           Full name

@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { HoneypotField } from "@/components/public/honeypot-field";
 import { submitMembershipAction } from "@/server/actions/members";
 import type { SubmitState } from "@/lib/validators";
 
@@ -23,6 +24,7 @@ export function MembershipForm({ wings }: { wings: { id: string; name: string }[
 
   return (
     <form action={action} className="grid gap-5 rounded-xl border border-border bg-card p-5 sm:p-7 md:grid-cols-2">
+      <HoneypotField id="join-website" />
       <div className="md:col-span-2">
         <label htmlFor="name" className="text-sm font-medium">
           Full name

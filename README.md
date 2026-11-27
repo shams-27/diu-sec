@@ -128,6 +128,7 @@ S3_ACCESS_KEY=""
 S3_SECRET_KEY=""
 
 SUPER_ADMIN_EMAIL=""            # seeded as President / Super Admin
+BOOTSTRAP_ONLY="false"          # true: production seed creates only the admin and wings
 ```
 
 Never commit `.env`.
@@ -301,10 +302,10 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 - [x] Dashboard cards and wing distribution chart
 
 ### Phase 9 — Hardening
-- [ ] Rate limiting on public forms, honeypot/captcha on `/join` and `/contact`
-- [ ] SEO, sitemap, OG images, a11y pass, Lighthouse ≥ 90
-- [ ] Playwright e2e for: join flow, registration + check-in, cert issue + verify, RBAC denial
-- [ ] Deployment docs (Vercel + managed Postgres)
+- [x] Rate limiting on public forms, honeypot/captcha on `/join` and `/contact`
+- [x] SEO, sitemap, OG images, a11y pass, Lighthouse ≥ 90
+- [x] Playwright e2e for: join flow, registration + check-in, cert issue + verify, RBAC denial
+- [x] Deployment docs (Vercel + managed Postgres)
 
 ---
 

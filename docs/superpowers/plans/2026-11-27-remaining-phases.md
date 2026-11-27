@@ -36,7 +36,7 @@ Each phase ends with `pnpm lint && pnpm typecheck && pnpm test && pnpm build`, a
 - [x] Add `recharts`; real dashboard counts + wing distribution chart, wing-scoped for WING_LEAD; verify + commit.
 
 ## Phase 9 — Hardening
-- [ ] In-memory rate limit + honeypot on `/join` and `/contact`; document limitation.
-- [ ] `sitemap.ts`, `robots.ts`, OG image, metadata/a11y pass.
-- [ ] `@playwright/test` config + e2e for join, registration + check-in, cert issue + verify, RBAC denial.
-- [ ] `docs/deployment.md`; full gate + final browser smoke; commit.
+- [x] In-memory rate limit + honeypot on `/join` and `/contact`; document limitation.
+- [x] `sitemap.ts`, `robots.ts`, OG image, metadata/a11y pass.
+- [x] `@playwright/test` config + e2e for join, registration + check-in, cert issue + verify, RBAC denial.
+- [x] `docs/deployment.md`; full gate + final browser smoke; commit.

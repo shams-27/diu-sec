@@ -51,11 +51,12 @@ const WINGS = [
 ] as const;
 
 async function main() {
+  const bootstrap = process.env.BOOTSTRAP_ONLY === "true";
   const adminEmail = (process.env.SUPER_ADMIN_EMAIL || "president@diu.edu.bd").toLowerCase();
   await db.user.upsert({
     where: { email: adminEmail },
     create: { email: adminEmail, name: "DIU SEC President", role: "SUPER_ADMIN" },
-    update: { role: "SUPER_ADMIN" },
+    update: bootstrap ? {} : { role: "SUPER_ADMIN" },
   });
 
   const wings: Record<string, Wing> = {};
@@ -63,10 +64,15 @@ async function main() {
     const row = await db.wing.upsert({
       where: { slug: wing.slug },
       create: { ...wing, responsibilities: [...wing.responsibilities] },
-      update: { name: wing.name, description: wing.description, responsibilities: [...wing.responsibilities] },
+      update: bootstrap
+        ? {}
+        : { name: wing.name, description: wing.description, responsibilities: [...wing.responsibilities] },
     });
     wings[wing.slug] = row;
   }
+
+  // Production bootstrap: real admin account plus wing structure, no demo content.
+  if (bootstrap) return;
 
   const current = await db.execSession.upsert({
     where: { year: 2026 },
@@ -553,7 +559,7 @@ async function main() {
 }
 
 main()
-  .then(() => console.log("Seed complete"))
+  .then(() => console.log(process.env.BOOTSTRAP_ONLY === "true" ? "Bootstrap complete" : "Seed complete"))
   .catch((error) => {
     console.error(error);
     process.exitCode = 1;

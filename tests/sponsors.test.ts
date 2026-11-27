@@ -15,7 +15,7 @@ vi.mock("@/lib/db", () => ({
   db: { sponsor: { upsert: e.sponsorUpsert }, $transaction: e.transaction },
 }));
 vi.mock("@/lib/storage", () => ({ saveUpload: e.saveUpload, removeUploadedAsset: e.removeAsset }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { sponsorSchema } from "@/lib/validators";
 import { saveSponsorAction } from "@/server/actions/sponsors";
