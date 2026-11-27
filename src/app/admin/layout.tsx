@@ -1,7 +1,15 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+// Auth reads happen per request; the admin shell is intentionally blocking.
+export const instant = false;
+
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+  if (!session?.user?.role) redirect("/");
+
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
       <a

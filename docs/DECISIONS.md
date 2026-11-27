@@ -15,3 +15,9 @@ Append one entry per assumption or deviation. Newest at the bottom.
 | 9 | 2026-11-27 | Pinned Prisma 6 and Zod 3; scaffolded with Next 16 + Tailwind 4 | Prisma 7 drops `prisma-client-js`; Zod 4 drops `.cuid()`; pins keep the existing schema/validators valid. |
 | 10 | 2026-11-27 | `vitest.config.mts` (not `.ts`) and no `shadcn/tailwind.css` import | Native Vite loader needs `.mjs`/`.mts`; shadcn package import is unresolvable and unused. |
 | 11 | 2026-11-27 | Brand palette kept in hex (not OKLCH); footer has no dynamic year | Exact generated brand colors; Next 16 Cache Components rejects `new Date()` at prerender. |
+| 12 | 2026-11-27 | Added `next-auth@beta` (v5.0.0-beta.32) for Auth.js | Only v5 supports Next 16 App Router and `proxy.ts`; v4 needs the deprecated middleware convention. |
+| 13 | 2026-11-27 | `trustHost: true` in Auth.js config | Auth.js v5 rejects production requests with `UntrustedHost` unless the host is trusted; Vercel auto-detects, but self-hosting/`pnpm start` needs this. Deployment host header must be trusted. |
+| 14 | 2026-11-27 | `export const instant = false` on the admin layout | Cache Components cannot prerender per-request auth reads; documented blocking-route opt-out covers every `/admin/*` page. |
+| 15 | 2026-11-27 | Default Auth.js sign-in page; audit viewer limited to 100 rows | No custom login UI in README; caps unbounded log growth in the read-only viewer. |
+| 16 | 2026-11-27 | Refresh `role`/`wingId` from `User` on every JWT callback | A signed-in admin kept stale privileges for up to 30 days after demotion; Next 16 proxy runs on Node, so Prisma works there. Cost: one DB read per authenticated admin request. |
+| 17 | 2026-11-27 | A-12 can clear a role; the last SUPER_ADMIN cannot be demoted; audit "To" is an exclusive next-day bound | Roleless users are the documented way to revoke admin access; one careless demotion otherwise locks everyone out; a midnight `lte` bound hid most of the selected day. |

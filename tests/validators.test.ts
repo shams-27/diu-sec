@@ -1,14 +1,17 @@
 import { describe, expect, it } from "vitest";
 import {
+  auditFilterSchema,
   IMAGE_MIME,
   MAX_IMAGE_BYTES,
   MAX_PDF_BYTES,
   certIdSchema,
   certIdSchema as idSchema,
   diuEmailSchema,
+  nextUtcMidnight,
   generateCertId,
   githubRepoSchema,
   memberApplicationSchema,
+  roleAssignmentSchema,
   studentIdSchema,
 } from "@/lib/validators";
 
@@ -92,5 +95,53 @@ describe("member application", () => {
         email: "student@diu.edu.bd",
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("role assignment", () => {
+  it("accepts a known role with a wing", () => {
+    expect(roleAssignmentSchema.safeParse({ userId: "u1", role: "WING_LEAD", wingId: "w1" }).success).toBe(true);
+  });
+
+  it("accepts a role without a wing", () => {
+    expect(roleAssignmentSchema.safeParse({ userId: "u1", role: "SUPER_ADMIN" }).success).toBe(true);
+  });
+
+  it("rejects unknown roles and empty user IDs", () => {
+    expect(roleAssignmentSchema.safeParse({ userId: "u1", role: "ADMIN" }).success).toBe(false);
+    expect(roleAssignmentSchema.safeParse({ userId: "", role: "WING_LEAD" }).success).toBe(false);
+  });
+});
+
+describe("audit filters", () => {
+  it("accepts a known audit action", () => {
+    expect(auditFilterSchema.safeParse({ action: "UPDATE" }).success).toBe(true);
+  });
+
+  it("rejects an unknown audit action", () => {
+    expect(auditFilterSchema.safeParse({ action: "DROP_TABLE" }).success).toBe(false);
+  });
+
+  it("coerces a date string to midnight UTC", () => {
+    const parsed = auditFilterSchema.parse({ from: "2026-11-27" });
+    expect(parsed.from?.toISOString()).toBe("2026-11-27T00:00:00.000Z");
+  });
+
+  it("rejects an invalid date", () => {
+    expect(auditFilterSchema.safeParse({ from: "not-a-date" }).success).toBe(false);
+  });
+
+  it("treats empty filter values as absent", () => {
+    expect(auditFilterSchema.parse({ action: "", entity: "", email: "" })).toEqual({});
+  });
+});
+
+describe("role revocation and audit date bounds", () => {
+  it("accepts an empty role as no role", () => {
+    expect(roleAssignmentSchema.parse({ userId: "u1", role: "" }).role).toBeNull();
+  });
+
+  it("includes the whole selected end day", () => {
+    expect(nextUtcMidnight(new Date("2026-11-27T00:00:00Z")).toISOString()).toBe("2026-11-28T00:00:00.000Z");
   });
 });

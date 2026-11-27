@@ -270,10 +270,10 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 - [x] Layouts: public shell (nav/footer) and admin shell (sidebar)
 
 ### Phase 1 — Auth, RBAC, Audit
-- [ ] Auth.js Google SSO, domain restriction, session with role
-- [ ] `rbac.ts` + route middleware for `/admin/*`
-- [ ] `audit.ts` + append-only enforcement
-- [ ] A-12 pages (roles, audit viewer with filters)
+- [x] Auth.js Google SSO, domain restriction, session with role
+- [x] `rbac.ts` + route middleware for `/admin/*`
+- [x] `audit.ts` + append-only enforcement
+- [x] A-12 pages (roles, audit viewer with filters)
 
 ### Phase 2 — Membership (04 + A-02)
 - [ ] Public `/join` form + ID card generation

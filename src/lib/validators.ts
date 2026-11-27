@@ -22,6 +22,11 @@ export const diuEmailSchema = z
   .email()
   .refine((e) => e.endsWith(`@${DIU_EMAIL_DOMAIN}`), `Email must end with @${DIU_EMAIL_DOMAIN}`);
 
+/** Shared institutional-domain check for the Auth.js sign-in callback. */
+export function isDiuEmail(email: unknown): boolean {
+  return typeof email === "string" && diuEmailSchema.safeParse(email).success;
+}
+
 export const certIdSchema = z
   .string()
   .trim()
@@ -40,6 +45,34 @@ export const memberApplicationSchema = z.object({
   batch: z.string().trim().max(10).optional(),
   phone: z.string().trim().max(20).optional(),
   wingPrefId: z.string().cuid().optional(),
+});
+
+const emptyToUndefined = (value: unknown) => (value === "" ? undefined : value);
+const emptyToNull = (value: unknown) => (value === "" ? null : value);
+
+/** Exclusive upper bound for a UTC date-picker value. */
+export function nextUtcMidnight(date: Date): Date {
+  return new Date(date.getTime() + 86_400_000);
+}
+
+export const roleAssignmentSchema = z.object({
+  userId: z.string().min(1),
+  role: z.preprocess(
+    emptyToNull,
+    z.enum(["SUPER_ADMIN", "GENERAL_SECRETARY", "WING_LEAD", "PUBLICATION_EDITOR"]).nullable(),
+  ),
+  wingId: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+});
+
+export const auditFilterSchema = z.object({
+  action: z.preprocess(
+    emptyToUndefined,
+    z.enum(["CREATE", "UPDATE", "DELETE", "APPROVE", "REJECT", "REVOKE", "REISSUE", "PUBLISH", "LOGIN", "EXPORT"]).optional(),
+  ),
+  entity: z.preprocess(emptyToUndefined, z.string().trim().min(1).optional()),
+  email: z.preprocess(emptyToUndefined, z.string().trim().min(1).optional()),
+  from: z.preprocess(emptyToUndefined, z.coerce.date().optional()),
+  to: z.preprocess(emptyToUndefined, z.coerce.date().optional()),
 });
 
 export const contactSchema = z.object({
