@@ -263,11 +263,11 @@ Rules:
 Work in phases. Finish each phase (it builds, lints, typechecks, and works) before starting the next. Commit after each phase: `feat(phase-N): ...`.
 
 ### Phase 0 — Foundation
-- [ ] Init Next.js + TS + Tailwind + shadcn/ui, ESLint, Prettier, pnpm scripts
-- [ ] Generate design system with UI/UX Pro Max → `docs/design-system.md`; define Tailwind tokens from it
-- [ ] Prisma schema (Section 6), first migration, `seed.ts` (super admin, 5 wings, sample session, sample data)
-- [ ] `validators.ts` with ID/email/cert regexes + unit tests
-- [ ] Layouts: public shell (nav/footer) and admin shell (sidebar)
+- [x] Init Next.js + TS + Tailwind + shadcn/ui, ESLint, Prettier, pnpm scripts
+- [x] Generate design system with UI/UX Pro Max → `docs/design-system.md`; define Tailwind tokens from it
+- [x] Prisma schema (Section 6), first migration, `seed.ts` (super admin, 5 wings, sample session, sample data)
+- [x] `validators.ts` with ID/email/cert regexes + unit tests
+- [x] Layouts: public shell (nav/footer) and admin shell (sidebar)
 
 ### Phase 1 — Auth, RBAC, Audit
 - [ ] Auth.js Google SSO, domain restriction, session with role

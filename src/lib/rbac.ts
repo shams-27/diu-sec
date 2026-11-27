@@ -35,6 +35,7 @@ export interface Actor {
 /**
  * Server-side permission check. For own_* access pass `resourceWingId`
  * (the wing that owns the target record); it must equal actor.wingId.
+ * A missing wing ID denies access — never fail open.
  */
 export function can(
   actor: Actor,
@@ -52,9 +53,9 @@ export function can(
     case "write":
       return true;
     case "own_read":
-      return action === "read" && !!actor.wingId && (resourceWingId == null || resourceWingId === actor.wingId);
+      return action === "read" && !!actor.wingId && resourceWingId === actor.wingId;
     case "own_write":
-      return !!actor.wingId && (resourceWingId == null || resourceWingId === actor.wingId);
+      return !!actor.wingId && resourceWingId === actor.wingId;
   }
 }
 

@@ -1,4 +1,4 @@
--- Run once after the first migration (use `prisma migrate dev --create-only`, paste this in).
+-- Reference copy. Already appended to the initial migration; keep in sync if changed.
 CREATE OR REPLACE FUNCTION audit_log_immutable() RETURNS trigger AS $$
 BEGIN
   RAISE EXCEPTION 'AuditLog is append-only';
