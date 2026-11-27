@@ -9,6 +9,7 @@ const e = vi.hoisted(() => ({
   updateMany: vi.fn(),
   create: vi.fn(),
   findFirst: vi.fn(),
+  upsert: vi.fn(),
   transaction: vi.fn(),
   rateLimited: vi.fn(),
 }));
@@ -18,14 +19,14 @@ vi.mock("@/backend/shared/audit", () => ({ writeAudit: e.writeAudit }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 vi.mock("@/backend/shared/db", () => ({
   db: {
-    event: { findUnique: e.findUnique, update: e.update, updateMany: e.updateMany },
+    event: { findUnique: e.findUnique, update: e.update, updateMany: e.updateMany, upsert: e.upsert },
     registration: { findUnique: e.findUnique, create: e.create, findFirst: e.findFirst, update: e.update },
     $transaction: (fn: (tx: unknown) => Promise<unknown>) => e.transaction(fn),
   },
 }));
 
 const tx = {
-  event: { findUnique: e.findUnique, update: e.update, updateMany: e.updateMany },
+  event: { findUnique: e.findUnique, update: e.update, updateMany: e.updateMany, upsert: e.upsert },
   registration: { findUnique: e.findUnique, create: e.create, findFirst: e.findFirst, update: e.update },
 };
 e.transaction.mockImplementation((fn: (tx: unknown) => Promise<unknown>) => fn(tx));
@@ -36,7 +37,7 @@ import {
   registrationSchema,
   slugify,
 } from "@/backend/shared/validators";
-import { checkInAction, registerForEventAction } from "@/backend/features/events/events";
+import { checkInAction, registerForEventAction, saveEventAction } from "@/backend/features/events/events";
 
 const EVENT = "cmwypjwbz0009sbfj0tu78g24";
 const fd = (entries: [string, string][]) => {
@@ -98,6 +99,8 @@ describe("event registration", () => {
       status: "PUBLISHED",
       wingId: null,
       slug: "test-event",
+      startsAt: new Date("2027-01-01T10:00:00Z"),
+      endsAt: null,
     });
     e.findFirst.mockResolvedValue(null);
     e.create.mockImplementation(async ({ data }) => ({ id: "r1", qrToken: data.qrToken }));
@@ -175,5 +178,83 @@ describe("event check-in", () => {
     expect(result.checkedIn).toBe("Jane Doe");
     expect(e.requireActor).toHaveBeenCalledWith("events", "write", "own");
     expect(e.writeAudit).toHaveBeenCalledWith(expect.objectContaining({ action: "APPROVE", entity: "Registration" }), tx);
+  });
+});
+
+describe("event registration input safety", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    e.rateLimited.mockResolvedValue(false);
+    e.findUnique.mockResolvedValue({
+      id: EVENT,
+      capacity: 2,
+      seatsTaken: 1,
+      status: "PUBLISHED",
+      wingId: null,
+      slug: "test-event",
+      startsAt: new Date("2027-01-01T10:00:00Z"),
+      endsAt: null,
+    });
+    e.findFirst.mockResolvedValue(null);
+    e.create.mockImplementation(async ({ data }) => ({ id: "r1", qrToken: data.qrToken }));
+  });
+
+  it("refuses a registration for an event that already started", async () => {
+    e.findUnique.mockResolvedValue({
+      id: EVENT,
+      capacity: 2,
+      seatsTaken: 0,
+      status: "PUBLISHED",
+      slug: "old-event",
+      startsAt: new Date("2020-01-01T10:00:00Z"),
+      endsAt: new Date("2020-01-01T12:00:00Z"),
+    });
+    const result = await registerForEventAction({}, registrationForm);
+    expect(result.error).toBeTruthy();
+    expect(e.update).not.toHaveBeenCalled();
+    expect(e.create).not.toHaveBeenCalled();
+  });
+
+  it("does not store a client-supplied member id", async () => {
+    const form = fd([
+      ["eventId", EVENT],
+      ["name", "Jane Doe"],
+      ["email", "jane@diu.edu.bd"],
+      ["memberId", EVENT],
+    ]);
+    const result = await registerForEventAction({}, form);
+    expect(result.qrToken).toBeTruthy();
+    expect(e.create.mock.calls[0][0].data).not.toHaveProperty("memberId");
+  });
+
+  it("strips a client-supplied member id during validation", () => {
+    const parsed = registrationSchema.parse({
+      eventId: EVENT,
+      name: "Jane Doe",
+      email: "jane@diu.edu.bd",
+      memberId: EVENT,
+    });
+    expect(parsed).not.toHaveProperty("memberId");
+  });
+});
+
+describe("event slug stability", () => {
+  it("keeps the existing slug when a title is edited", async () => {
+    vi.clearAllMocks();
+    e.requireActor.mockResolvedValue({ id: "u1", role: "SUPER_ADMIN" });
+    e.findUnique.mockResolvedValue({ wingId: null, slug: "old-slug" });
+    e.upsert.mockResolvedValue({ id: EVENT });
+    await saveEventAction(
+      fd([
+        ["id", EVENT],
+        ["type", "WORKSHOP"],
+        ["title", "Renamed workshop"],
+        ["description", "A hands-on workshop"],
+        ["startsAt", "2027-01-01T10:00:00Z"],
+        ["capacity", "10"],
+        ["status", "PUBLISHED"],
+      ]),
+    );
+    expect(e.upsert).toHaveBeenCalledWith(expect.objectContaining({ update: expect.objectContaining({ slug: "old-slug" }) }));
   });
 });

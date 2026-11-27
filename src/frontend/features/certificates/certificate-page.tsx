@@ -85,7 +85,7 @@ export async function CertificatePage({ params }: { params: Promise<{ certId: st
             ) : null}
           </dl>
 
-          {cert.pdfUrl ? (
+          {cert.pdfUrl && valid ? (
             <a
               href={cert.pdfUrl}
               target="_blank"

@@ -32,17 +32,17 @@ export async function issueCertificatesAction(formData: FormData): Promise<void>
     });
     if (!event) throw new Error("Event not found");
     if (!can(actor, "certificates", "write", event.wingId)) throw new ForbiddenError();
-
-    const existing = await db.certificate.findMany({
-      where: { eventId: input.eventId, type: input.type, recipientEmail: { in: emails } },
-      select: { recipientEmail: true },
-    });
-    if (existing.length > 0) {
-      throw new Error(`Certificate already issued to ${existing[0].recipientEmail ?? "a recipient"}`);
-    }
     eventTitle = event.title;
   } else if (!can(actor, "certificates", "write")) {
     throw new ForbiddenError();
+  }
+
+  const existing = await db.certificate.findMany({
+    where: { eventId: input.eventId ?? null, type: input.type, recipientEmail: { in: emails } },
+    select: { recipientEmail: true },
+  });
+  if (existing.length > 0) {
+    throw new Error(`Certificate already issued to ${existing[0].recipientEmail ?? "a recipient"}`);
   }
 
   // Allocate IDs and render PDFs before the transaction so it stays short.

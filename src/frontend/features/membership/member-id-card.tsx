@@ -17,6 +17,15 @@ export interface CardMember {
 
 const WIDTH = 1000;
 const HEIGHT = 600;
+const TEXT_WIDTH = WIDTH - 112;
+
+/** Keeps long values inside the exported image instead of clipping them. */
+export function fitText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string {
+  if (ctx.measureText(text).width <= maxWidth) return text;
+  let fitted = text;
+  while (fitted.length > 0 && ctx.measureText(`${fitted}…`).width > maxWidth) fitted = fitted.slice(0, -1);
+  return `${fitted}…`;
+}
 
 export function MemberIdCard({ member }: { member: CardMember }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -59,13 +68,13 @@ export function MemberIdCard({ member }: { member: CardMember }) {
 
     ctx.fillStyle = foreground;
     ctx.font = `bold 52px ${bodyFont}`;
-    ctx.fillText(member.name, 56, 220);
+    ctx.fillText(fitText(ctx, member.name, TEXT_WIDTH), 56, 220);
     ctx.fillStyle = muted;
     ctx.font = `32px ${bodyFont}`;
-    ctx.fillText(member.studentId, 56, 276);
-    ctx.fillText(member.email, 56, 322);
+    ctx.fillText(fitText(ctx, member.studentId, TEXT_WIDTH), 56, 276);
+    ctx.fillText(fitText(ctx, member.email, TEXT_WIDTH), 56, 322);
     ctx.font = `26px ${bodyFont}`;
-    ctx.fillText([member.batch && `Batch ${member.batch}`, member.wingName].filter(Boolean).join("  ·  "), 56, 368);
+    ctx.fillText(fitText(ctx, [member.batch && `Batch ${member.batch}`, member.wingName].filter(Boolean).join("  ·  "), TEXT_WIDTH), 56, 368);
 
     ctx.fillStyle = primary;
     ctx.fillRect(56, 420, 888, 2);

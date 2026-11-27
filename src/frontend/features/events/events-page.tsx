@@ -18,9 +18,8 @@ export async function EventsPage({
   );
   const parsed = eventFilterSchema.safeParse(flat);
   const tab = parsed.success ? (parsed.data.tab ?? "upcoming") : "upcoming";
-  const events = await getPublishedEvents(tab);
   const now = new Date();
-  const visible = events.filter((event) => (tab === "past" ? event.startsAt < now : event.startsAt >= now));
+  const visible = await getPublishedEvents(tab, now);
 
   return (
     <div className="space-y-10">

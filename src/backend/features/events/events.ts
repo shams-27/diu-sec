@@ -37,9 +37,12 @@ export async function registerForEventAction(
       async (tx) => {
         const event = await tx.event.findUnique({
           where: { id: input.eventId },
-          select: { capacity: true, seatsTaken: true, status: true, slug: true },
+          select: { capacity: true, seatsTaken: true, status: true, slug: true, startsAt: true, endsAt: true },
         });
         if (!event || event.status !== "PUBLISHED") return { error: "This event is not open for registration." };
+        if (event.startsAt <= new Date() || (event.endsAt && event.endsAt <= new Date())) {
+          return { error: "Registration for this event has closed." };
+        }
         // Serializable isolation makes this read-then-increment safe against concurrent bookings.
         if (event.seatsTaken >= event.capacity) return { error: "This event is full." };
         const duplicate = await tx.registration.findFirst({
@@ -48,7 +51,7 @@ export async function registerForEventAction(
         if (duplicate) return { error: "You are already registered for this event." };
         await tx.event.update({ where: { id: input.eventId }, data: { seatsTaken: { increment: 1 } } });
         const registration = await tx.registration.create({
-          data: { eventId: input.eventId, name: input.name, email: input.email, memberId: input.memberId, qrToken },
+          data: { eventId: input.eventId, name: input.name, email: input.email, qrToken },
         });
         await writeAudit(
           {
@@ -117,16 +120,18 @@ export async function saveEventAction(formData: FormData): Promise<void> {
   const wingId = actor.role === "WING_LEAD" ? actor.wingId : input.wingId;
   if (actor.role === "WING_LEAD" && !wingId) throw new ForbiddenError();
   const slug = slugify(input.title);
+  let existingSlug: string | undefined;
   await db.$transaction(async (tx) => {
     if (input.id) {
-      const before = await tx.event.findUnique({ where: { id: input.id }, select: { wingId: true } });
+      const before = await tx.event.findUnique({ where: { id: input.id }, select: { wingId: true, slug: true } });
       if (!before) throw new Error("Event not found");
       if (!can(actor, "events", "write", before.wingId)) throw new ForbiddenError();
+      existingSlug = before.slug;
     }
     const data = {
       type: input.type,
       title: input.title,
-      slug,
+      slug: existingSlug ?? slug,
       description: input.description,
       syllabus: (input.syllabus ?? null) as Prisma.InputJsonValue,
       startsAt: input.startsAt,
@@ -152,7 +157,7 @@ export async function saveEventAction(formData: FormData): Promise<void> {
     );
   }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
   revalidatePath("/admin/events");
-  revalidatePath(`/events/${slug}`);
+  revalidatePath(`/events/${existingSlug ?? slug}`);
   revalidatePath("/");
   updateTag(HOME_HIGHLIGHTS_TAG);
 }

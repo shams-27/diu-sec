@@ -216,7 +216,6 @@ export const registrationSchema = z.object({
   eventId: z.string().cuid(),
   name: z.string().trim().min(2).max(100),
   email: z.string().trim().toLowerCase().email().max(200),
-  memberId: z.preprocess(emptyToUndefined, z.string().cuid().optional()),
 });
 
 export const checkInSchema = z.object({

@@ -231,6 +231,22 @@ describe("certificate actions", () => {
     expect(e.writeAudit).not.toHaveBeenCalled();
   });
 
+  it("refuses to issue an event-less certificate twice to the same recipient", async () => {
+    e.certFindMany.mockResolvedValue([{ recipientEmail: "jane@diu.edu.bd" }]);
+    await expect(
+      issueCertificatesAction(
+        fd([
+          ["type", "EXECUTIVE"],
+          ["recipients", "Jane Doe, jane@diu.edu.bd"],
+        ]),
+      ),
+    ).rejects.toThrow(/already issued/i);
+    expect(e.certFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ eventId: null, type: "EXECUTIVE" }) }),
+    );
+    expect(e.render).not.toHaveBeenCalled();
+  });
+
   it("denies a wing lead revoking another wing's certificate", async () => {
     e.requireActor.mockResolvedValue({ id: "u1", role: "WING_LEAD", wingId: "w1" });
     e.certFindUnique.mockResolvedValue({

@@ -1,9 +1,9 @@
 import { db } from "@/backend/shared/db";
 import { getWingOptions } from "@/backend/features/membership/queries";
 
-export function getPublishedEvents(tab: "upcoming" | "past") {
+export function getPublishedEvents(tab: "upcoming" | "past", now: Date) {
   return db.event.findMany({
-    where: { status: "PUBLISHED" },
+    where: { status: "PUBLISHED", startsAt: tab === "past" ? { lt: now } : { gte: now } },
     orderBy: { startsAt: tab === "past" ? "desc" : "asc" },
     select: {
       id: true,
