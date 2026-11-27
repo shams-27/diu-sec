@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { cacheLife, cacheTag } from "next/cache";
 import { SectionTitle } from "@/components/public/page-hero";
+import { StatNumber } from "@/components/public/stat-number";
 import { HOME_HIGHLIGHTS_TAG } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
 
@@ -190,7 +191,9 @@ export default function HomePage() {
           {IMPACT.map((item) => (
             <div key={item.label} className="card-lift rounded-2xl border border-border bg-card p-4 shadow-sm">
               <dt className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{item.label}</dt>
-              <dd className="stat-value mt-3">{item.value}</dd>
+              <dd className="stat-value mt-3">
+                <StatNumber value={item.value} />
+              </dd>
             </div>
           ))}
         </dl>

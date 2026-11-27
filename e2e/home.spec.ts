@@ -132,6 +132,48 @@ test("gives impact cards the shared hard shadow and bigger numbers", async ({ pa
   expect(await noPageOverflow()).toBe(true);
 });
 
+test("shuffles impact digits on visit and settles for reduced motion", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+  const visual = page.locator(".brutal-stats dd span[aria-hidden='true']").first();
+  await expect(page.locator(".brutal-stats dd .sr-only").first()).toHaveText("1,200+");
+  await expect(visual).toHaveText("1,200+");
+
+  const recorded = page.evaluate(
+    () =>
+      new Promise<string[]>((resolve) => {
+        const el = document.querySelector(".brutal-stats dd span[aria-hidden='true']");
+        if (!el) return resolve([]);
+        const seen: string[] = [];
+        const capture = () => {
+          const text = el.textContent ?? "";
+          if (seen[seen.length - 1] !== text) seen.push(text);
+        };
+        capture();
+        const observer = new MutationObserver(capture);
+        observer.observe(el, { childList: true, characterData: true, subtree: true });
+        setTimeout(() => {
+          observer.disconnect();
+          resolve(seen);
+        }, 2000);
+      }),
+  );
+
+  await page.locator(".brutal-stats").scrollIntoViewIfNeeded();
+  const seen = await recorded;
+  expect(seen.some((text) => text !== "1,200+")).toBe(true);
+  for (const text of seen) {
+    expect(text).toHaveLength("1,200+".length);
+    expect(text.replace(/\d/g, "")).toBe(",+");
+  }
+  await expect(visual).toHaveText("1,200+", { timeout: 2000 });
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload({ waitUntil: "networkidle" });
+  await page.locator(".brutal-stats").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(600);
+  await expect(visual).toHaveText("1,200+");
+});
+
 test("staggers cards, fills the viewport with pattern, scales type and disables motion", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
 
