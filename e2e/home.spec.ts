@@ -359,3 +359,26 @@ test("shows a newly published event on the cached homepage", async ({ page }) =>
     }, { timeout: 15_000 })
     .toBe(true);
 });
+
+test("uses the club logo instead of text branding in the public shell", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  const headerLogo = page.locator("header a[href='/'] img");
+  const footerLogo = page.locator("footer img");
+  for (const logo of [headerLogo, footerLogo]) {
+    await expect(logo).toBeVisible();
+    await expect(logo).toHaveAttribute("src", "/sec_logo.png");
+    await expect(logo).toHaveAttribute("alt", "DIU SEC");
+    await expect(logo).toHaveAttribute("width", "82");
+    await expect(logo).toHaveAttribute("height", "40");
+    expect(await logo.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBe(82);
+  }
+
+  await expect(page.locator("header a[href='/']")).toHaveAccessibleName("DIU SEC");
+  await expect(page.getByText("DIU SEC", { exact: true })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  await page.evaluate(() => document.documentElement.classList.add("dark"));
+  const chip = await headerLogo.evaluate((el) => getComputedStyle(el.parentElement!).backgroundColor);
+  expect(chip).toBe("rgb(255, 255, 255)");
+});

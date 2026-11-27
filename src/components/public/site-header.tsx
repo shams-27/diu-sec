@@ -8,11 +8,10 @@ export function SiteHeader() {
         <div className="flex items-center gap-3">
           <SiteNavDrawer />
           <Link href="/" className="group flex items-center gap-2 font-heading text-2xl tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <span
-              aria-hidden="true"
-              className="size-4 rotate-45 rounded-[3px] bg-primary transition-transform duration-200 group-hover:rotate-[225deg] motion-reduce:transition-none"
-            />
-            DIU SEC
+            <span className="rounded-sm bg-transparent dark:bg-white">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/sec_logo.png" alt="DIU SEC" width={82} height={40} className="h-10 w-auto" />
+            </span>
           </Link>
         </div>
         <Link

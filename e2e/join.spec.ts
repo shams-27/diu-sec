@@ -20,5 +20,5 @@ test("applies for membership and shows a pending digital ID card", async ({ page
   await expect(page).toHaveURL(/\/join\/[^/]+$/);
   await expect(page.getByRole("heading", { name: "Your club card" })).toBeVisible();
   await expect(page.getByText(/pending approval/i)).toBeVisible();
-  expect(await page.getByRole("img").getAttribute("aria-label")).toContain(email);
+  expect(await page.locator("canvas[role='img']").getAttribute("aria-label")).toContain(email);
 });
