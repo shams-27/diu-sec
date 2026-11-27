@@ -14,27 +14,38 @@ export default async function AdminHomePage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-primary">A-01</p>
-        <h1 className="mt-2 font-heading text-4xl tracking-wide">Dashboard</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+      <div className="admin-banner admin-enter rounded-2xl border border-border p-6 sm:p-8">
+        <span className="pill">A-01 · Overview</span>
+        <h1 className="mt-4 font-heading text-5xl leading-none tracking-wide sm:text-6xl">Dashboard</h1>
+        <p className="mt-3 max-w-xl text-sm text-muted-foreground">
           {actor.role === "WING_LEAD" ? "Your wing at a glance." : "The club at a glance."}
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {cards.map((card) => (
-          <Card key={card.label}>
+        {cards.map((card, index) => (
+          <Card
+            key={card.label}
+            className="admin-enter card-lift border-t-2 border-t-primary/70"
+            style={{ animationDelay: `${index * 60}ms` }}
+          >
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">{card.label}</CardTitle>
+              <CardTitle className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                {card.label}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="font-heading text-4xl tabular-nums">{card.value}</p>
+              <p className="stat-value text-primary">{card.value}</p>
             </CardContent>
           </Card>
         ))}
       </div>
-      <section aria-labelledby="distribution-heading" className="rounded-2xl border border-border bg-card p-5">
-        <h2 id="distribution-heading" className="font-heading text-2xl tracking-wide">
+      <section
+        aria-labelledby="distribution-heading"
+        className="hero-surface admin-enter card-lift rounded-2xl border border-border p-5 sm:p-6"
+        style={{ animationDelay: "260ms" }}
+      >
+        <span className="pill">Analytics</span>
+        <h2 id="distribution-heading" className="mt-3 font-heading text-3xl tracking-wide">
           Wing-wise member distribution
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">Approved members by preferred wing.</p>

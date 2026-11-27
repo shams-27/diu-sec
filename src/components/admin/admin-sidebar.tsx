@@ -54,12 +54,15 @@ export function AdminSidebar() {
                   <Link
                     href={link.href}
                     aria-current={active ? "page" : undefined}
-                    className={`block rounded-md px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    className={`relative block rounded-md px-3 py-2 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                       active
-                        ? "bg-accent font-semibold text-accent-foreground"
-                        : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                        ? "bg-primary/10 font-semibold text-primary"
+                        : "text-foreground hover:bg-muted hover:text-foreground"
                     }`}
                   >
+                    {active && (
+                      <span aria-hidden="true" className="absolute inset-y-1 left-0 w-1 rounded-full bg-primary" />
+                    )}
                     {link.label}
                   </Link>
                 </li>
@@ -80,7 +83,10 @@ export function AdminSidebar() {
         <div className="mt-2">{links}</div>
       </details>
       <aside className="hidden w-64 shrink-0 border-r border-border bg-card p-4 lg:block">
-        <p className="mb-6 font-heading text-2xl tracking-wide">DIU SEC Admin</p>
+        <div className="dot-grid mb-6 rounded-xl border border-border bg-muted/40 p-4">
+          <p className="font-heading text-3xl leading-none tracking-wide">DIU SEC</p>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-primary">Admin panel</p>
+        </div>
         {links}
       </aside>
     </>

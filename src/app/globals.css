@@ -131,6 +131,17 @@
   }
 }
 
+@keyframes admin-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @layer components {
   /* Token-only surfaces: the gradient follows the brand primary in light and dark mode. */
   .hero-surface {
@@ -151,5 +162,22 @@
   }
   .stat-value {
     @apply font-heading text-4xl leading-none tracking-wide tabular-nums sm:text-5xl;
+  }
+  .admin-banner {
+    background-color: var(--card);
+    background-image:
+      radial-gradient(circle at 88% 12%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 55%),
+      radial-gradient(color-mix(in oklab, var(--primary) 18%, transparent) 1px, transparent 1px);
+    background-size: auto, 14px 14px;
+  }
+  .admin-enter {
+    /* backwards only: after the animation, hover transforms must still work. */
+    animation: admin-enter 350ms ease-out backwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-enter {
+    animation: none;
   }
 }

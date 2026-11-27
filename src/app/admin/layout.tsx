@@ -23,13 +23,27 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </a>
       <AdminSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-border px-4 py-3">
-          <p className="text-sm font-medium text-muted-foreground">Administration</p>
-          <Link href="/" className="text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            View site
-          </Link>
+        <header className="admin-banner flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary font-heading text-xl tracking-wide text-primary-foreground shadow-sm">
+              SEC
+            </span>
+            <div>
+              <p className="font-heading text-xl leading-none tracking-wide">Administration</p>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground">DIU SEC control room</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="pill">{session.user.role.replaceAll("_", " ")}</span>
+            <Link
+              href="/"
+              className="rounded-md text-sm font-semibold text-primary underline-offset-4 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
+            >
+              View site
+            </Link>
+          </div>
         </header>
-        <main id="main" className="flex-1 px-4 py-8">
+        <main id="main" className="flex-1 px-4 py-8 sm:px-6">
           {children}
         </main>
       </div>

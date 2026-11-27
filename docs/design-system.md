@@ -36,6 +36,13 @@ Dark mode overrides every semantic token under `.dark` with dark red surfaces an
 5. Motion: 200–300ms, `motion-reduce:transition-none`, no auto-playing media.
 6. Error/empty/loading states use the same tokens and keep text ≥4.5:1 contrast.
 
+## Admin shell & dashboard (A-01)
+
+- The header and dashboard title use `.admin-banner`: a token-coloured dot grid plus a soft primary radial glow. Patterns are CSS backgrounds only, never content.
+- The sidebar brand block reuses `.dot-grid`; active links get a primary tint and a left accent bar instead of a solid fill, so the label stays readable in both themes.
+- Metric cards use `.stat-value` for Bebas numerals, `.card-lift` for hover/focus elevation and `.admin-enter` (350ms fade-up, 60ms stagger) on load. The chart section repeats the same entrance with a longer delay.
+- `.admin-enter` uses `animation-fill-mode: backwards` so the final keyframe does not pin `transform` and block hover lift. `prefers-reduced-motion: reduce` removes the animation entirely.
+
 ## Anti-patterns
 
 Static, lifeless pages; low-contrast gray text; emoji icons; hard-coded colors; focus rings removed; motion that ignores reduced-motion.
