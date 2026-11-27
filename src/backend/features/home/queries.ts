@@ -6,9 +6,10 @@ export async function getHomeHighlights() {
   "use cache";
   cacheLife("minutes");
   cacheTag(HOME_HIGHLIGHTS_TAG);
-  const [upcoming, wings] = await Promise.all([
+  const now = new Date();
+  const [upcoming, wings, nextEvent] = await Promise.all([
     db.event.findMany({
-      where: { status: "PUBLISHED", startsAt: { gte: new Date() } },
+      where: { status: "PUBLISHED", startsAt: { gte: now } },
       orderBy: { startsAt: "asc" },
       take: 3,
       select: {
@@ -25,6 +26,21 @@ export async function getHomeHighlights() {
       orderBy: { name: "asc" },
       select: { id: true, slug: true, name: true, description: true },
     }),
+    db.event.findFirst({
+      where: { status: "PUBLISHED", endsAt: { gte: now } },
+      orderBy: { startsAt: "asc" },
+      take: 1,
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        type: true,
+        startsAt: true,
+        endsAt: true,
+        capacity: true,
+        seatsTaken: true,
+      },
+    }),
   ]);
-  return { upcoming, wings };
+  return { upcoming, wings, nextEvent, nowIso: now.toISOString() };
 }
