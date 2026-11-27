@@ -79,8 +79,10 @@ describe("frontend/backend layers", () => {
   it("keeps database access out of the frontend", () => {
     for (const file of sourceFilesIn("src/frontend")) {
       const source = readFileSync(join(root, file), "utf8");
-      expect(source, file).not.toContain("@/backend/shared/db");
+      expect(source, file).not.toMatch(/@\/backend\/shared\/(auth|db)\b/);
+      expect(source, file).not.toMatch(/\.\.\/.*backend\//);
       expect(source, file).not.toContain("@prisma/client");
+      expect(source, file).not.toContain("PrismaClient");
     }
   });
 

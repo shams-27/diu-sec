@@ -42,7 +42,7 @@ Subsequent deploys run `pnpm prisma migrate deploy` then `pnpm build`. Do not ru
 4. Add the Google redirect URI for the deployed origin and verify sign-in with an `@diu.edu.bd` account.
 5. Check `/sitemap.xml`, `/robots.txt` and `/opengraph-image` after the first deploy.
 
-**Storage limitation:** uploads and generated certificate PDFs currently go to `public/uploads` through `src/lib/storage.ts`. On Vercel's read-only/ephemeral filesystem those files will not persist. Deploy on a host with persistent storage until an S3-compatible adapter replaces `writeAsset()`; `STORAGE_DRIVER`/`S3_*` are not wired up yet.
+**Storage limitation:** uploads and generated certificate PDFs currently go to `public/uploads` through `src/backend/shared/storage.ts`. On Vercel's read-only/ephemeral filesystem those files will not persist. Deploy on a host with persistent storage until an S3-compatible adapter replaces `writeAsset()`; `STORAGE_DRIVER`/`S3_*` are not wired up yet.
 
 ## Self-hosted / persistent host
 
