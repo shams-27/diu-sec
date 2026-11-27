@@ -162,6 +162,15 @@
   }
 }
 
+@keyframes pattern-drift {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+  to {
+    background-position: 0 0, 0 0, 28px 28px, 28px 28px;
+  }
+}
+
 @layer components {
   /* Token-only surfaces: the gradient follows the brand primary in light and dark mode. */
   .hero-surface {
@@ -224,6 +233,7 @@
       linear-gradient(to right, color-mix(in oklab, var(--border) 22%, transparent) 1px, transparent 1px),
       linear-gradient(to bottom, color-mix(in oklab, var(--border) 22%, transparent) 1px, transparent 1px);
     background-size: auto, auto, 28px 28px, 28px 28px;
+    animation: pattern-drift 8s linear infinite;
   }
   .display-title {
     @apply font-heading text-6xl leading-[1.05] tracking-wide sm:text-8xl;
@@ -260,7 +270,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .rise-in,
-  .stagger-in > * {
+  .stagger-in > *,
+  .pattern-surface {
     animation: none;
   }
   .link-underline::after {

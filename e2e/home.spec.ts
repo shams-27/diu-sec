@@ -210,6 +210,20 @@ test("staggers cards, fills the viewport with pattern, scales type and disables 
   expect(pattern).toContain("radial-gradient");
   expect(pattern).toContain("linear-gradient");
 
+  const patternAnimation = await page.locator(".pattern-surface").evaluate((el) => {
+    const styles = getComputedStyle(el);
+    return { name: styles.animationName, duration: styles.animationDuration };
+  });
+  expect(patternAnimation).toEqual({ name: "pattern-drift", duration: "8s" });
+  const initialPosition = await page.locator(".pattern-surface").evaluate((el) => getComputedStyle(el).backgroundPosition);
+  await page.waitForFunction(
+    (initial) => getComputedStyle(document.querySelector(".pattern-surface")!).backgroundPosition !== initial,
+    initialPosition,
+  );
+  expect(
+    await page.locator(".hero-surface").first().evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe("none");
+
   const paddingLeft = (selector: string) =>
     page.locator(selector).first().evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft));
   const titleSize = () =>
@@ -241,6 +255,7 @@ test("staggers cards, fills the viewport with pattern, scales type and disables 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.reload({ waitUntil: "networkidle" });
   expect(await firstCard.evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
+  expect(await page.locator(".pattern-surface").evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
 });
 
 test("keeps larger page titles inside the viewport", async ({ page }) => {

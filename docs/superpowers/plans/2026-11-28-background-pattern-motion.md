@@ -37,7 +37,7 @@
 - Consumes: existing `.pattern-surface` and `.hero-surface` elements on `/`.
 - Produces: e2e assertions that fail until Task 2 lands.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Inside the existing test, after the current gradient assertions, add:
 
@@ -58,12 +58,12 @@ After the existing `await page.emulateMedia({ reducedMotion: "reduce" }); await 
 expect(await page.locator(".pattern-surface").evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `set -a; . ./.env; set +a; pnpm e2e --grep "staggers cards"`
 Expected: FAIL because `.pattern-surface` has no animation yet.
 
-- [ ] **Step 3: Implement the CSS**
+- [x] **Step 3: Implement the CSS**
 
 In `src/app/globals.css`:
 
@@ -76,16 +76,16 @@ In `src/app/globals.css`:
 
 Add `animation: pattern-drift 8s linear infinite;` to `.pattern-surface` after its `background-size` declaration. Add `.pattern-surface { animation: none; }` inside the existing `@media (prefers-reduced-motion: reduce)` block.
 
-- [ ] **Step 4: Run the test and full gates to verify they pass**
+- [x] **Step 4: Run the test and full gates to verify they pass**
 
 Run: `set -a; . ./.env; set +a; pnpm e2e --grep "staggers cards" && pnpm lint && pnpm typecheck && pnpm test`
 Expected: all pass; `patternAnimation` is `{ name: "pattern-drift", duration: "8s" }`, reduced-motion name is `none`.
 
-- [ ] **Step 5: Log the decision and commit**
+- [x] **Step 5: Log the decision and commit**
 
 Add a new row to `docs/DECISIONS.md` recording the visible 8s grid drift and reduced-motion override.
 
 ```bash
-git add e2e/home.spec.ts src/app/globals.css docs/DECISIONS.md
+git add e2e/home.spec.ts src/app/globals.css docs/DECISIONS.md docs/superpowers/plans/2026-11-28-background-pattern-motion.md
 git commit -m "feat(ui): drift the public background pattern"
 ```
