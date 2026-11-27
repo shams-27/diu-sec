@@ -215,3 +215,51 @@ export const checkInSchema = z.object({
   eventId: z.string().cuid(),
   qrToken: z.string().trim().min(4).max(200),
 });
+
+// ───────── Certification & verification (Phase 5) ─────────
+/** pdf-lib's standard Helvetica font can only encode WinAnsi/Latin-1 text. */
+const PDF_SAFE_TEXT_REGEX = /^[\x20-\x7E\u00A0-\u00FF]+$/;
+export const certificateRecipientSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2)
+    .max(100)
+    .regex(PDF_SAFE_TEXT_REGEX, "Name must use Latin characters supported by the certificate PDF"),
+  email: z.string().trim().toLowerCase().email().max(200),
+});
+
+const certificateRecipientLines = (input: string) =>
+  input
+    .split(/\r?\n/)
+    .map((line, index) => ({ line: line.trim(), index }))
+    .filter(({ line }) => line.length > 0);
+
+/** Bulk-issue input accepts one "Name, email" recipient per line. */
+export function parseCertificateRecipients(input: string) {
+  return certificateRecipientLines(input).map(({ line, index }) => {
+    const separator = line.indexOf(",");
+    const parsed = certificateRecipientSchema.safeParse({
+      name: line.slice(0, separator).trim(),
+      email: line.slice(separator + 1).trim(),
+    });
+    if (!parsed.success) throw new Error(`Invalid recipient on line ${index + 1}: use "Name, email"`);
+    return parsed.data;
+  });
+}
+
+export const certIssueSchema = z
+  .object({
+    eventId: z.preprocess(emptyToUndefined, z.string().cuid().optional()),
+    type: z.enum(["PARTICIPANT", "WINNER", "EXECUTIVE", "COURSE"]),
+    recipients: z.string().trim().min(3).max(20_000),
+  })
+  .refine((value) => certificateRecipientLines(value.recipients).length <= 50, {
+    message: "Issue at most 50 certificates at a time",
+    path: ["recipients"],
+  });
+
+export const certRevokeSchema = z.object({
+  certId: certIdSchema,
+  reason: z.preprocess(emptyToUndefined, z.string().trim().max(300).optional()),
+});

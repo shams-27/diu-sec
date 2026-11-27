@@ -4,22 +4,22 @@ Reference: `docs/superpowers/specs/2026-11-27-remaining-website-design.md`, READ
 Each phase ends with `pnpm lint && pnpm typecheck && pnpm test && pnpm build`, a browser smoke at 360px + desktop, README tick, then `feat(phase-N): ...` commit.
 
 ## Phase 3 — Committee & Wings (02, 03 + A-03, A-04)
-- [ ] Validators for sessions, committee members/reorder, wing edit/roster; tests.
-- [ ] `storage.ts` upload helper; portrait upload in committee form.
-- [ ] Public `/committee` (session filter) and `/wings`, `/wings/[slug]`.
-- [ ] Admin `/admin/committee` (sessions, CRUD, drag + keyboard reorder, archive) and `/admin/wings` (edit, lead, roster, syllabus), scoped actions with audit.
-- [ ] Seed leads/roster and extra committee members; verify + commit.
+- [x] Validators for sessions, committee members/reorder, wing edit/roster; tests.
+- [x] `storage.ts` upload helper; portrait upload in committee form.
+- [x] Public `/committee` (session filter) and `/wings`, `/wings/[slug]`.
+- [x] Admin `/admin/committee` (sessions, CRUD, drag + keyboard reorder, archive) and `/admin/wings` (edit, lead, roster, syllabus), scoped actions with audit.
+- [x] Seed leads/roster and extra committee members; verify + commit.
 
 ## Phase 4 — Events & Attendance (05 + A-05)
-- [ ] Add `qrcode` + `html5-qrcode`; validators for events/registration/check-in; tests.
-- [ ] Public `/events` (upcoming/past, live seat counter) and `/events/[slug]` (syllabus modal, registration, QR).
-- [ ] Transactional registration (atomic seat claim, no overbooking, unique email), audited.
-- [ ] Admin `/admin/events` CRUD/publish and `/admin/events/[id]/checkin` scanner + manual token, double check-in blocked; seed past event; verify + commit.
+- [x] Add `qrcode` + `html5-qrcode`; validators for events/registration/check-in; tests.
+- [x] Public `/events` (upcoming/past, live seat counter) and `/events/[slug]` (syllabus modal, registration, QR).
+- [x] Transactional registration (atomic seat claim, no overbooking, unique email), audited.
+- [x] Admin `/admin/events` CRUD/publish and `/admin/events/[id]/checkin` scanner + manual token, double check-in blocked; seed past event; verify + commit.
 
 ## Phase 5 — Certification (09 + A-06)
-- [ ] `certs.ts` PDF renderer (pdf-lib + embedded QR → `/verify/[certId]`); validators/tests.
-- [ ] Admin `/admin/certificates` bulk issue + revoke; audited, unique random IDs with collision retry.
-- [ ] Public `/verify` lookup and `/verify/[certId]` VALID / REVOKED / NOT FOUND + PDF download; verify + commit.
+- [x] `certs.ts` PDF renderer (pdf-lib + embedded QR → `/verify/[certId]`); validators/tests.
+- [x] Admin `/admin/certificates` bulk issue + revoke; audited, unique random IDs with collision retry.
+- [x] Public `/verify` lookup and `/verify/[certId]` VALID / REVOKED / NOT FOUND + PDF download; verify + commit.
 
 ## Phase 6 — Content CMS (06, 07, 08, 10 + A-07–A-10)
 - [ ] Validators + tests for issues/articles, projects, hall of fame, notices.

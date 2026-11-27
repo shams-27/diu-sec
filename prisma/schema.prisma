@@ -256,6 +256,8 @@ model Certificate {
   issuedAt       DateTime   @default(now())
   revokedAt      DateTime?
   revokeReason   String?
+
+  @@unique([eventId, recipientEmail, type])
 }
 
 // ───────── Publications ─────────

@@ -288,7 +288,7 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 - [x] QR generation and scan check-in
 
 ### Phase 5 — Certification (09 + A-06)
-- [ ] ID generator, bulk PDF with QR, public verify page, revoke
+- [x] ID generator, bulk PDF with QR, public verify page, revoke
 
 ### Phase 6 — Content CMS (06, 07, 08, 10 + A-07 to A-10)
 - [ ] Magazine, Hall of Fame, Projects (with GitHub link check), Notices (schedule/expire/pin)

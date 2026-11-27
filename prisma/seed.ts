@@ -1,4 +1,6 @@
 import { db } from "../src/lib/db";
+import { renderCertificatePdf } from "../src/lib/certs";
+import { saveGeneratedPdf } from "../src/lib/storage";
 import { Prisma, type Wing } from "@prisma/client";
 
 const WINGS = [
@@ -233,17 +235,32 @@ async function main() {
     });
   }
 
-  await db.certificate.upsert({
-    where: { certId: "DIU-SEC-CERT-A1B2C3" },
-    create: {
-      certId: "DIU-SEC-CERT-A1B2C3",
+  const seededCertId = "DIU-SEC-CERT-A1B2C3";
+  const existingCert = await db.certificate.findUnique({ where: { certId: seededCertId } });
+  if (!existingCert?.pdfUrl) {
+    const pdf = await renderCertificatePdf({
+      certId: seededCertId,
       recipientName: member.name,
-      recipientEmail: memberEmail,
       type: "PARTICIPANT",
-      eventId: event.id,
-    },
-    update: {},
-  });
+      issuedAt: new Date("2026-11-20T00:00:00Z"),
+      eventTitle: event.title,
+      siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+    });
+    const pdfUrl = await saveGeneratedPdf(pdf);
+    await db.certificate.upsert({
+      where: { certId: seededCertId },
+      create: {
+        certId: seededCertId,
+        recipientName: member.name,
+        recipientEmail: memberEmail,
+        type: "PARTICIPANT",
+        eventId: event.id,
+        pdfUrl,
+        issuedAt: new Date("2026-11-20T00:00:00Z"),
+      },
+      update: { pdfUrl },
+    });
+  }
 
   await db.notice.upsert({
     where: { id: "seed-notice-recruitment" },
