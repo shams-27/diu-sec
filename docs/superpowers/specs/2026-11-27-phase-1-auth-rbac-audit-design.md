@@ -27,6 +27,7 @@ Password/credentials login, self-service registration, creating new role values,
 - All regexes stay in `src/lib/validators.ts`; new Zod schemas go there too.
 - Every mutation is a server action: authenticate → authorize → Zod-validate → write → `writeAudit()`.
 - `.env.example` already declares `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `ALLOWED_EMAIL_DOMAIN`.
+- Auth.js generates a CSRF token via `crypto.getRandomValues` inside `auth()` when no CSRF cookie is present. Under Cache Components, call `await connection()` before `auth()` in the admin layout and in every admin page that calls `requireActor()`; otherwise the prerender pass logs `blocking-prerender-crypto`. `instant = false` only disables instant-navigation validation — it does not stop prerendering.
 
 ## Approaches
 

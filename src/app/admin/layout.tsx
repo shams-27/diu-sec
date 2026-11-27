@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { auth } from "@/auth";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 
-// Auth reads happen per request; the admin shell is intentionally blocking.
+// Auth is per-request, so this shell blocks instead of prerendering.
 export const instant = false;
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  // Auth.js generates a CSRF token via crypto.getRandomValues when none is present.
+  await connection();
   const session = await auth();
   if (!session?.user?.role) redirect("/");
 

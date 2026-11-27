@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { requireActor } from "@/lib/admin-guard";
 import { db } from "@/lib/db";
 import { setUserRoleAction } from "@/server/actions/access";
@@ -8,6 +9,7 @@ const selectClass =
   "rounded-md border border-border bg-background px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export default async function AccessPage() {
+  await connection();
   await requireActor("access", "read");
   const [users, wings] = await Promise.all([
     db.user.findMany({ include: { wing: true }, orderBy: { email: "asc" } }),

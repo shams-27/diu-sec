@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { requireActor } from "@/lib/admin-guard";
 import { db } from "@/lib/db";
 import { auditFilterSchema, nextUtcMidnight } from "@/lib/validators";
@@ -9,6 +10,7 @@ const inputClass =
 type SearchParams = Record<string, string | string[] | undefined>;
 
 export default async function AuditPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  await connection();
   await requireActor("audit", "read");
   const raw = await searchParams;
   const flat = Object.fromEntries(
