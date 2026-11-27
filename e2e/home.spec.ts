@@ -87,12 +87,38 @@ test("applies scoped editorial brutalism only to public pages", async ({ page })
 });
 
 test("shows a bigger upcoming-event banner in the hero", async ({ page }) => {
-  await page.goto("/", { waitUntil: "networkidle" });
+  const title = `E2E Home Event ${uniqueId()}`;
+  const cookie = await superAdminCookie();
+  await page.context().addCookies([{ name: "authjs.session-token", value: cookie, domain: "localhost", path: "/" }]);
+  await page.goto("/admin/events");
+  const createForm = page.locator("section").filter({ has: page.getByRole("heading", { name: "Create an event" }) });
+  await createForm.getByLabel("Title").fill(title);
+  await createForm.getByLabel("Description").fill("A regression event for the hero banner.");
+  await createForm.getByLabel("Starts at (UTC)").fill(new Date(Date.now() - 60_000).toISOString().slice(0, 16));
+  await createForm.getByLabel("Ends at (UTC)").fill(new Date(Date.now() + 3_600_000).toISOString().slice(0, 16));
+  await createForm.getByLabel("Status").selectOption("PUBLISHED");
+  await createForm.getByRole("button", { name: "Create event" }).click();
+
+  await expect
+    .poll(async () => {
+      await page.goto(`/?t=${Date.now()}`, { waitUntil: "networkidle" });
+      return page.getByRole("complementary", { name: "Next event" }).innerText();
+    }, { timeout: 15_000 })
+    .toContain(title);
 
   const banner = page.getByRole("complementary", { name: "Next event" });
   await expect(banner).toBeVisible();
-  await expect(banner).toContainText("DIU SEC Freshers Hackathon 2026");
-  await expect(banner.getByRole("link", { name: /Event details/ })).toBeVisible();
+  await expect(banner).toContainText("Happening now");
+  const detailsLink = banner.getByRole("link", { name: /Event details/ });
+  await expect(detailsLink).toBeVisible();
+  for (let i = 0; i < 20 && !(await detailsLink.evaluate((el) => el === document.activeElement)); i++) {
+    await page.keyboard.press("Tab");
+  }
+  const focusColors = await detailsLink.evaluate((el) => ({
+    ring: getComputedStyle(el).getPropertyValue("--tw-ring-color").trim(),
+    foreground: getComputedStyle(el).getPropertyValue("--primary-foreground").trim(),
+  }));
+  expect(focusColors.ring).toBe(focusColors.foreground);
   expect(await page.locator(".brutal-stats > div").first().evaluate((el) => getComputedStyle(el).borderLeftWidth)).toBe(
     "6px",
   );

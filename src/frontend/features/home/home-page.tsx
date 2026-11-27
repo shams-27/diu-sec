@@ -33,7 +33,7 @@ async function HeroEventBanner() {
   const { nextEvent, nowIso } = await getHomeHighlights();
   const ongoing = nextEvent ? nextEvent.startsAt.getTime() <= Date.parse(nowIso) : false;
   const linkClass =
-    "mt-4 inline-block border-t-2 border-current pt-2 font-mono text-xs font-bold uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+    "mt-4 inline-block border-t-2 border-current pt-2 font-mono text-xs font-bold uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground";
   return (
     <aside aria-label="Next event" className={HERO_BANNER_CLASS}>
       <p className="font-mono text-xs font-bold uppercase tracking-[0.2em]">Next event</p>
