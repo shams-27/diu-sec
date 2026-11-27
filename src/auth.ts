@@ -6,7 +6,12 @@ import type { Role } from "@/lib/rbac";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
-  providers: [Google],
+  providers: [
+    Google({
+      // Google reuses an existing session unless the account chooser is forced.
+      authorization: { params: { prompt: "select_account" } },
+    }),
+  ],
   session: { strategy: "jwt" },
   callbacks: {
     async signIn({ profile }) {
