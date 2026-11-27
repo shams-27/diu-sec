@@ -280,8 +280,8 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 - [x] Admin review queue, approve/reject/revoke/reissue, CSV export
 
 ### Phase 3 — Committee & Wings (02, 03 + A-03, A-04)
-- [ ] Sessions, committee CRUD with reorder + portrait upload
-- [ ] Wings CRUD, lead assignment, rosters, syllabi
+- [x] Sessions, committee CRUD with reorder + portrait upload
+- [x] Wings CRUD, lead assignment, rosters, syllabi
 
 ### Phase 4 — Events & Attendance (05 + A-05)
 - [ ] Event CRUD/publish, seat counter, registration with transaction

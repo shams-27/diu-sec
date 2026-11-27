@@ -78,6 +78,17 @@ async function main() {
       update: { title },
     });
   }
+  for (const [i, entry] of [
+    { name: "Demo Vice President", title: "Vice President", batch: "2023" },
+    { name: "Demo Technical Lead", title: "Technical Lead", batch: "2023" },
+  ].entries()) {
+    await db.committeeMember.upsert({
+      where: { id: `seed-committee-extra-${i}` },
+      create: { id: `seed-committee-extra-${i}`, sessionId: current.id, ...entry, order: i + 2 },
+      update: { title: entry.title },
+    });
+  }
+
   await db.committeeMember.upsert({
     where: { id: "seed-committee-previous" },
     create: {
@@ -110,6 +121,37 @@ async function main() {
     where: { wingId_memberId: { wingId: wings["competitive-programming"].id, memberId: member.id } },
     create: { wingId: wings["competitive-programming"].id, memberId: member.id, role: "CORE" },
     update: {},
+  });
+
+  // Approved leads make public wing rosters and wing-scoped admin pages demoable.
+  for (const [i, entry] of [
+    { slug: "web-mobile-dev", email: "lead.web@diu.edu.bd", name: "Web Wing Lead", studentId: "222-35-201", role: "LEAD" as const },
+    { slug: "ai-ml", email: "core.ai@diu.edu.bd", name: "AI Core Member", studentId: "222-35-202", role: "CORE" as const },
+  ].entries()) {
+    const lead = await db.member.upsert({
+      where: { email: entry.email },
+      create: {
+        studentId: entry.studentId,
+        name: entry.name,
+        email: entry.email,
+        batch: "2023",
+        wingPrefId: wings[entry.slug].id,
+        status: "APPROVED",
+        memberCardNo: `SEC-2026-000${i + 2}`,
+        cardIssuedAt: new Date("2026-01-15T00:00:00Z"),
+      },
+      update: { status: "APPROVED", wingPrefId: wings[entry.slug].id },
+    });
+    await db.wingMember.upsert({
+      where: { wingId_memberId: { wingId: wings[entry.slug].id, memberId: lead.id } },
+      create: { wingId: wings[entry.slug].id, memberId: lead.id, role: entry.role },
+      update: { role: entry.role },
+    });
+  }
+  await db.user.upsert({
+    where: { email: "lead.web@diu.edu.bd" },
+    create: { email: "lead.web@diu.edu.bd", name: "Web Wing Lead", role: "WING_LEAD", wingId: wings["web-mobile-dev"].id },
+    update: { role: "WING_LEAD", wingId: wings["web-mobile-dev"].id },
   });
 
   // Pending applicants let A-02 review and wing-scoped reads be demoed without applying first.

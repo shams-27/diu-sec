@@ -102,3 +102,72 @@ export function generateCertId(len = 6): string {
   for (const b of bytes) s += CERT_ALPHABET[b % CERT_ALPHABET.length];
   return `DIU-SEC-CERT-${s}`;
 }
+
+const parseJson = (value: unknown) => {
+  if (typeof value !== "string") return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+};
+
+/** Links are rendered as href/src, so only web URLs and local uploads are safe. */
+const httpUrl = z.string().url().refine((url) => /^https?:\/\//i.test(url), "Use an http(s) URL");
+const photoUrlSchema = z.string().max(500).refine(
+  (url) => /^https?:\/\//i.test(url) || /^\/uploads\/[\w.-]+$/.test(url),
+  "Use an http(s) URL or a local upload",
+);
+
+// ───────── Committee & sessions (Phase 3) ─────────
+export const sessionCreateSchema = z.object({
+  year: z.coerce.number().int().min(2000).max(2100),
+  label: z.string().trim().min(2).max(100),
+});
+
+export const sessionActionSchema = z.object({
+  sessionId: z.string().cuid(),
+  decision: z.enum(["ARCHIVE", "UNARCHIVE", "SET_CURRENT"]),
+});
+
+export const committeeMemberSchema = z.object({
+  id: z.preprocess(emptyToUndefined, z.string().cuid().optional()),
+  sessionId: z.string().cuid(),
+  name: z.string().trim().min(2).max(100),
+  title: z.string().trim().min(2).max(100),
+  batch: z.preprocess(emptyToUndefined, z.string().trim().max(10).optional()),
+  photoUrl: z.preprocess(emptyToUndefined, photoUrlSchema.optional()),
+  socialLinks: z.preprocess(parseJson, z.record(httpUrl).optional()),
+  order: z.coerce.number().int().min(0).max(1000),
+});
+
+export const committeeDeleteSchema = z.object({ id: z.string().cuid() });
+
+export const committeeReorderSchema = z.object({
+  sessionId: z.string().cuid(),
+  ids: z.preprocess(parseJson, z.array(z.string().cuid()).min(1)),
+});
+
+export const sessionFilterSchema = z.object({
+  year: z.preprocess(emptyToUndefined, z.coerce.number().int().optional()),
+});
+
+// ───────── Wings & rosters (Phase 3) ─────────
+const linesToArray = (value: unknown) =>
+  typeof value === "string" ? value.split("\n").map((line) => line.trim()).filter(Boolean) : value;
+
+export const wingUpdateSchema = z.object({
+  wingId: z.string().cuid(),
+  name: z.string().trim().min(2).max(100),
+  description: z.string().trim().min(10).max(500),
+  responsibilities: z.preprocess(linesToArray, z.array(z.string().trim().min(2).max(120)).min(1)),
+  syllabusUrl: z.preprocess(emptyToUndefined, httpUrl.optional()),
+  leadMemberId: z.preprocess(emptyToUndefined, z.string().cuid().optional()),
+});
+
+export const wingRosterSchema = z.object({
+  wingId: z.string().cuid(),
+  memberId: z.string().cuid(),
+  role: z.enum(["LEAD", "CORE", "MEMBER"]),
+  decision: z.enum(["ADD", "UPDATE", "REMOVE"]).default("ADD"),
+});
