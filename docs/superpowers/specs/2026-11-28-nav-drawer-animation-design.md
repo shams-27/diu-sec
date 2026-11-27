@@ -1,6 +1,6 @@
 # Quick-Links Drawer Animation
 
-**Status:** awaiting approval
+**Status:** implemented (approved 2026-11-28)
 
 ## Intent
 

@@ -21,7 +21,7 @@
 
 ## Review Focus
 
-- **Close/backdrop/Escape/link dismissal still work:** the existing drawer e2e covers all four and must stay green — Task 1 Step 1 keeps those assertions in place.
+- **Close/Escape/link dismissal still work:** the existing drawer e2e covers these three; backdrop-click handling is untouched in the component and must stay working — Task 1 Step 1 keeps all existing assertions in place.
 - **Exit actually animates rather than snapping shut:** Task 1 Step 1 asserts a second `transform` transition on close.
 - **Backdrop fades with the panel:** Task 1 Step 1 asserts a `background-color` transition with `pseudoElement === "::backdrop"`.
 - **Reduced-motion users see no motion:** Task 1 Step 1 asserts no `transitionstart` and an identity transform under `reducedMotion: "reduce"`.
@@ -42,7 +42,7 @@
 - Consumes: `<dialog className="nav-drawer ...">` from `src/frontend/shared/shell/site-nav-drawer.tsx`, with accessible name `Quick links`.
 - Produces: CSS classes/selectors `.nav-drawer`, `.nav-drawer[open]`, `.nav-drawer::backdrop` and their reduced-motion opt-out; no new exported symbols.
 
-- [ ] **Step 1: Write the failing e2e test**
+- [x] **Step 1: Write the failing e2e test**
 
 In the existing `"keeps all quick links in an accessible drawer"` test, keep every current assertion. Before the first `Menu` click, register a transition recorder on the dialog:
 
@@ -97,13 +97,13 @@ await page.keyboard.press("Escape");
 await expect(dialog).toBeHidden();
 ```
 
-- [ ] **Step 2: Run the focused test to verify it fails**
+- [x] **Step 2: Run the focused test to verify it fails**
 
 Run: `set -a; . ./.env; set +a; pnpm e2e --grep "keeps all quick links in an accessible drawer"` (Playwright builds and starts its own server on port 3003).
 
 Expected: FAIL — no `transform` transition is recorded and the reduced-motion duration is not `0s`.
 
-- [ ] **Step 3: Implement the CSS**
+- [x] **Step 3: Implement the CSS**
 
 In `src/app/globals.css`:
 
@@ -115,13 +115,13 @@ In `src/app/globals.css`:
 
 Do not change `site-nav-drawer.tsx` or any dialog state handling.
 
-- [ ] **Step 4: Run the focused test and gates**
+- [x] **Step 4: Run the focused test and gates**
 
 Run: `set -a; . ./.env; set +a; pnpm e2e --grep "keeps all quick links in an accessible drawer" && pnpm lint && pnpm typecheck`
 
 Expected: all pass.
 
-- [ ] **Step 5: Add documentation, run the full suite, and commit**
+- [x] **Step 5: Add documentation, run the full suite, and commit**
 
 Update `docs/design-system.md` line 45 to note the 220ms slide and backdrop fade; append one row to `docs/DECISIONS.md` recording the CSS-only discrete-transition approach and reduced-motion opt-out.
 
