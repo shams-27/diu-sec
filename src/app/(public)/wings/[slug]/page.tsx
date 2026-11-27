@@ -1,24 +1,16 @@
+import { getWingBySlug } from "@/backend/features/wings/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = { title: "Wing" };
 
 export default async function WingDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   await connection();
   const { slug } = await params;
-  const wing = await db.wing.findUnique({
-    where: { slug },
-    include: {
-      members: {
-        include: { member: { select: { name: true, batch: true, status: true } } },
-        orderBy: [{ role: "asc" }, { member: { name: "asc" } }],
-      },
-    },
-  });
+  const wing = await getWingBySlug(slug);
   if (!wing) notFound();
 
   const groups = [

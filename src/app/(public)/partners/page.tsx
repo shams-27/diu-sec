@@ -1,8 +1,8 @@
+import { getSponsors } from "@/backend/features/partners/queries";
 import type { Metadata } from "next";
 import { ExternalLink } from "lucide-react";
 import { connection } from "next/server";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 import { SPONSOR_KINDS } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
@@ -18,10 +18,7 @@ const kindLabels: Record<(typeof SPONSOR_KINDS)[number], string> = {
 
 export default async function PartnersPage() {
   await connection();
-  const sponsors = await db.sponsor.findMany({
-    orderBy: [{ order: "asc" }, { name: "asc" }],
-    select: { id: true, kind: true, name: true, logoUrl: true, websiteUrl: true, tier: true, bio: true },
-  });
+  const sponsors = await getSponsors();
 
   return (
     <div className="space-y-10">

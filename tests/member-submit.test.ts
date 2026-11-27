@@ -17,7 +17,7 @@ vi.mock("@/backend/shared/audit", () => ({ writeAudit: m.writeAudit }));
 vi.mock("@/backend/shared/rate-limit", () => ({ rateLimited: m.rateLimited }));
 vi.mock("@/backend/shared/honeypot", () => ({ isBot: m.isBot, HONEYPOT_FIELD: "website" }));
 
-import { submitMembershipAction } from "@/server/actions/members";
+import { submitMembershipAction } from "@/backend/features/membership/members";
 
 function application(overrides: Record<string, string> = {}): FormData {
   const data = new FormData();

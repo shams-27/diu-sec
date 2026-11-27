@@ -1,8 +1,8 @@
+import { getAdminWings } from "@/backend/features/wings/queries";
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
-import { manageWingRosterAction, saveWingAction } from "@/server/actions/wings";
+import { manageWingRosterAction, saveWingAction } from "@/backend/features/wings/wings";
 
 export const metadata: Metadata = { title: "Wings & rosters · Admin" };
 
@@ -14,22 +14,7 @@ const buttonClass =
 export default async function WingsAdminPage() {
   await connection();
   const actor = await requireActor("wings", "read", "own");
-  const wingWhere = actor.role === "WING_LEAD" && actor.wingId ? { id: actor.wingId } : {};
-  const [wings, members] = await Promise.all([
-    db.wing.findMany({
-      where: wingWhere,
-      orderBy: { name: "asc" },
-      include: {
-        members: { include: { member: { select: { name: true, batch: true, status: true } } } },
-      },
-    }),
-    db.member.findMany({
-      where: { status: "APPROVED", wingPrefId: actor.role === "WING_LEAD" ? (actor.wingId ?? undefined) : undefined },
-      select: { id: true, name: true, batch: true },
-      orderBy: { name: "asc" },
-      take: 200,
-    }),
-  ]);
+  const [wings, members] = await getAdminWings(actor.role === "WING_LEAD" ? actor.wingId : undefined);
 
   return (
     <div className="space-y-8">

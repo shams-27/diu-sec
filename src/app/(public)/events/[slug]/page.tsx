@@ -1,3 +1,4 @@
+import { getPublishedEventBySlug } from "@/backend/features/events/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -5,7 +6,6 @@ import { connection } from "next/server";
 import { EventRegistration } from "@/components/public/event-registration";
 import { SyllabusDialog } from "@/components/public/syllabus-dialog";
 import { PageHero } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = { title: "Event details" };
 
@@ -18,21 +18,7 @@ function prettySyllabus(value: unknown): string | null {
 export default async function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   await connection();
   const { slug } = await params;
-  const event = await db.event.findFirst({
-    where: { slug, status: "PUBLISHED" },
-    select: {
-      id: true,
-      title: true,
-      type: true,
-      description: true,
-      startsAt: true,
-      endsAt: true,
-      capacity: true,
-      seatsTaken: true,
-      syllabus: true,
-      wing: { select: { name: true } },
-    },
-  });
+  const event = await getPublishedEventBySlug(slug);
   if (!event) notFound();
 
   const syllabus = prettySyllabus(event.syllabus);

@@ -1,10 +1,10 @@
+import { getMemberQueue, getWingOptions } from "@/backend/features/membership/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
 import { memberFilterSchema } from "@/backend/shared/validators";
-import { reviewMemberAction } from "@/server/actions/member-review";
+import { reviewMemberAction } from "@/backend/features/membership/member-review";
 
 export const metadata: Metadata = { title: "Members · Admin" };
 
@@ -24,23 +24,8 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
   const wingId = actor.role === "WING_LEAD" ? actor.wingId : filters.wingPrefId;
 
   const [wings, members] = await Promise.all([
-    actor.role === "WING_LEAD" ? Promise.resolve([]) : db.wing.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
-    db.member.findMany({
-      where: { status: filters.status, wingPrefId: wingId },
-      select: {
-        id: true,
-        name: true,
-        studentId: true,
-        email: true,
-        batch: true,
-        status: true,
-        memberCardNo: true,
-        createdAt: true,
-        wingPref: { select: { name: true } },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 100,
-    }),
+    actor.role === "WING_LEAD" ? Promise.resolve([]) : getWingOptions(),
+    getMemberQueue(filters.status, wingId),
   ]);
 
   const query = new URLSearchParams();

@@ -1,7 +1,7 @@
+import { getAuditLogs } from "@/backend/features/audit/queries";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
-import { auditFilterSchema, nextUtcMidnight } from "@/backend/shared/validators";
+import { auditFilterSchema } from "@/backend/shared/validators";
 
 const ACTIONS = ["CREATE", "UPDATE", "DELETE", "APPROVE", "REJECT", "REVOKE", "REISSUE", "PUBLISH", "LOGIN", "EXPORT"] as const;
 const inputClass =
@@ -19,17 +19,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
   const parsed = auditFilterSchema.safeParse(flat);
   const filters = parsed.success ? parsed.data : {};
 
-  const logs = await db.auditLog.findMany({
-    where: {
-      action: filters.action,
-      entity: filters.entity ? { contains: filters.entity, mode: "insensitive" } : undefined,
-      actor: filters.email ? { email: { equals: filters.email, mode: "insensitive" } } : undefined,
-      createdAt: { gte: filters.from, lt: filters.to ? nextUtcMidnight(filters.to) : undefined },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-    include: { actor: true },
-  });
+  const logs = await getAuditLogs(filters);
 
   return (
     <div className="space-y-6">

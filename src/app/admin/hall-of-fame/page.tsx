@@ -1,10 +1,10 @@
+import { getAllEntries } from "@/backend/features/hall-of-fame/queries";
 import type { Metadata } from "next";
 import { Trophy } from "lucide-react";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
 import { HOF_CATEGORIES } from "@/backend/shared/validators";
-import { saveHallOfFameEntryAction } from "@/server/actions/hall-of-fame";
+import { saveHallOfFameEntryAction } from "@/backend/features/hall-of-fame/hall-of-fame";
 
 export const metadata: Metadata = { title: "Hall of fame · Admin" };
 
@@ -18,7 +18,7 @@ const primaryButtonClass =
 export default async function HallOfFameAdminPage() {
   await connection();
   await requireActor("hallOfFame", "read");
-  const entries = await db.hallOfFameEntry.findMany({ orderBy: [{ year: "desc" }, { title: "asc" }] });
+  const entries = await getAllEntries();
 
   return (
     <div className="space-y-8">

@@ -36,8 +36,8 @@ import {
   wingRosterSchema,
   wingUpdateSchema,
 } from "@/backend/shared/validators";
-import { saveCommitteeMemberAction } from "@/server/actions/committee";
-import { saveWingAction } from "@/server/actions/wings";
+import { saveCommitteeMemberAction } from "@/backend/features/committee/committee";
+import { saveWingAction } from "@/backend/features/wings/wings";
 
 const WING = "cmwypjwan0000sbfjk8ca2z4k";
 const fd = (entries: [string, string][]) => {

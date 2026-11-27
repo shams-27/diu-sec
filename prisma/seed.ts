@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { db } from "../src/backend/shared/db";
-import { renderCertificatePdf } from "../src/lib/certs";
+import { renderCertificatePdf } from "../src/backend/features/certificates/certs";
 import { saveGeneratedPdf } from "../src/backend/shared/storage";
 import { Prisma, type Wing } from "@prisma/client";
 import { PDFDocument, StandardFonts } from "pdf-lib";

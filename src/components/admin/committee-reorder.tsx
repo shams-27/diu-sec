@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ArrowDown, ArrowUp, GripVertical } from "lucide-react";
-import { reorderCommitteeAction } from "@/server/actions/committee";
+import { reorderCommitteeAction } from "@/backend/features/committee/committee";
 
 export function CommitteeReorder({
   sessionId,

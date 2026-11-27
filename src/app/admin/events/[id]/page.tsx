@@ -1,9 +1,9 @@
+import { getAdminEventById } from "@/backend/features/events/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = { title: "Event registrations · Admin" };
 
@@ -11,13 +11,7 @@ export default async function EventRegistrationsPage({ params }: { params: Promi
   await connection();
   const actor = await requireActor("events", "read", "own");
   const { id } = await params;
-  const event = await db.event.findFirst({
-    where: { id, ...(actor.role === "WING_LEAD" ? { wingId: actor.wingId } : {}) },
-    include: {
-      registrations: { orderBy: { createdAt: "desc" } },
-      wing: { select: { name: true } },
-    },
-  });
+  const event = await getAdminEventById(id, actor.role === "WING_LEAD" ? actor.wingId : undefined);
   if (!event) notFound();
 
   return (

@@ -1,9 +1,9 @@
+import { getResources } from "@/backend/features/resources/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { connection } from "next/server";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 import { RESOURCE_TYPES, resourceFilterSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
@@ -23,11 +23,7 @@ export default async function ResourcesPage({
   );
   const parsed = resourceFilterSchema.safeParse(flat);
   const type = parsed.success ? parsed.data.type : undefined;
-  const resources = await db.resource.findMany({
-    where: type ? { type } : {},
-    orderBy: [{ type: "asc" }, { title: "asc" }],
-    select: { id: true, type: true, title: true, url: true, tags: true },
-  });
+  const resources = await getResources(type);
 
   const chipClass = (active: boolean) =>
     `rounded-full border px-4 py-2 text-sm font-medium transition-colors duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${

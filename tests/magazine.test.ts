@@ -24,7 +24,7 @@ vi.mock("@/backend/shared/storage", () => ({ saveUpload: e.saveUpload, removeUpl
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { articleModerationSchema, magazineIssueSchema } from "@/backend/shared/validators";
-import { moderateArticleAction, saveMagazineIssueAction } from "@/server/actions/magazine";
+import { moderateArticleAction, saveMagazineIssueAction } from "@/backend/features/magazine/magazine";
 
 const fd = (entries: [string, string][]) => {
   const data = new FormData();

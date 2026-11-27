@@ -15,7 +15,7 @@ vi.mock("@/backend/shared/db", () => ({
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { resourceFilterSchema, resourceSchema } from "@/backend/shared/validators";
-import { saveResourceAction } from "@/server/actions/resources";
+import { saveResourceAction } from "@/backend/features/resources/resources";
 
 const form = () => {
   const data = new FormData();

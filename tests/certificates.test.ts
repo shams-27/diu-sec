@@ -22,7 +22,7 @@ vi.mock("@/backend/shared/validators", async (importOriginal) => {
 });
 vi.mock("@/backend/shared/admin-guard", () => ({ requireActor: e.requireActor }));
 vi.mock("@/backend/shared/audit", () => ({ writeAudit: e.writeAudit }));
-vi.mock("@/lib/certs", () => ({ renderCertificatePdf: e.render }));
+vi.mock("@/backend/features/certificates/certs", () => ({ renderCertificatePdf: e.render }));
 vi.mock("@/backend/shared/storage", () => ({ saveGeneratedPdf: e.savePdf, removeUploadedAsset: e.removeAsset }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 vi.mock("@/backend/shared/db", () => ({
@@ -50,7 +50,7 @@ import {
   certRevokeSchema,
   parseCertificateRecipients,
 } from "@/backend/shared/validators";
-import { issueCertificatesAction, revokeCertificateAction } from "@/server/actions/certificates";
+import { issueCertificatesAction, revokeCertificateAction } from "@/backend/features/certificates/certificates";
 
 const EVENT = "cmwypjwbz0009sbfj0tu78g24";
 const fd = (entries: [string, string][]) => {

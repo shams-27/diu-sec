@@ -16,7 +16,7 @@ vi.mock("@/backend/shared/db", () => ({
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { projectReviewSchema, projectSchema } from "@/backend/shared/validators";
-import { reviewProjectAction, saveProjectAction } from "@/server/actions/projects";
+import { reviewProjectAction, saveProjectAction } from "@/backend/features/projects/projects";
 
 const fd = (entries: [string, string][]) => {
   const data = new FormData();

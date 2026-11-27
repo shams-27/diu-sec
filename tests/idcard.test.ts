@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { nextMemberCardNo } from "@/lib/idcard";
+import { nextMemberCardNo } from "@/backend/features/membership/idcard";
 
 describe("nextMemberCardNo", () => {
   it("continues the current-year sequence", async () => {

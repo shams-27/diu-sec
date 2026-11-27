@@ -17,7 +17,7 @@ vi.mock("@/backend/shared/db", () => ({
   },
 }));
 
-import { dashboardData, dashboardScopes } from "@/lib/dashboard";
+import { dashboardData, dashboardScopes } from "@/backend/features/dashboard/queries";
 
 describe("dashboardScopes", () => {
   it("limits a wing lead's counts and chart to their own wing", () => {

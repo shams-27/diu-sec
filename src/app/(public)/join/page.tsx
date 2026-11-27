@@ -1,7 +1,7 @@
+import { getWingOptions } from "@/backend/features/membership/queries";
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { MembershipForm } from "@/components/public/membership-form";
-import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = {
   title: "Join DIU SEC",
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function JoinPage() {
   await connection();
-  const wings = await db.wing.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } });
+  const wings = await getWingOptions();
 
   return (
     <div className="space-y-8">

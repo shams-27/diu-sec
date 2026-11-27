@@ -1,15 +1,15 @@
+import { getAdminSessions, getSessionMembers } from "@/backend/features/committee/queries";
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { CommitteeReorder } from "@/components/admin/committee-reorder";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
 import { sessionFilterSchema } from "@/backend/shared/validators";
 import {
   createSessionAction,
   deleteCommitteeMemberAction,
   manageSessionAction,
   saveCommitteeMemberAction,
-} from "@/server/actions/committee";
+} from "@/backend/features/committee/committee";
 
 export const metadata: Metadata = { title: "Committee & sessions · Admin" };
 
@@ -30,13 +30,13 @@ export default async function CommitteeAdminPage({
     Object.entries(raw).map(([key, value]) => [key, Array.isArray(value) ? (value[0] ?? "") : (value ?? "")]),
   );
   const parsed = sessionFilterSchema.safeParse(flat);
-  const sessions = await db.execSession.findMany({ orderBy: { year: "desc" }, include: { _count: { select: { members: true } } } });
+  const sessions = await getAdminSessions();
   const selected =
     sessions.find((session) => session.year === (parsed.success ? parsed.data.year : undefined)) ??
     sessions.find((session) => session.isCurrent) ??
     sessions[0];
   const members = selected
-    ? await db.committeeMember.findMany({ where: { sessionId: selected.id }, orderBy: { order: "asc" } })
+    ? await getSessionMembers(selected.id)
     : [];
 
   return (

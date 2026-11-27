@@ -1,9 +1,9 @@
+import { getVerifiedEntries } from "@/backend/features/hall-of-fame/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Trophy } from "lucide-react";
 import { connection } from "next/server";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 import { HOF_CATEGORIES, hallOfFameFilterSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
@@ -23,19 +23,7 @@ export default async function HallOfFamePage({
   );
   const parsed = hallOfFameFilterSchema.safeParse(flat);
   const category = parsed.success ? parsed.data.category : undefined;
-  const entries = await db.hallOfFameEntry.findMany({
-    where: { verified: true, ...(category ? { category } : {}) },
-    orderBy: [{ year: "desc" }, { personName: "asc" }],
-    select: {
-      id: true,
-      category: true,
-      title: true,
-      personName: true,
-      year: true,
-      description: true,
-      imageUrl: true,
-    },
-  });
+  const entries = await getVerifiedEntries(category);
 
   return (
     <div className="space-y-10">

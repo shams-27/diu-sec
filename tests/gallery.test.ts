@@ -24,7 +24,7 @@ vi.mock("@/backend/shared/storage", () => ({ saveUpload: e.saveUpload, removeUpl
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { galleryAlbumSchema, galleryFilterSchema, galleryPhotoSchema } from "@/backend/shared/validators";
-import { addGalleryPhotoAction, saveGalleryAlbumAction } from "@/server/actions/gallery";
+import { addGalleryPhotoAction, saveGalleryAlbumAction } from "@/backend/features/gallery/gallery";
 
 describe("gallery validators", () => {
   it("accepts album categories and photo ordering", () => {

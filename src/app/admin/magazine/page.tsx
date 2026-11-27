@@ -1,9 +1,9 @@
+import { getMagazineAdminData } from "@/backend/features/magazine/queries";
 import type { Metadata } from "next";
 import { BookOpen } from "lucide-react";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
-import { moderateArticleAction, saveMagazineIssueAction } from "@/server/actions/magazine";
+import { moderateArticleAction, saveMagazineIssueAction } from "@/backend/features/magazine/magazine";
 
 export const metadata: Metadata = { title: "Magazine · Admin" };
 
@@ -18,17 +18,7 @@ const local = (date: Date | null) => (date ? date.toISOString().slice(0, 16) : "
 export default async function MagazineAdminPage() {
   await connection();
   await requireActor("magazine", "read");
-  const [issues, articles] = await Promise.all([
-    db.magazineIssue.findMany({
-      orderBy: { number: "desc" },
-      include: { _count: { select: { articles: true } } },
-    }),
-    db.article.findMany({
-      where: { status: "SUBMITTED" },
-      orderBy: { createdAt: "desc" },
-      select: { id: true, title: true, body: true, authorName: true, issueId: true, createdAt: true },
-    }),
-  ]);
+  const [issues, articles] = await getMagazineAdminData();
 
   return (
     <div className="space-y-8">

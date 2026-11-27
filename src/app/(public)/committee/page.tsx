@@ -1,8 +1,8 @@
+import { getPublicSessions, getSessionMembers } from "@/backend/features/committee/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 import { sessionFilterSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
@@ -28,13 +28,13 @@ export default async function CommitteePage({
     Object.entries(raw).map(([key, value]) => [key, Array.isArray(value) ? (value[0] ?? "") : (value ?? "")]),
   );
   const parsed = sessionFilterSchema.safeParse(flat);
-  const sessions = await db.execSession.findMany({ orderBy: { year: "desc" } });
+  const sessions = await getPublicSessions();
   const selected =
     sessions.find((session) => session.year === (parsed.success ? parsed.data.year : undefined)) ??
     sessions.find((session) => session.isCurrent) ??
     sessions[0];
   const members = selected
-    ? await db.committeeMember.findMany({ where: { sessionId: selected.id }, orderBy: { order: "asc" } })
+    ? await getSessionMembers(selected.id)
     : [];
 
   return (

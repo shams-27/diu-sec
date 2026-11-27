@@ -25,7 +25,7 @@ const tx = {
 };
 m.transaction.mockImplementation((fn: (tx: unknown) => Promise<unknown>) => fn(tx));
 
-import { reviewMemberAction } from "@/server/actions/member-review";
+import { reviewMemberAction } from "@/backend/features/membership/member-review";
 
 const ID = "cmwypjwan0000sbfjk8ca2z4k";
 

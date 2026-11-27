@@ -15,7 +15,7 @@ vi.mock("@/backend/shared/db", () => ({
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { hallOfFameSchema } from "@/backend/shared/validators";
-import { saveHallOfFameEntryAction } from "@/server/actions/hall-of-fame";
+import { saveHallOfFameEntryAction } from "@/backend/features/hall-of-fame/hall-of-fame";
 
 const form = () => {
   const data = new FormData();

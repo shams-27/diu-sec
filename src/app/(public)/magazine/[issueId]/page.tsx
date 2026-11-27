@@ -1,22 +1,17 @@
+import { getPublishedIssueById } from "@/backend/features/magazine/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Download } from "lucide-react";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = { title: "Magazine issue" };
 
 export default async function MagazineIssuePage({ params }: { params: Promise<{ issueId: string }> }) {
   await connection();
   const { issueId } = await params;
-  const issue = await db.magazineIssue.findFirst({
-    where: { id: issueId, publishedAt: { not: null } },
-    include: {
-      articles: { where: { status: "APPROVED" }, orderBy: { createdAt: "desc" } },
-    },
-  });
+  const issue = await getPublishedIssueById(issueId);
   if (!issue) notFound();
 
   return (

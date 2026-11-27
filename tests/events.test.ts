@@ -36,7 +36,7 @@ import {
   registrationSchema,
   slugify,
 } from "@/backend/shared/validators";
-import { checkInAction, registerForEventAction } from "@/server/actions/events";
+import { checkInAction, registerForEventAction } from "@/backend/features/events/events";
 
 const EVENT = "cmwypjwbz0009sbfj0tu78g24";
 const fd = (entries: [string, string][]) => {

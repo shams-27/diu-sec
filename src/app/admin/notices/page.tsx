@@ -1,10 +1,10 @@
+import { getAllNotices } from "@/backend/features/notices/queries";
 import type { Metadata } from "next";
 import { Bell } from "lucide-react";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
 import { NOTICE_CATEGORIES } from "@/backend/shared/validators";
-import { saveNoticeAction } from "@/server/actions/notices";
+import { saveNoticeAction } from "@/backend/features/notices/notices";
 
 export const metadata: Metadata = { title: "Notice board · Admin" };
 
@@ -25,7 +25,7 @@ const status = (notice: { publishAt: Date; expireAt: Date | null }, now: Date) =
 export default async function NoticesAdminPage() {
   await connection();
   await requireActor("notices", "read");
-  const notices = await db.notice.findMany({ orderBy: [{ pinned: "desc" }, { publishAt: "desc" }] });
+  const notices = await getAllNotices();
   const now = new Date();
 
   return (

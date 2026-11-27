@@ -1,6 +1,6 @@
+import { getMembersForExport } from "@/backend/features/membership/queries";
 import { connection, type NextRequest } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
 import { memberFilterSchema } from "@/backend/shared/validators";
 
 const COLUMNS = ["Name", "Student ID", "Email", "Batch", "Phone", "Preferred wing", "Status", "Card no.", "Applied at"];
@@ -12,21 +12,7 @@ export async function GET(request: NextRequest) {
   const filters = parsed.success ? parsed.data : {};
   const wingId = actor.role === "WING_LEAD" ? actor.wingId : filters.wingPrefId;
 
-  const members = await db.member.findMany({
-    where: { status: filters.status, wingPrefId: wingId },
-    select: {
-      name: true,
-      studentId: true,
-      email: true,
-      batch: true,
-      phone: true,
-      status: true,
-      memberCardNo: true,
-      createdAt: true,
-      wingPref: { select: { name: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const members = await getMembersForExport(filters.status, wingId);
 
   const escape = (value: string | null | undefined) => {
     let text = String(value ?? "");

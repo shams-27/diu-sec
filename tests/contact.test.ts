@@ -16,7 +16,7 @@ vi.mock("@/backend/shared/rate-limit", () => ({ rateLimited: e.rateLimited }));
 vi.mock("@/backend/shared/honeypot", () => ({ isBot: e.isBot, HONEYPOT_FIELD: "website" }));
 
 import { contactSchema } from "@/backend/shared/validators";
-import { submitContactAction } from "@/server/actions/contact";
+import { submitContactAction } from "@/backend/features/contact/contact";
 
 const form = () => {
   const data = new FormData();

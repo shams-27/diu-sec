@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { registerForEventAction, type RegistrationState } from "@/server/actions/events";
+import { registerForEventAction, type RegistrationState } from "@/backend/features/events/events";
 
 const initial: RegistrationState = {};
 const inputClass =

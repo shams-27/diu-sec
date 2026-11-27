@@ -1,9 +1,9 @@
+import { getAdminEvents } from "@/backend/features/events/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
-import { manageEventAction, saveEventAction } from "@/server/actions/events";
+import { manageEventAction, saveEventAction } from "@/backend/features/events/events";
 
 export const metadata: Metadata = { title: "Events · Admin" };
 
@@ -16,17 +16,7 @@ const local = (date: Date) => date.toISOString().slice(0, 16);
 export default async function EventsAdminPage() {
   await connection();
   const actor = await requireActor("events", "read", "own");
-  const wingWhere = actor.role === "WING_LEAD" && actor.wingId ? { wingId: actor.wingId } : {};
-  const [events, wings] = await Promise.all([
-    db.event.findMany({
-      where: wingWhere,
-      orderBy: { startsAt: "desc" },
-      include: { wing: { select: { name: true } }, _count: { select: { registrations: true } } },
-    }),
-    actor.role === "WING_LEAD"
-      ? Promise.resolve([])
-      : db.wing.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
-  ]);
+  const [events, wings] = await getAdminEvents(actor.role === "WING_LEAD" ? actor.wingId : undefined);
 
   return (
     <div className="space-y-8">

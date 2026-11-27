@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/frontend/shared/ui/button";
 import { HoneypotField } from "@/frontend/shared/form/honeypot-field";
-import { submitMembershipAction } from "@/server/actions/members";
+import { submitMembershipAction } from "@/backend/features/membership/members";
 import type { SubmitState } from "@/backend/shared/validators";
 
 const fieldClass =

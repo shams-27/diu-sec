@@ -1,9 +1,9 @@
+import { getCertificateAdminData } from "@/backend/features/certificates/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
-import { issueCertificatesAction, revokeCertificateAction } from "@/server/actions/certificates";
+import { issueCertificatesAction, revokeCertificateAction } from "@/backend/features/certificates/certificates";
 
 export const metadata: Metadata = { title: "Certificates · Admin" };
 
@@ -12,16 +12,7 @@ const inputClass =
 export default async function CertificatesAdminPage() {
   await connection();
   const actor = await requireActor("certificates", "read", "own");
-  const wingFilter = actor.role === "WING_LEAD" ? { wingId: actor.wingId } : {};
-  const [certificates, events] = await Promise.all([
-    db.certificate.findMany({
-      where: actor.role === "WING_LEAD" ? { event: { wingId: actor.wingId } } : {},
-      orderBy: { issuedAt: "desc" },
-      include: { event: { select: { title: true } } },
-      take: 200,
-    }),
-    db.event.findMany({ where: wingFilter, orderBy: { startsAt: "desc" }, select: { id: true, title: true } }),
-  ]);
+  const [certificates, events] = await getCertificateAdminData(actor.role === "WING_LEAD" ? actor.wingId : undefined);
 
   return (
     <div className="space-y-8">

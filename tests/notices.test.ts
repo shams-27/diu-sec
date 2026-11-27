@@ -13,7 +13,7 @@ vi.mock("@/backend/shared/db", () => ({ db: { notice: { upsert: e.noticeUpsert }
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { noticeSchema } from "@/backend/shared/validators";
-import { saveNoticeAction } from "@/server/actions/notices";
+import { saveNoticeAction } from "@/backend/features/notices/notices";
 
 const form = () => {
   const data = new FormData();

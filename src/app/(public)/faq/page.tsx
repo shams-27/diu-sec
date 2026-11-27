@@ -1,7 +1,7 @@
+import { getFaqs } from "@/backend/features/contact/queries";
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -10,10 +10,7 @@ export const metadata: Metadata = {
 
 export default async function FaqPage() {
   await connection();
-  const faqs = await db.faq.findMany({
-    orderBy: [{ order: "asc" }, { question: "asc" }],
-    select: { id: true, question: true, answer: true },
-  });
+  const faqs = await getFaqs();
 
   return (
     <div className="space-y-10">

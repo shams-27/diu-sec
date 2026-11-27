@@ -1,9 +1,9 @@
+import { getPublicNotices } from "@/backend/features/notices/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Pin } from "lucide-react";
 import { connection } from "next/server";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 import { NOTICE_CATEGORIES, noticeFilterSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
@@ -23,23 +23,7 @@ export default async function NoticesPage({
   );
   const parsed = noticeFilterSchema.safeParse(flat);
   const category = parsed.success ? parsed.data.category : undefined;
-  const now = new Date();
-  const notices = await db.notice.findMany({
-    where: {
-      publishAt: { lte: now },
-      OR: [{ expireAt: null }, { expireAt: { gt: now } }],
-      ...(category ? { category } : {}),
-    },
-    orderBy: [{ pinned: "desc" }, { publishAt: "desc" }],
-    select: {
-      id: true,
-      title: true,
-      body: true,
-      category: true,
-      pinned: true,
-      publishAt: true,
-    },
-  });
+  const notices = await getPublicNotices(category);
 
   return (
     <div className="space-y-10">

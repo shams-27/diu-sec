@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requireActor } from "@/backend/shared/admin-guard";
 import { writeAudit } from "@/backend/shared/audit";
 import { db } from "@/backend/shared/db";
-import { nextMemberCardNo } from "@/lib/idcard";
+import { nextMemberCardNo } from "@/backend/features/membership/idcard";
 import { can, ForbiddenError } from "@/backend/shared/rbac";
 import { memberReviewSchema } from "@/backend/shared/validators";
 

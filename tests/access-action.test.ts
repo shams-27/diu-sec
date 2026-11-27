@@ -32,7 +32,7 @@ describe("setUserRoleAction", () => {
   it("denies a caller without access write before any write or audit", async () => {
     vi.clearAllMocks();
     m.requireActor.mockRejectedValue(new ForbiddenError());
-    const { setUserRoleAction } = await import("@/server/actions/access");
+    const { setUserRoleAction } = await import("@/backend/features/access/access");
 
     await expect(setUserRoleAction(form("SUPER_ADMIN"))).rejects.toThrow(ForbiddenError);
     expect(m.requireActor).toHaveBeenCalledWith("access", "write");
@@ -45,7 +45,7 @@ describe("setUserRoleAction", () => {
     m.requireActor.mockResolvedValue({ id: "actor-1", role: "SUPER_ADMIN" });
     m.findUnique.mockResolvedValue({ role: "WING_LEAD", wingId: "w1" });
     m.count.mockResolvedValue(2);
-    const { setUserRoleAction } = await import("@/server/actions/access");
+    const { setUserRoleAction } = await import("@/backend/features/access/access");
 
     await setUserRoleAction(form(""));
 
@@ -71,7 +71,7 @@ describe("setUserRoleAction", () => {
     m.requireActor.mockResolvedValue({ id: "actor-1", role: "SUPER_ADMIN" });
     m.findUnique.mockResolvedValue({ role: "SUPER_ADMIN", wingId: null });
     m.count.mockResolvedValue(1);
-    const { setUserRoleAction } = await import("@/server/actions/access");
+    const { setUserRoleAction } = await import("@/backend/features/access/access");
 
     await expect(setUserRoleAction(form("WING_LEAD"))).rejects.toThrow(/last super admin/i);
     expect(m.userUpdate).not.toHaveBeenCalled();

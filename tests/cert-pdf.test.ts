@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import QRCode from "qrcode";
-import { renderCertificatePdf } from "@/lib/certs";
+import { renderCertificatePdf } from "@/backend/features/certificates/certs";
 
 afterEach(() => vi.restoreAllMocks());
 

@@ -1,10 +1,10 @@
+import { getAdminAlbums } from "@/backend/features/gallery/queries";
 import type { Metadata } from "next";
 import { Images } from "lucide-react";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
 import { ALBUM_CATEGORIES } from "@/backend/shared/validators";
-import { addGalleryPhotoAction, saveGalleryAlbumAction } from "@/server/actions/gallery";
+import { addGalleryPhotoAction, saveGalleryAlbumAction } from "@/backend/features/gallery/gallery";
 
 export const metadata: Metadata = { title: "Gallery · Admin" };
 
@@ -20,10 +20,7 @@ const summaryClass =
 export default async function GalleryAdminPage() {
   await connection();
   await requireActor("gallery", "read");
-  const albums = await db.galleryAlbum.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { photos: { orderBy: { order: "asc" } } },
-  });
+  const albums = await getAdminAlbums();
 
   return (
     <div className="space-y-8">

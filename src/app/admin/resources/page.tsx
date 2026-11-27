@@ -1,10 +1,10 @@
+import { getAllResources } from "@/backend/features/resources/queries";
 import type { Metadata } from "next";
 import { Link2 } from "lucide-react";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
 import { RESOURCE_TYPES } from "@/backend/shared/validators";
-import { saveResourceAction } from "@/server/actions/resources";
+import { saveResourceAction } from "@/backend/features/resources/resources";
 
 export const metadata: Metadata = { title: "Resources · Admin" };
 
@@ -18,7 +18,7 @@ const primaryButtonClass =
 export default async function ResourcesAdminPage() {
   await connection();
   await requireActor("resources", "read");
-  const resources = await db.resource.findMany({ orderBy: [{ type: "asc" }, { title: "asc" }] });
+  const resources = await getAllResources();
 
   return (
     <div className="space-y-8">

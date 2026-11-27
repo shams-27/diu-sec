@@ -1,9 +1,9 @@
+import { getPublishedIssues } from "@/backend/features/magazine/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { connection } from "next/server";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = {
   title: "Magazine",
@@ -12,18 +12,7 @@ export const metadata: Metadata = {
 
 export default async function MagazinePage() {
   await connection();
-  const issues = await db.magazineIssue.findMany({
-    where: { publishedAt: { not: null } },
-    orderBy: [{ featured: "desc" }, { number: "desc" }],
-    select: {
-      id: true,
-      number: true,
-      title: true,
-      coverUrl: true,
-      featured: true,
-      publishedAt: true,
-    },
-  });
+  const issues = await getPublishedIssues();
 
   return (
     <div className="space-y-10">

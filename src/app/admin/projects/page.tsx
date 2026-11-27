@@ -1,9 +1,9 @@
+import { getAllProjects } from "@/backend/features/projects/queries";
 import type { Metadata } from "next";
 import { Code2 } from "lucide-react";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
-import { reviewProjectAction, saveProjectAction } from "@/server/actions/projects";
+import { reviewProjectAction, saveProjectAction } from "@/backend/features/projects/projects";
 
 export const metadata: Metadata = { title: "Projects · Admin" };
 
@@ -19,7 +19,7 @@ const statusPill = (status: string) =>
 export default async function ProjectsAdminPage() {
   await connection();
   await requireActor("projects", "read");
-  const projects = await db.project.findMany({ orderBy: [{ featured: "desc" }, { createdAt: "desc" }] });
+  const projects = await getAllProjects();
 
   return (
     <div className="space-y-8">

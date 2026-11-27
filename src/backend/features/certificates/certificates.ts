@@ -4,7 +4,7 @@ import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { requireActor } from "@/backend/shared/admin-guard";
 import { writeAudit } from "@/backend/shared/audit";
-import { renderCertificatePdf } from "@/lib/certs";
+import { renderCertificatePdf } from "@/backend/features/certificates/certs";
 import { db } from "@/backend/shared/db";
 import { can, ForbiddenError } from "@/backend/shared/rbac";
 import { removeUploadedAsset, saveGeneratedPdf } from "@/backend/shared/storage";

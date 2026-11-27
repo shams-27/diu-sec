@@ -1,6 +1,6 @@
+import { getSitemapData } from "@/backend/features/seo/queries";
 import type { MetadataRoute } from "next";
 import { connection } from "next/server";
-import { db } from "@/backend/shared/db";
 
 const SITE = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
@@ -24,17 +24,7 @@ const PAGES = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await connection();
-  const [events, wings, issues] = await Promise.all([
-    db.event.findMany({
-      where: { status: "PUBLISHED" },
-      select: { slug: true, updatedAt: true },
-    }),
-    db.wing.findMany({ select: { slug: true, updatedAt: true } }),
-    db.magazineIssue.findMany({
-      where: { publishedAt: { not: null } },
-      select: { id: true, updatedAt: true },
-    }),
-  ]);
+  const [events, wings, issues] = await getSitemapData();
 
   return [
     ...PAGES.map((path) => ({ url: `${SITE}${path}`, changeFrequency: "weekly" as const, priority: path ? 0.6 : 1 })),

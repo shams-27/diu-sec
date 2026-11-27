@@ -4,7 +4,7 @@ import { useActionState, useState, type ChangeEvent } from "react";
 import { Button } from "@/frontend/shared/ui/button";
 import { HoneypotField } from "@/frontend/shared/form/honeypot-field";
 import type { ContactState } from "@/backend/shared/validators";
-import { submitContactAction } from "@/server/actions/contact";
+import { submitContactAction } from "@/backend/features/contact/contact";
 
 const fieldClass =
   "mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";

@@ -1,10 +1,10 @@
+import { getPublicAlbums } from "@/backend/features/gallery/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Images } from "lucide-react";
 import { connection } from "next/server";
 import { GalleryLightbox } from "@/components/public/gallery-lightbox";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 import { ALBUM_CATEGORIES, galleryFilterSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
@@ -24,17 +24,7 @@ export default async function GalleryPage({
   );
   const parsed = galleryFilterSchema.safeParse(flat);
   const category = parsed.success ? parsed.data.category : undefined;
-  const albums = await db.galleryAlbum.findMany({
-    where: category ? { category } : {},
-    orderBy: [{ createdAt: "desc" }],
-    select: {
-      id: true,
-      title: true,
-      category: true,
-      coverUrl: true,
-      photos: { orderBy: { order: "asc" }, select: { id: true, url: true, caption: true } },
-    },
-  });
+  const albums = await getPublicAlbums(category);
 
   const chipClass = (active: boolean) =>
     `rounded-full border px-4 py-2 text-sm font-medium transition-colors duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${

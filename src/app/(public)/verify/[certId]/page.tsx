@@ -1,9 +1,9 @@
+import { getCertificateByCertId } from "@/backend/features/certificates/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { CheckCircle2, ShieldX } from "lucide-react";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 import { certIdSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = { title: "Certificate status" };
@@ -13,10 +13,7 @@ export default async function CertificateStatusPage({ params }: { params: Promis
   const { certId: raw } = await params;
   const parsed = certIdSchema.safeParse(raw);
   const cert = parsed.success
-    ? await db.certificate.findUnique({
-        where: { certId: parsed.data },
-        include: { event: { select: { title: true } } },
-      })
+    ? await getCertificateByCertId(parsed.data)
     : null;
 
   if (!cert) {

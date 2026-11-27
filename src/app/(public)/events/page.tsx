@@ -1,8 +1,8 @@
+import { getPublishedEvents } from "@/backend/features/events/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 import { eventFilterSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
@@ -22,22 +22,7 @@ export default async function EventsPage({
   );
   const parsed = eventFilterSchema.safeParse(flat);
   const tab = parsed.success ? (parsed.data.tab ?? "upcoming") : "upcoming";
-  const events = await db.event.findMany({
-    where: { status: "PUBLISHED" },
-    orderBy: { startsAt: tab === "past" ? "desc" : "asc" },
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      type: true,
-      description: true,
-      startsAt: true,
-      endsAt: true,
-      capacity: true,
-      seatsTaken: true,
-      wing: { select: { name: true } },
-    },
-  });
+  const events = await getPublishedEvents(tab);
   const now = new Date();
   const visible = events.filter((event) => (tab === "past" ? event.startsAt < now : event.startsAt >= now));
 

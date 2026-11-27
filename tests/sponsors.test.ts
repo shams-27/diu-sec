@@ -18,7 +18,7 @@ vi.mock("@/backend/shared/storage", () => ({ saveUpload: e.saveUpload, removeUpl
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
 import { sponsorSchema } from "@/backend/shared/validators";
-import { saveSponsorAction } from "@/server/actions/sponsors";
+import { saveSponsorAction } from "@/backend/features/partners/sponsors";
 
 const form = () => {
   const data = new FormData();

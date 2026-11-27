@@ -1,7 +1,7 @@
+import { getAccessData } from "@/backend/features/access/queries";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
-import { setUserRoleAction } from "@/server/actions/access";
+import { setUserRoleAction } from "@/backend/features/access/access";
 
 const ROLES = ["SUPER_ADMIN", "GENERAL_SECRETARY", "WING_LEAD", "PUBLICATION_EDITOR"] as const;
 
@@ -11,10 +11,7 @@ const selectClass =
 export default async function AccessPage() {
   await connection();
   await requireActor("access", "read");
-  const [users, wings] = await Promise.all([
-    db.user.findMany({ include: { wing: true }, orderBy: { email: "asc" } }),
-    db.wing.findMany({ orderBy: { name: "asc" } }),
-  ]);
+  const [users, wings] = await getAccessData();
 
   return (
     <div className="space-y-6">

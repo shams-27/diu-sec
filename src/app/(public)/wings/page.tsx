@@ -1,9 +1,9 @@
+import { getPublicWings } from "@/backend/features/wings/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { ArrowUpRight } from "lucide-react";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = {
   title: "Wings",
@@ -12,15 +12,7 @@ export const metadata: Metadata = {
 
 export default async function WingsPage() {
   await connection();
-  const wings = await db.wing.findMany({
-    orderBy: { name: "asc" },
-    include: {
-      members: {
-        include: { member: { select: { name: true } } },
-        orderBy: { role: "asc" },
-      },
-    },
-  });
+  const wings = await getPublicWings();
 
   return (
     <div className="space-y-10">

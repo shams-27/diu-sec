@@ -1,27 +1,16 @@
+import { getMemberCard } from "@/backend/features/membership/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { MemberIdCard } from "@/components/public/member-id-card";
-import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = { title: "Digital member ID" };
 
 export default async function MemberCardPage({ params }: { params: Promise<{ memberId: string }> }) {
   await connection();
   const { memberId } = await params;
-  const member = await db.member.findUnique({
-    where: { id: memberId },
-    select: {
-      name: true,
-      studentId: true,
-      email: true,
-      batch: true,
-      memberCardNo: true,
-      status: true,
-      wingPref: { select: { name: true } },
-    },
-  });
+  const member = await getMemberCard(memberId);
   if (!member) notFound();
 
   return (

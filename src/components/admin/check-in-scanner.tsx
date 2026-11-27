@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { checkInAction, type CheckInState } from "@/server/actions/events";
+import { checkInAction, type CheckInState } from "@/backend/features/events/events";
 
 const initial: CheckInState = {};
 

@@ -1,9 +1,9 @@
+import { getApprovedProjects } from "@/backend/features/projects/queries";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { ExternalLink, GitBranch } from "lucide-react";
 import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
-import { db } from "@/backend/shared/db";
 import { projectFilterSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
@@ -23,21 +23,7 @@ export default async function ProjectsPage({
   );
   const parsed = projectFilterSchema.safeParse(flat);
   const tag = parsed.success ? parsed.data.tag : undefined;
-  const projects = await db.project.findMany({
-    where: { status: "APPROVED" },
-    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      githubUrl: true,
-      demoUrl: true,
-      techStack: true,
-      contributors: true,
-      tags: true,
-      featured: true,
-    },
-  });
+  const projects = await getApprovedProjects();
   const chips = [...new Set(projects.flatMap((project) => [...project.tags, ...project.techStack]))].sort();
   const visible = tag ? projects.filter((project) => project.tags.includes(tag) || project.techStack.includes(tag)) : projects;
 

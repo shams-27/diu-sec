@@ -1,10 +1,10 @@
+import { getAllSponsors } from "@/backend/features/partners/queries";
 import type { Metadata } from "next";
 import { Handshake } from "lucide-react";
 import { connection } from "next/server";
 import { requireActor } from "@/backend/shared/admin-guard";
-import { db } from "@/backend/shared/db";
 import { SPONSOR_KINDS } from "@/backend/shared/validators";
-import { saveSponsorAction } from "@/server/actions/sponsors";
+import { saveSponsorAction } from "@/backend/features/partners/sponsors";
 
 export const metadata: Metadata = { title: "Sponsors · Admin" };
 
@@ -18,7 +18,7 @@ const primaryButtonClass =
 export default async function SponsorsAdminPage() {
   await connection();
   await requireActor("sponsors", "read");
-  const sponsors = await db.sponsor.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }] });
+  const sponsors = await getAllSponsors();
 
   return (
     <div className="space-y-8">
