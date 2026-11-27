@@ -75,4 +75,24 @@ describe("frontend/backend layers", () => {
       expect(source, file).not.toContain("@/lib/");
     }
   });
+
+  it("keeps database access out of the frontend", () => {
+    for (const file of sourceFilesIn("src/frontend")) {
+      const source = readFileSync(join(root, file), "utf8");
+      expect(source, file).not.toContain("@/backend/shared/db");
+      expect(source, file).not.toContain("@prisma/client");
+    }
+  });
+
+  it("moves every component into a feature folder", () => {
+    expect(filesIn("src/components").filter((file) => file.endsWith(".tsx"))).toEqual([]);
+  });
+
+  it("keeps route files thin with a feature re-export", () => {
+    for (const file of sourceFilesIn("src/app").filter((file) => file.endsWith("page.tsx"))) {
+      const source = readFileSync(join(root, file), "utf8");
+      expect(source, file).toContain('as default } from "@/frontend/features/');
+      expect(source, file).not.toContain("prisma.");
+    }
+  });
 });

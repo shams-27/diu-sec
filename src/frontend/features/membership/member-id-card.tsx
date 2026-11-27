@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { MemberStatus } from "@prisma/client";
+import type { MemberStatus } from "@/backend/shared/contracts";
 import { PDFDocument } from "pdf-lib";
 import { Button } from "@/frontend/shared/ui/button";
 
