@@ -9,7 +9,6 @@ export interface AuditInput {
   entityId?: string | null;
   before?: Prisma.InputJsonValue | null;
   after?: Prisma.InputJsonValue | null;
-  ip?: string | null;
 }
 
 /** Call from EVERY mutating server action. Append-only. */
@@ -23,7 +22,6 @@ export async function writeAudit(input: AuditInput, tx: Prisma.TransactionClient
       entityId: input.entityId ?? null,
       before: input.before ?? undefined,
       after: input.after ?? undefined,
-      ip: input.ip ?? null,
     },
   });
 }

@@ -112,18 +112,11 @@ DATABASE_URL="postgresql://user:pass@localhost:5432/diusec"
 AUTH_SECRET="generate-with-openssl-rand-base64-32"
 AUTH_GOOGLE_ID=""
 AUTH_GOOGLE_SECRET=""
-ALLOWED_EMAIL_DOMAIN="diu.edu.bd"
 
 NEXT_PUBLIC_SITE_URL="http://localhost:3000"
 
-STORAGE_DRIVER="local"          # local | s3
-S3_ENDPOINT=""
-S3_BUCKET=""
-S3_ACCESS_KEY=""
-S3_SECRET_KEY=""
-
 SUPER_ADMIN_EMAIL=""            # seeded as President / Super Admin
-BOOTSTRAP_ONLY="false"          # true: production seed creates only the admin and wings
+SEED_DEMO="false"               # true: add demo members, events and certificates locally
 ```
 
 Never commit `.env`.

@@ -17,7 +17,7 @@ Copy `.env.example` into the platform's environment settings and fill every valu
 | `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | Google OAuth client credentials. Sign-in accepts verified `@diu.edu.bd` addresses only, enforced by the shared validator. |
 | `NEXT_PUBLIC_SITE_URL` | Public origin, no trailing slash. Used for metadata, sitemap, robots and certificate QR URLs. |
 | `SUPER_ADMIN_EMAIL` | Provisioned as the first Super Admin by the seed; must be a real `@diu.edu.bd` account. |
-| `STORAGE_DRIVER`, `S3_*` | Reserved for S3-compatible storage; see the storage limitation below. |
+| `SEED_DEMO` | Local/demo only; `true` adds sample members, events and certificates. |
 
 Never commit `.env` or secrets.
 

@@ -30,6 +30,7 @@ test("issues a certificate and verifies it publicly", async ({ page, browser }) 
 
   await page.goto("/admin/certificates");
   await page.locator("tr", { hasText: certId }).getByRole("button", { name: "Revoke" }).click();
+  await expect(page.locator("tr", { hasText: certId })).toContainText("REVOKED");
   await publicPage.reload();
   await expect(publicPage.getByText("This certificate is revoked")).toBeVisible();
   await expect(publicPage.getByRole("link", { name: /Download PDF/ })).toHaveCount(0);
