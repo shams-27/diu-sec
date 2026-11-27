@@ -112,6 +112,13 @@ const parseJson = (value: unknown) => {
   }
 };
 
+/** datetime-local has no zone; treat admin entries as UTC so forms round-trip. */
+const DATE_TIME_LOCAL = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?$/;
+export const utcDateTimeSchema = z.preprocess(
+  (value) => (typeof value === "string" && DATE_TIME_LOCAL.test(value) ? `${value}Z` : value),
+  z.coerce.date(),
+);
+
 /** Links are rendered as href/src, so only web URLs and local uploads are safe. */
 const httpUrl = z.string().url().refine((url) => /^https?:\/\//i.test(url), "Use an http(s) URL");
 const photoUrlSchema = z.string().max(500).refine(
@@ -183,8 +190,8 @@ export const eventSchema = z
     type: z.enum(["HACKATHON", "WORKSHOP", "COURSE"]),
     title: z.string().trim().min(3).max(150),
     description: z.string().trim().min(10).max(3000),
-    startsAt: z.coerce.date(),
-    endsAt: z.preprocess(emptyToUndefined, z.coerce.date().optional()),
+    startsAt: utcDateTimeSchema,
+    endsAt: z.preprocess(emptyToUndefined, utcDateTimeSchema.optional()),
     capacity: z.coerce.number().int().min(0).max(10_000),
     status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
     wingId: z.preprocess(emptyToUndefined, z.string().cuid().optional()),
@@ -262,4 +269,94 @@ export const certIssueSchema = z
 export const certRevokeSchema = z.object({
   certId: certIdSchema,
   reason: z.preprocess(emptyToUndefined, z.string().trim().max(300).optional()),
+});
+
+// ───────── Content CMS (Phase 6) ─────────
+const checkboxToBoolean = (value: unknown) => value === true || value === "on" || value === "true";
+const pdfUrlSchema = z.string().max(500).refine(
+  (url) => /^\/uploads\/[\w.-]+\.pdf$/.test(url) || /^https?:\/\//i.test(url),
+  "Use an http(s) URL or a local PDF upload",
+);
+
+export const HOF_CATEGORIES = ["ICPC", "NCPC", "HACKATHON", "GSOC", "ALUMNI"] as const;
+export const NOTICE_CATEGORIES = ["RECRUITMENT", "COMMITTEE", "CONTEST", "CAMPUS", "URGENT"] as const;
+
+export const magazineIssueSchema = z.object({
+  id: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  number: z.coerce.number().int().positive().max(999),
+  title: z.string().trim().min(2).max(150),
+  pdfUrl: z.preprocess(emptyToUndefined, pdfUrlSchema.optional()),
+  coverUrl: z.preprocess(emptyToUndefined, photoUrlSchema.optional()),
+  featured: z.preprocess(checkboxToBoolean, z.boolean()),
+  publishedAt: z.preprocess(emptyToUndefined, utcDateTimeSchema.optional()),
+});
+
+export const articleModerationSchema = z
+  .object({
+    id: z.string().min(1),
+    decision: z.enum(["APPROVE", "REJECT"]),
+    issueId: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    title: z.preprocess(emptyToUndefined, z.string().trim().min(2).max(150).optional()),
+    body: z.preprocess(emptyToUndefined, z.string().trim().min(10).max(10_000).optional()),
+  })
+  .refine((value) => value.decision !== "APPROVE" || Boolean(value.issueId), {
+    message: "Choose an issue before approving",
+    path: ["issueId"],
+  });
+
+export const projectSchema = z.object({
+  id: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  title: z.string().trim().min(3).max(150),
+  description: z.string().trim().min(10).max(3000),
+  githubUrl: githubRepoSchema,
+  demoUrl: z.preprocess(emptyToUndefined, httpUrl.optional()),
+  techStack: z.preprocess(linesToArray, z.array(z.string().trim().min(1).max(50)).min(1).max(20)),
+  contributors: z.preprocess(linesToArray, z.array(z.string().trim().min(1).max(100)).min(1).max(30)),
+  tags: z.preprocess(linesToArray, z.array(z.string().trim().min(1).max(50)).min(1).max(20)),
+  status: z.enum(["SUBMITTED", "APPROVED", "REJECTED"]).default("SUBMITTED"),
+  featured: z.preprocess(checkboxToBoolean, z.boolean()),
+});
+
+export const projectReviewSchema = z.object({
+  id: z.string().min(1),
+  decision: z.enum(["APPROVE", "REJECT"]),
+  featured: z.preprocess(checkboxToBoolean, z.boolean()),
+});
+
+export const projectFilterSchema = z.object({
+  tag: z.preprocess(emptyToUndefined, z.string().trim().max(50).optional()),
+});
+
+export const hallOfFameSchema = z.object({
+  id: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  category: z.enum(HOF_CATEGORIES),
+  title: z.string().trim().min(3).max(150),
+  personName: z.string().trim().min(2).max(100),
+  year: z.coerce.number().int().min(2000).max(2100),
+  description: z.preprocess(emptyToUndefined, z.string().trim().max(1000).optional()),
+  imageUrl: z.preprocess(emptyToUndefined, photoUrlSchema.optional()),
+  verified: z.preprocess(checkboxToBoolean, z.boolean()),
+});
+
+export const hallOfFameFilterSchema = z.object({
+  category: z.preprocess(emptyToUndefined, z.enum(HOF_CATEGORIES).optional()),
+});
+
+export const noticeSchema = z
+  .object({
+    id: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    title: z.string().trim().min(3).max(150),
+    body: z.string().trim().min(10).max(3000),
+    category: z.enum(NOTICE_CATEGORIES),
+    pinned: z.preprocess(checkboxToBoolean, z.boolean()),
+    publishAt: utcDateTimeSchema,
+    expireAt: z.preprocess(emptyToUndefined, utcDateTimeSchema.optional()),
+  })
+  .refine((value) => !value.expireAt || value.expireAt > value.publishAt, {
+    message: "Expiry must be after the publish time",
+    path: ["expireAt"],
+  });
+
+export const noticeFilterSchema = z.object({
+  category: z.preprocess(emptyToUndefined, z.enum(NOTICE_CATEGORIES).optional()),
 });

@@ -50,8 +50,8 @@ export default async function EventsAdminPage() {
             </select>
           </label>
           <label className="text-xs font-medium sm:col-span-2">Description <textarea name="description" required rows={2} className={inputClass} /></label>
-          <label className="text-xs font-medium">Starts at <input name="startsAt" type="datetime-local" required className={inputClass} /></label>
-          <label className="text-xs font-medium">Ends at <input name="endsAt" type="datetime-local" className={inputClass} /></label>
+          <label className="text-xs font-medium">Starts at (UTC) <input name="startsAt" type="datetime-local" required className={inputClass} /></label>
+          <label className="text-xs font-medium">Ends at (UTC) <input name="endsAt" type="datetime-local" className={inputClass} /></label>
           <label className="text-xs font-medium">Capacity <input name="capacity" type="number" min={0} defaultValue={30} className={inputClass} /></label>
           <label className="text-xs font-medium">Status
             <select name="status" defaultValue="DRAFT" className={inputClass}>
@@ -116,8 +116,8 @@ export default async function EventsAdminPage() {
                     </select>
                   </label>
                   <label className="text-xs font-medium sm:col-span-2">Description <textarea name="description" defaultValue={event.description} rows={2} className={inputClass} /></label>
-                  <label className="text-xs font-medium">Starts at <input name="startsAt" type="datetime-local" defaultValue={local(event.startsAt)} className={inputClass} /></label>
-                  <label className="text-xs font-medium">Ends at <input name="endsAt" type="datetime-local" defaultValue={event.endsAt ? local(event.endsAt) : ""} className={inputClass} /></label>
+                  <label className="text-xs font-medium">Starts at (UTC) <input name="startsAt" type="datetime-local" defaultValue={local(event.startsAt)} className={inputClass} /></label>
+                  <label className="text-xs font-medium">Ends at (UTC) <input name="endsAt" type="datetime-local" defaultValue={event.endsAt ? local(event.endsAt) : ""} className={inputClass} /></label>
                   <label className="text-xs font-medium">Capacity <input name="capacity" type="number" min={0} defaultValue={event.capacity} className={inputClass} /></label>
                   <label className="text-xs font-medium">Status
                     <select name="status" defaultValue={event.status} className={inputClass}>

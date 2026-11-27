@@ -2,6 +2,7 @@ import { db } from "../src/lib/db";
 import { renderCertificatePdf } from "../src/lib/certs";
 import { saveGeneratedPdf } from "../src/lib/storage";
 import { Prisma, type Wing } from "@prisma/client";
+import { PDFDocument, StandardFonts } from "pdf-lib";
 
 const WINGS = [
   {
@@ -301,6 +302,146 @@ async function main() {
       },
       update: {},
     });
+  }
+
+  const magazineIssueId = "seed-magazine-issue-1";
+  const existingIssue = await db.magazineIssue.findUnique({ where: { id: magazineIssueId } });
+  let magazinePdfUrl = existingIssue?.pdfUrl;
+  if (!magazinePdfUrl) {
+    const pdf = await PDFDocument.create();
+    const page = pdf.addPage([595, 842]);
+    const font = await pdf.embedFont(StandardFonts.HelveticaBold);
+    page.drawText("DIU SEC Tech Review - Issue 1", { x: 48, y: 760, size: 24, font });
+    page.drawText("Stories from the Software Engineering Club.", { x: 48, y: 720, size: 12, font });
+    magazinePdfUrl = await saveGeneratedPdf(await pdf.save());
+  }
+  await db.magazineIssue.upsert({
+    where: { id: magazineIssueId },
+    create: {
+      id: magazineIssueId,
+      number: 1,
+      title: "DIU SEC Tech Review 2026",
+      pdfUrl: magazinePdfUrl,
+      featured: true,
+      publishedAt: new Date("2026-10-15T00:00:00Z"),
+    },
+    update: { pdfUrl: magazinePdfUrl, featured: true },
+  });
+  await db.article.upsert({
+    where: { id: "seed-article-1" },
+    create: {
+      id: "seed-article-1",
+      title: "How our CP track prepares for ICPC",
+      body: "Weekly contests, problem reviews and peer mentoring make the CP track a reliable path into competitive programming.\n\nMembers start with fundamentals, then move to regional-level problem sets.",
+      authorName: "Jane Doe",
+      authorEmail: "jane@diu.edu.bd",
+      status: "APPROVED",
+      issueId: magazineIssueId,
+    },
+    update: { status: "APPROVED", issueId: magazineIssueId },
+  });
+  await db.article.upsert({
+    where: { id: "seed-article-2" },
+    create: {
+      id: "seed-article-2",
+      title: "Designing accessible club tools",
+      body: "A short field guide to focus rings, semantic markup and readable contrast for student projects.",
+      authorName: "John Roe",
+      status: "SUBMITTED",
+    },
+    update: { status: "SUBMITTED", issueId: null },
+  });
+
+  for (const project of [
+    {
+      id: "seed-project-cp-tracker",
+      title: "CP Tracker",
+      description: "Track solved problems, contests and weekly progress for the competitive programming track.",
+      githubUrl: "https://github.com/diu-sec/cp-tracker",
+      demoUrl: "https://sec.example/cp-tracker",
+      techStack: ["Next.js", "TypeScript"],
+      contributors: ["Jane Doe", "John Roe"],
+      tags: ["cp", "dashboard"],
+      featured: true,
+    },
+    {
+      id: "seed-project-campus-map",
+      title: "DIU Campus Map",
+      description: "An interactive guide to labs, halls and common spaces for new Software Engineering students.",
+      githubUrl: "https://github.com/diu-sec/campus-map",
+      techStack: ["React", "Tailwind"],
+      contributors: ["John Roe"],
+      tags: ["web", "freshers"],
+      featured: false,
+    },
+  ]) {
+    await db.project.upsert({
+      where: { id: project.id },
+      create: { ...project, status: "APPROVED" },
+      update: { ...project, status: "APPROVED" },
+    });
+  }
+
+  for (const entry of [
+    {
+      id: "seed-hof-icpc",
+      category: "ICPC" as const,
+      title: "ICPC regional finalists",
+      personName: "Jane Doe",
+      year: 2026,
+      description: "Qualified for the ICPC regional finals from DIU.",
+      verified: true,
+    },
+    {
+      id: "seed-hof-gsoc",
+      category: "GSOC" as const,
+      title: "Google Summer of Code contributor",
+      personName: "John Roe",
+      year: 2025,
+      description: "Contributed to an open-source mentoring organisation.",
+      verified: true,
+    },
+    {
+      id: "seed-hof-alumni",
+      category: "ALUMNI" as const,
+      title: "Distinguished alumni spotlight",
+      personName: "Ayesha Rahman",
+      year: 2024,
+      description: "Awaiting verification from the executive panel.",
+      verified: false,
+    },
+  ]) {
+    await db.hallOfFameEntry.upsert({ where: { id: entry.id }, create: entry, update: entry });
+  }
+
+  for (const notice of [
+    {
+      id: "seed-notice-contest",
+      title: "Weekly CP contest opens",
+      body: "Registration for this week's contest is open until Thursday evening.",
+      category: "CONTEST" as const,
+      pinned: false,
+      publishAt: new Date("2026-11-25T00:00:00Z"),
+    },
+    {
+      id: "seed-notice-expired",
+      title: "Old committee meeting",
+      body: "This notice is kept to demonstrate the expired-notice filter.",
+      category: "COMMITTEE" as const,
+      pinned: false,
+      publishAt: new Date("2026-10-01T00:00:00Z"),
+      expireAt: new Date("2026-11-01T00:00:00Z"),
+    },
+    {
+      id: "seed-notice-scheduled",
+      title: "Winter workshop schedule",
+      body: "The winter workshop schedule will be published next month.",
+      category: "CAMPUS" as const,
+      pinned: false,
+      publishAt: new Date("2026-12-01T00:00:00Z"),
+    },
+  ]) {
+    await db.notice.upsert({ where: { id: notice.id }, create: notice, update: notice });
   }
 }
 

@@ -291,7 +291,7 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 - [x] ID generator, bulk PDF with QR, public verify page, revoke
 
 ### Phase 6 — Content CMS (06, 07, 08, 10 + A-07 to A-10)
-- [ ] Magazine, Hall of Fame, Projects (with GitHub link check), Notices (schedule/expire/pin)
+- [x] Magazine, Hall of Fame, Projects (with GitHub link check), Notices (schedule/expire/pin)
 
 ### Phase 7 — Supporting modules (11–14 + A-11)
 - [ ] Resources, Partners/Sponsors/Faculty, Gallery, FAQ & Contact

@@ -13,7 +13,18 @@ import {
   memberApplicationSchema,
   roleAssignmentSchema,
   studentIdSchema,
+  utcDateTimeSchema,
 } from "@/lib/validators";
+
+describe("UTC datetime inputs", () => {
+  it("parses datetime-local values as UTC", () => {
+    expect(utcDateTimeSchema.parse("2026-11-28T09:00").toISOString()).toBe("2026-11-28T09:00:00.000Z");
+  });
+
+  it("still accepts explicit UTC values", () => {
+    expect(utcDateTimeSchema.parse("2026-11-28T09:00Z").toISOString()).toBe("2026-11-28T09:00:00.000Z");
+  });
+});
 
 describe("student ID", () => {
   it("accepts a DIU SWE ID", () => {

@@ -32,11 +32,11 @@ export async function saveGeneratedPdf(bytes: Uint8Array): Promise<string> {
   return `/uploads/${name}`;
 }
 
-/** Best-effort rollback for PDFs written before a failed DB transaction. */
-export async function removeGeneratedPdf(url: string): Promise<void> {
+/** Best-effort rollback for assets written before a failed DB transaction. */
+export async function removeUploadedAsset(url: string): Promise<void> {
   if (!url.startsWith("/uploads/")) return;
   const name = path.basename(url);
-  if (!/^[\w.-]+\.pdf$/.test(name)) return;
+  if (!/^[\w.-]+\.(pdf|jpg|png|webp)$/.test(name)) return;
   await unlink(path.join(process.cwd(), "public", "uploads", name)).catch(() => {});
 }
 

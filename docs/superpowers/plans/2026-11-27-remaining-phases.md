@@ -22,9 +22,9 @@ Each phase ends with `pnpm lint && pnpm typecheck && pnpm test && pnpm build`, a
 - [x] Public `/verify` lookup and `/verify/[certId]` VALID / REVOKED / NOT FOUND + PDF download; verify + commit.
 
 ## Phase 6 — Content CMS (06, 07, 08, 10 + A-07–A-10)
-- [ ] Validators + tests for issues/articles, projects, hall of fame, notices.
-- [ ] Public `/magazine`, `/magazine/[issueId]`, `/hall-of-fame`, `/projects`, `/notices` with filters and empty states.
-- [ ] Admin CRUD/moderation pages with RBAC, GitHub URL verification, schedule/pin/expire; seed content; verify + commit.
+- [x] Validators + tests for issues/articles, projects, hall of fame, notices.
+- [x] Public `/magazine`, `/magazine/[issueId]`, `/hall-of-fame`, `/projects`, `/notices` with filters and empty states.
+- [x] Admin CRUD/moderation pages with RBAC, GitHub URL verification, schedule/pin/expire; seed content; verify + commit.
 
 ## Phase 7 — Supporting modules (11–14 + A-11)
 - [ ] Validators + tests for resources, sponsors, gallery albums/photos, contact.

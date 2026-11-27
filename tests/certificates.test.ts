@@ -12,7 +12,7 @@ const e = vi.hoisted(() => ({
   certUpdate: vi.fn(),
   render: vi.fn(),
   savePdf: vi.fn(),
-  removePdf: vi.fn(),
+  removeAsset: vi.fn(),
   transaction: vi.fn(),
   generateCertId: vi.fn(),
 }));
@@ -23,7 +23,7 @@ vi.mock("@/lib/validators", async (importOriginal) => {
 vi.mock("@/lib/admin-guard", () => ({ requireActor: e.requireActor }));
 vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
 vi.mock("@/lib/certs", () => ({ renderCertificatePdf: e.render }));
-vi.mock("@/lib/storage", () => ({ saveGeneratedPdf: e.savePdf, removeGeneratedPdf: e.removePdf }));
+vi.mock("@/lib/storage", () => ({ saveGeneratedPdf: e.savePdf, removeUploadedAsset: e.removeAsset }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/db", () => ({
   db: {
@@ -105,7 +105,7 @@ describe("certificate actions", () => {
     e.certCreate.mockImplementation(async ({ data }) => ({ id: "created", certId: data.certId }));
     e.render.mockResolvedValue(new Uint8Array([1, 2, 3]));
     e.savePdf.mockResolvedValue("/uploads/cert.pdf");
-    e.removePdf.mockResolvedValue(undefined);
+    e.removeAsset.mockResolvedValue(undefined);
   });
 
   it("issues one unique certificate per recipient and audits each one", async () => {
@@ -141,7 +141,7 @@ describe("certificate actions", () => {
       new Prisma.PrismaClientKnownRequestError("duplicate", { code: "P2002", clientVersion: "6.19.3" }),
     );
     await expect(issueCertificatesAction(issueForm)).rejects.toThrow(/conflicted/i);
-    expect(e.removePdf).toHaveBeenCalledTimes(2);
+    expect(e.removeAsset).toHaveBeenCalledTimes(2);
   });
 
   it("lets a super admin issue without an event", async () => {

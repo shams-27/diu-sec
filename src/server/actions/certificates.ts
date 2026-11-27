@@ -7,7 +7,7 @@ import { writeAudit } from "@/lib/audit";
 import { renderCertificatePdf } from "@/lib/certs";
 import { db } from "@/lib/db";
 import { can, ForbiddenError } from "@/lib/rbac";
-import { removeGeneratedPdf, saveGeneratedPdf } from "@/lib/storage";
+import { removeUploadedAsset, saveGeneratedPdf } from "@/lib/storage";
 import {
   certIssueSchema,
   certRevokeSchema,
@@ -103,7 +103,7 @@ export async function issueCertificatesAction(formData: FormData): Promise<void>
     );
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && ["P2002", "P2034"].includes(error.code)) {
-      await Promise.all(batch.map(({ pdfUrl }) => removeGeneratedPdf(pdfUrl)));
+      await Promise.all(batch.map(({ pdfUrl }) => removeUploadedAsset(pdfUrl)));
       throw new Error("Issuance conflicted with another request; please retry.");
     }
     throw error;
