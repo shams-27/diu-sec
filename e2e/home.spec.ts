@@ -58,6 +58,76 @@ test("staggers cards, fills the viewport with pattern, scales type and disables 
   expect(await firstCard.evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
 });
 
+test("runs a page transition when a header nav link is clicked", async ({ page }) => {
+  await page.addInitScript(() => {
+    const w = window as Window & {
+      __viewTransitions?: number;
+      __transitionNames?: string[];
+      __transitionClasses?: string[];
+    };
+    w.__viewTransitions = 0;
+    w.__transitionNames = [];
+    w.__transitionClasses = [];
+    new MutationObserver((records) => {
+      for (const record of records) {
+        const el = record.target as HTMLElement;
+        const name = el.style?.viewTransitionName;
+        const className = el.style?.viewTransitionClass;
+        if (name && name !== "none") w.__transitionNames?.push(name);
+        if (className && className !== "none") w.__transitionClasses?.push(className);
+      }
+    }).observe(document, { attributes: true, attributeFilter: ["style"], subtree: true });
+    const original = document.startViewTransition?.bind(document);
+    document.startViewTransition = ((callback: () => void) => {
+      w.__viewTransitions = (w.__viewTransitions ?? 0) + 1;
+      return original ? original(callback) : Promise.resolve();
+    }) as typeof document.startViewTransition;
+  });
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/", { waitUntil: "networkidle" });
+  const count = () => page.evaluate(() => (window as Window & { __viewTransitions?: number }).__viewTransitions ?? 0);
+  const beforeNav = await count();
+
+  await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "Events" }).click();
+  await expect(page).toHaveURL(/\/events$/);
+  expect(await count()).toBeGreaterThan(beforeNav);
+
+  const observed = await page.evaluate(() => {
+    const w = window as Window & { __transitionNames?: string[]; __transitionClasses?: string[] };
+    return { names: w.__transitionNames ?? [], classes: w.__transitionClasses ?? [] };
+  });
+  expect(observed.names).toContain("public-page");
+  expect(observed.classes).toContain("page-fade");
+});
+
+test("zeroes page transition animations for reduced-motion users", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  const duration = await page.evaluate(() => {
+    for (const sheet of document.styleSheets) {
+      let rules: CSSRuleList;
+      try {
+        rules = sheet.cssRules;
+      } catch {
+        continue;
+      }
+      for (const rule of Array.from(rules)) {
+        if (rule instanceof CSSMediaRule && rule.conditionText.includes("prefers-reduced-motion")) {
+          for (const inner of Array.from(rule.cssRules)) {
+            if (inner instanceof CSSStyleRule && inner.selectorText.includes("::view-transition-new(*)")) {
+              return inner.style.getPropertyValue("animation-duration").trim();
+            }
+          }
+        }
+      }
+    }
+    return "";
+  });
+  expect(duration).toBe("0s");
+});
+
 test("shows a newly published event on the cached homepage", async ({ page }) => {
   await page.goto("/");
   const title = `E2E Home Event ${uniqueId()}`;
