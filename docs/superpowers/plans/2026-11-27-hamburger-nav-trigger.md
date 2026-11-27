@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js 16 App Router, React 19.3, Tailwind 4, installed `lucide-react`, Playwright.
 
-**Spec:** `docs/superpowers/specs/2026-11-27-hamburger-nav-trigger-design.md`
+**Specs:** `docs/superpowers/specs/2026-11-27-hamburger-nav-trigger-design.md`, `docs/superpowers/specs/2026-11-27-public-shell-width-design.md`
 
 ## Global Constraints
 
@@ -17,7 +17,9 @@
 - The trigger keeps accessible name `Menu`, `aria-haspopup="dialog"`, `aria-expanded`, visible focus ring, and `showModal()` behavior.
 - Keep shared `px-6 sm:px-10 lg:px-16` gutters and the existing responsive header shell unchanged.
 - Mobile-first ≥360px, no horizontal overflow, keyboard accessible, WCAG AA.
-- No drawer content, footer, animation, or page-content changes.
+- No drawer content, footer link, animation, or page-content changes.
+- Public header, main, and footer use `max-w-[1440px]` with the existing `px-6 sm:px-10 lg:px-16` gutters.
+- Home highlight Suspense fallbacks must keep CLS below the existing 0.1 e2e threshold.
 - Do not stage or restore the local `D .env.example`.
 - Gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm e2e`.
 
@@ -28,6 +30,8 @@
 - **Icon actually renders:** the button must contain an SVG from `lucide-react`; the e2e asserts a visible `svg` inside the trigger.
 - **Keyboard/modal behavior:** icon replacement must not break opening, Escape, close, or link navigation; existing drawer e2e assertions still run.
 - **No new dependency or layout rewrite:** `package.json` and the header shell classes stay unchanged; verified by the diff and full gate.
+- **Desktop side emptiness:** at 1280px the `main` content box must be at least 1100px wide; added to the existing homepage layout test in Task 2.
+- **Wider-card wrap shift:** wider cards wrap less, so the home highlight fallbacks must not reserve excess height; checked by the CLS e2e and a 360/768/1280px measurement in Task 2.
 
 ---
 
@@ -87,7 +91,72 @@ git commit -m "feat(ui): use a left-edge hamburger menu trigger"
 
 Expected: lint/typecheck clean, 151 unit tests, 11 e2e tests, build succeeds.
 
+---
+
+### Task 2: Wider public shell
+
+**Files:**
+- Modify: `src/app/(public)/layout.tsx`
+- Modify: `src/components/public/site-header.tsx`
+- Modify: `src/components/public/site-footer.tsx`
+- Modify: `e2e/home.spec.ts`
+- Modify: `docs/design-system.md`
+- Modify: `docs/DECISIONS.md`
+
+**Interfaces:**
+- Consumes: existing public shell and homepage e2e.
+- Produces: header, main, and footer all capped at `max-w-[1440px]` with unchanged gutters; no new exports.
+
+- [ ] **Step 1: Add a failing 1280px width assertion**
+
+In the existing `staggers cards, fills the viewport with pattern, scales type and disables motion` test, immediately after `await page.setViewportSize({ width: 1280, height: 900 });`, add:
+
+```ts
+const mainContentWidth = await page.locator("main").evaluate((el) => {
+  const styles = getComputedStyle(el);
+  return el.getBoundingClientRect().width - parseFloat(styles.paddingLeft) - parseFloat(styles.paddingRight);
+});
+expect(mainContentWidth).toBeGreaterThanOrEqual(1100);
+```
+
+- [ ] **Step 2: Run the failing test**
+
+Run: `set -a; . ./.env; set +a; pnpm e2e --grep "staggers cards"`
+
+Expected: FAIL because the current 1280px content box is about 1024px.
+
+- [ ] **Step 3: Widen the shared shell**
+
+Replace `max-w-6xl` with `max-w-[1440px]` in `src/app/(public)/layout.tsx`, `src/components/public/site-header.tsx`, and `src/components/public/site-footer.tsx`. Keep every other class, especially the shared gutters, unchanged.
+
+- [ ] **Step 4: Run the focused test to verify it passes**
+
+Run: `set -a; . ./.env; set +a; pnpm e2e --grep "staggers cards"`
+
+Expected: PASS, including unchanged gutter equality, full-width pattern, and no horizontal overflow.
+
+- [ ] **Step 5: Recheck home highlight fallbacks**
+
+With the app running, measure the rendered home highlights from the first highlight section top to the last highlight section bottom at 360px, 768px, and 1280px. If the gap between that bottom and the next section boundary exceeds 24px, reduce the matching `min-h-*` value in `src/app/(public)/page.tsx` to the measured height. Then run `pnpm e2e --grep "layout shift"`.
+
+Expected: CLS e2e passes; no visible extra blank block where the fallback was.
+
+- [ ] **Step 6: Update docs**
+
+In `docs/design-system.md`, change the shared shell width from `max-w-6xl` to `max-w-[1440px]`. In `docs/DECISIONS.md`, append a row recording the wider shell and the reason it fills desktop sides while keeping the existing gutters and a large-screen cap.
+
+- [ ] **Step 7: Full gate and commit**
+
+```bash
+set -a; . ./.env; set +a
+pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm e2e
+git add src/app/(public)/layout.tsx src/components/public/site-header.tsx src/components/public/site-footer.tsx e2e/home.spec.ts docs/design-system.md docs/DECISIONS.md
+git commit -m "feat(ui): widen the public shell"
+```
+
+Expected: lint/typecheck clean, 151 unit tests, 11 e2e tests, build succeeds.
+
 ## Final Verification
 
-- Browser check at 360px and 1280px: hamburger is first in the header, opens the drawer, focus ring is visible, and no horizontal overflow.
+- Browser check at 360px and 1280px: hamburger is first in the header, opens the drawer, focus ring is visible, no horizontal overflow, and public content uses the wider shell.
 - Lighthouse keeps the existing accessibility 100, CLS 0, and LCP under 1s.
