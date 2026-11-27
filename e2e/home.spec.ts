@@ -32,6 +32,9 @@ test("keeps all quick links in an accessible drawer", async ({ page }) => {
   await expect(dialog.getByRole("link")).toHaveCount(14);
   await expect(dialog.getByRole("link", { name: "Committee" })).toBeVisible();
   await expect(dialog.getByRole("link", { name: "Contact" })).toBeVisible();
+  const dialogBox = await dialog.boundingBox();
+  expect(dialogBox?.y).toBe(0);
+  expect(dialogBox && Math.round(dialogBox.y + dialogBox.height)).toBe(await page.evaluate(() => innerHeight));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
   await dialog.getByRole("button", { name: "Close quick links" }).click();

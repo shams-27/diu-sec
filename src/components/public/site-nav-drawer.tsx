@@ -60,7 +60,7 @@ export function SiteNavDrawer() {
         onClick={(event) => {
           if (event.target === event.currentTarget) close();
         }}
-        className="nav-drawer fixed inset-y-0 left-0 right-auto m-0 h-dvh w-[min(20rem,90vw)] max-w-none border-r border-border bg-card p-0 text-card-foreground shadow-xl"
+        className="nav-drawer fixed inset-y-0 left-0 right-auto m-0 h-dvh max-h-none w-[min(20rem,90vw)] max-w-none border-r border-border bg-card p-0 text-card-foreground shadow-xl"
       >
         <div className="flex h-full flex-col gap-6 p-6">
           <div className="flex items-center justify-between gap-4">
