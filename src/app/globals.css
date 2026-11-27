@@ -309,3 +309,11 @@
   border-right: 4px solid var(--foreground);
   box-shadow: 8px 0 0 var(--primary);
 }
+.public-brutal .brutal-stats > div {
+  border-left: 6px solid var(--primary);
+  box-shadow: 4px 4px 0 var(--primary);
+}
+.public-brutal .brutal-callout {
+  border: 2px solid var(--foreground);
+  box-shadow: 6px 6px 0 var(--foreground);
+}

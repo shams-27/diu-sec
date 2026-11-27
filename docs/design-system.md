@@ -44,6 +44,7 @@ Regenerated 2026-11-27 with UI/UX Pro Max (`search.py "blue university engineeri
 - `.pattern-surface` — low-contrast CSS grid + radial glow built from semantic tokens; applied to a viewport-wide public wrapper so margins are textured without changing card/canvas contrast. Public header, main and footer share `px-6 sm:px-10 lg:px-16` gutters inside `max-w-[1440px]`.
 - `.nav-drawer` — native `<dialog>` side panel holding all 14 public routes, opened by a left-edge hamburger button with accessible name `Menu`; its `::backdrop` uses a translucent black scrim and it dismisses on close, Escape, backdrop click, or link click.
 - `.public-brutal` — scoped public wrapper: square corners, 2px foreground rules, hard primary offset shadows and heavier mono labels. Admin routes keep their original rounded surfaces.
+- `.brutal-callout` / `.brutal-stats` — static solid-blue hero callout and ruled impact grid; no extra data fetch, so the LCP path stays unchanged.
 - `.pill` — small uppercase metadata chip; `.card-lift` — hover/focus elevation; `.dot-grid`, `.hero-surface` and `.admin-banner` — decorative token-based patterns.
 
 ## Rules for every page

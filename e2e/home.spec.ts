@@ -86,6 +86,25 @@ test("applies scoped editorial brutalism only to public pages", async ({ page })
   );
 });
 
+test("adds an asymmetric hero callout and ruled impact grid", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  const callout = page.getByRole("complementary", { name: "Club snapshot" });
+  await expect(callout).toBeHidden();
+  expect(await page.locator(".brutal-stats > div").first().evaluate((el) => getComputedStyle(el).borderLeftWidth)).toBe(
+    "6px",
+  );
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await expect(callout).toBeVisible();
+  const calloutBox = await callout.boundingBox();
+  const titleBox = await page.locator(".display-title").first().boundingBox();
+  expect(calloutBox).not.toBeNull();
+  expect(titleBox).not.toBeNull();
+  expect(calloutBox!.x).toBeGreaterThan(titleBox!.x + titleBox!.width);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
 test("staggers cards, fills the viewport with pattern, scales type and disables motion", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
 

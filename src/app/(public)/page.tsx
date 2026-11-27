@@ -169,11 +169,24 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
+        <aside
+          aria-label="Club snapshot"
+          className="brutal-callout absolute right-10 top-10 hidden w-48 bg-primary p-4 text-primary-foreground xl:block"
+        >
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.2em]">Next up</p>
+          <p className="mt-6 font-heading text-4xl leading-none">05 wings</p>
+          <Link
+            href="/wings"
+            className="mt-6 inline-block border-t-2 border-current pt-2 font-mono text-xs font-bold uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            Explore →
+          </Link>
+        </aside>
       </section>
 
       <section aria-labelledby="impact-heading" className="space-y-5">
         <SectionTitle id="impact-heading">Our impact</SectionTitle>
-        <dl className="stagger-in grid grid-cols-2 gap-4 md:grid-cols-4">
+        <dl className="brutal-stats stagger-in grid grid-cols-2 gap-4 md:grid-cols-4">
           {IMPACT.map((item) => (
             <div key={item.label} className="card-lift rounded-2xl border border-border bg-card p-5 shadow-sm">
               <dt className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{item.label}</dt>
