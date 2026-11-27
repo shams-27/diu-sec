@@ -4,40 +4,40 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #fef2f2;
-  --foreground: #7f1d1d;
+  --background: #f8fafc;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #7f1d1d;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #7f1d1d;
-  --primary: #b91c1c;
+  --popover-foreground: #0f172a;
+  --primary: #1e3a5f;
   --primary-foreground: #ffffff;
-  --secondary: #ef4444;
-  --secondary-foreground: #000000;
-  --muted: #f0edf1;
+  --secondary: #2563eb;
+  --secondary-foreground: #ffffff;
+  --muted: #e9eef5;
   --muted-foreground: #475569;
-  --accent: #b91c1c;
+  --accent: #2563eb;
   --accent-foreground: #ffffff;
-  --destructive: #b91c1c;
-  --border: #fecaca;
-  --input: #fecaca;
-  --ring: #b91c1c;
-  --chart-1: #b91c1c;
-  --chart-2: #f59e0b;
-  --chart-3: #ef4444;
-  --chart-4: #7f1d1d;
-  --chart-5: #475569;
+  --destructive: #dc2626;
+  --border: #cbd5e1;
+  --input: #cbd5e1;
+  --ring: #1e3a5f;
+  --chart-1: #1e3a5f;
+  --chart-2: #2563eb;
+  --chart-3: #3b82f6;
+  --chart-4: #0ea5e9;
+  --chart-5: #64748b;
   --radius: 0.625rem;
   --space-section: 3rem;
   --duration-ui: 250ms;
   --sidebar: #ffffff;
-  --sidebar-foreground: #7f1d1d;
-  --sidebar-primary: #b91c1c;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #1e3a5f;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #fef2f2;
-  --sidebar-accent-foreground: #7f1d1d;
-  --sidebar-border: #fecaca;
-  --sidebar-ring: #b91c1c;
+  --sidebar-accent: #e9eef5;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #cbd5e1;
+  --sidebar-ring: #1e3a5f;
 }
 
 @theme inline {
@@ -86,37 +86,37 @@
 }
 
 .dark {
-  --background: #1a0f10;
-  --foreground: #fef2f2;
-  --card: #2a1618;
-  --card-foreground: #fef2f2;
-  --popover: #2a1618;
-  --popover-foreground: #fef2f2;
-  --primary: #ef4444;
-  --primary-foreground: #ffffff;
-  --secondary: #7f1d1d;
-  --secondary-foreground: #fef2f2;
-  --muted: #2a1618;
-  --muted-foreground: #d6a5a5;
-  --accent: #ef4444;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --border: #4a2225;
-  --input: #4a2225;
-  --ring: #ef4444;
-  --chart-1: #ef4444;
-  --chart-2: #f59e0b;
-  --chart-3: #b91c1c;
-  --chart-4: #fef2f2;
-  --chart-5: #d6a5a5;
-  --sidebar: #1a0f10;
-  --sidebar-foreground: #fef2f2;
-  --sidebar-primary: #ef4444;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #2a1618;
-  --sidebar-accent-foreground: #fef2f2;
-  --sidebar-border: #4a2225;
-  --sidebar-ring: #ef4444;
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --card: #192134;
+  --card-foreground: #f8fafc;
+  --popover: #192134;
+  --popover-foreground: #f8fafc;
+  --primary: #60a5fa;
+  --primary-foreground: #0f172a;
+  --secondary: #2563eb;
+  --secondary-foreground: #ffffff;
+  --muted: #192134;
+  --muted-foreground: #94a3b8;
+  --accent: #60a5fa;
+  --accent-foreground: #0f172a;
+  --destructive: #dc2626;
+  --border: #334155;
+  --input: #334155;
+  --ring: #60a5fa;
+  --chart-1: #60a5fa;
+  --chart-2: #3b82f6;
+  --chart-3: #38bdf8;
+  --chart-4: #818cf8;
+  --chart-5: #94a3b8;
+  --sidebar: #0f172a;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #60a5fa;
+  --sidebar-primary-foreground: #0f172a;
+  --sidebar-accent: #192134;
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: #334155;
+  --sidebar-ring: #60a5fa;
 }
 
 @layer base {
@@ -131,7 +131,7 @@
   }
 }
 
-@keyframes admin-enter {
+@keyframes rise-in {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -170,14 +170,29 @@
       radial-gradient(color-mix(in oklab, var(--primary) 18%, transparent) 1px, transparent 1px);
     background-size: auto, 14px 14px;
   }
-  .admin-enter {
+  .rise-in {
     /* backwards only: after the animation, hover transforms must still work. */
-    animation: admin-enter 350ms ease-out backwards;
+    animation: rise-in 350ms ease-out backwards;
+  }
+  .display-title {
+    @apply font-heading text-5xl leading-[1.05] tracking-wide sm:text-7xl;
+  }
+  .page-title {
+    @apply font-heading text-4xl leading-[1.05] tracking-wide sm:text-6xl;
+  }
+  .section-title {
+    @apply font-heading text-3xl tracking-wide sm:text-4xl;
+  }
+  .eyebrow {
+    @apply font-mono text-xs font-semibold uppercase tracking-[0.2em] text-primary;
+  }
+  .lead-text {
+    @apply max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .admin-enter {
+  .rise-in {
     animation: none;
   }
 }

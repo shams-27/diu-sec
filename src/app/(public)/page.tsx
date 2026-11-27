@@ -142,13 +142,9 @@ export default function HomePage() {
       <section className="hero-surface relative overflow-hidden rounded-3xl border border-border px-6 py-12 sm:px-10 sm:py-16">
         <div className="dot-grid pointer-events-none absolute -right-12 -top-12 size-56 opacity-40" aria-hidden="true" />
         <div className="relative max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-            Daffodil International University · Software Engineering
-          </p>
-          <h1 className="mt-4 font-heading text-5xl leading-[1.05] tracking-wide sm:text-7xl">
-            Build. Compete. Belong.
-          </h1>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="eyebrow">Daffodil International University · Software Engineering</p>
+          <h1 className="display-title mt-4">Build. Compete. Belong.</h1>
+          <p className="lead-text mt-5">
             We are DIU SEC — a student-led community turning coursework into real products, contest wins and lifelong
             peers. Five wings, one club, open to every SWE student at DIU.
           </p>
@@ -177,7 +173,7 @@ export default function HomePage() {
 
       <section aria-labelledby="impact-heading" className="space-y-5">
         <SectionTitle id="impact-heading">Our impact</SectionTitle>
-        <dl className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <dl className="rise-in grid grid-cols-2 gap-4 md:grid-cols-4" style={{ animationDelay: "80ms" }}>
           {IMPACT.map((item) => (
             <div key={item.label} className="card-lift rounded-2xl border border-border bg-card p-5 shadow-sm">
               <dt className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{item.label}</dt>
@@ -189,7 +185,7 @@ export default function HomePage() {
 
       <section aria-labelledby="manifesto-heading" className="space-y-5">
         <SectionTitle id="manifesto-heading">What we stand for</SectionTitle>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="rise-in grid gap-4 md:grid-cols-3" style={{ animationDelay: "160ms" }}>
           {MANIFESTO.map((item, index) => (
             <article key={item.title} className="card-lift rounded-2xl border border-border bg-card p-6">
               <p className="font-mono text-xs font-semibold text-primary tabular-nums">0{index + 1}</p>

@@ -15,13 +15,13 @@ export default function Image() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#FEF2F2",
-          color: "#7F1D1D",
+          background: "#F8FAFC",
+          color: "#0F172A",
           padding: 72,
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div style={{ width: 28, height: 28, background: "#B91C1C" }} />
+          <div style={{ width: 28, height: 28, background: "#1E3A5F" }} />
           <div style={{ fontSize: 26, fontWeight: 700, letterSpacing: 4 }}>DAFFODIL INTERNATIONAL UNIVERSITY</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
@@ -33,7 +33,7 @@ export default function Image() {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            borderTop: "8px solid #B91C1C",
+            borderTop: "8px solid #1E3A5F",
             paddingTop: 28,
           }}
         >

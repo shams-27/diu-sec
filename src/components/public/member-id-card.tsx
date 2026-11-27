@@ -30,11 +30,12 @@ export function MemberIdCard({ member }: { member: CardMember }) {
 
     const styles = getComputedStyle(document.documentElement);
     const token = (name: string, fallback: string) => styles.getPropertyValue(name).trim() || fallback;
-    const primary = token("--primary", "#b91c1c");
-    const foreground = token("--foreground", "#7f1d1d");
+    const primary = token("--primary", "#1e3a5f");
+    const onPrimary = token("--primary-foreground", "#ffffff");
+    const foreground = token("--foreground", "#0f172a");
     const muted = token("--muted-foreground", "#475569");
     const card = token("--card", "#ffffff");
-    const border = token("--border", "#fecaca");
+    const border = token("--border", "#cbd5e1");
     const headingFont = token("--font-bebas", '"Bebas Neue", sans-serif');
     const bodyFont = token("--font-source-sans", '"Source Sans 3", sans-serif');
 
@@ -50,7 +51,7 @@ export function MemberIdCard({ member }: { member: CardMember }) {
     ctx.lineWidth = 4;
     ctx.strokeRect(4, 4, WIDTH - 8, HEIGHT - 8);
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = onPrimary;
     ctx.font = `64px ${headingFont}`;
     ctx.fillText("DIU SEC", 56, 88);
     ctx.font = `26px ${bodyFont}`;

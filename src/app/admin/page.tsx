@@ -14,7 +14,7 @@ export default async function AdminHomePage() {
 
   return (
     <div className="space-y-8">
-      <div className="admin-banner admin-enter rounded-2xl border border-border p-6 sm:p-8">
+      <div className="admin-banner rise-in rounded-2xl border border-border p-6 sm:p-8">
         <span className="pill">A-01 · Overview</span>
         <h1 className="mt-4 font-heading text-5xl leading-none tracking-wide sm:text-6xl">Dashboard</h1>
         <p className="mt-3 max-w-xl text-sm text-muted-foreground">
@@ -25,7 +25,7 @@ export default async function AdminHomePage() {
         {cards.map((card, index) => (
           <Card
             key={card.label}
-            className="admin-enter card-lift border-t-2 border-t-primary/70"
+            className="rise-in card-lift border-t-2 border-t-primary/70"
             style={{ animationDelay: `${index * 60}ms` }}
           >
             <CardHeader>
@@ -41,7 +41,7 @@ export default async function AdminHomePage() {
       </div>
       <section
         aria-labelledby="distribution-heading"
-        className="hero-surface admin-enter card-lift rounded-2xl border border-border p-5 sm:p-6"
+        className="hero-surface rise-in card-lift rounded-2xl border border-border p-5 sm:p-6"
         style={{ animationDelay: "260ms" }}
       >
         <span className="pill">Analytics</span>
