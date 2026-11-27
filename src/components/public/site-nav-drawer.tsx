@@ -1,5 +1,6 @@
 "use client";
 
+import { Menu as MenuIcon } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
@@ -43,6 +44,7 @@ export function SiteNavDrawer() {
     <>
       <button
         type="button"
+        aria-label="Menu"
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => {
@@ -51,7 +53,7 @@ export function SiteNavDrawer() {
         }}
         className="rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        Menu
+        <MenuIcon className="size-5" aria-hidden="true" />
       </button>
       <dialog
         ref={dialogRef}

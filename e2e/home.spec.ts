@@ -25,6 +25,9 @@ test("keeps all quick links in an accessible drawer", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
   await expect(page.getByRole("navigation", { name: "Main navigation" })).toHaveCount(0);
   await expect(page.locator("header").getByRole("link", { name: "Join Now" })).toBeVisible();
+  const menuButton = page.getByRole("button", { name: "Menu" });
+  await expect(page.locator("header a, header button").first()).toHaveAttribute("aria-label", "Menu");
+  await expect(menuButton.locator("svg")).toBeVisible();
 
   await page.getByRole("button", { name: "Menu" }).click();
   const dialog = page.getByRole("dialog", { name: "Quick links" });
