@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ForbiddenError } from "@/lib/rbac";
+import { ForbiddenError } from "@/backend/shared/rbac";
 
 const a = vi.hoisted(() => ({
   requireActor: vi.fn(),
@@ -10,10 +10,10 @@ const a = vi.hoisted(() => ({
   update: vi.fn(),
   transaction: vi.fn(),
 }));
-vi.mock("@/lib/admin-guard", () => ({ requireActor: a.requireActor }));
+vi.mock("@/backend/shared/admin-guard", () => ({ requireActor: a.requireActor }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
-vi.mock("@/lib/audit", () => ({ writeAudit: a.writeAudit }));
-vi.mock("@/lib/db", () => ({
+vi.mock("@/backend/shared/audit", () => ({ writeAudit: a.writeAudit }));
+vi.mock("@/backend/shared/db", () => ({
   db: {
     committeeMember: { findUnique: a.findUnique, upsert: a.upsert },
     execSession: { create: a.create },
@@ -35,7 +35,7 @@ import {
   sessionCreateSchema,
   wingRosterSchema,
   wingUpdateSchema,
-} from "@/lib/validators";
+} from "@/backend/shared/validators";
 import { saveCommitteeMemberAction } from "@/server/actions/committee";
 import { saveWingAction } from "@/server/actions/wings";
 

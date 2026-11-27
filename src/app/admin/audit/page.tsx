@@ -1,7 +1,7 @@
 import { connection } from "next/server";
-import { requireActor } from "@/lib/admin-guard";
-import { db } from "@/lib/db";
-import { auditFilterSchema, nextUtcMidnight } from "@/lib/validators";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { db } from "@/backend/shared/db";
+import { auditFilterSchema, nextUtcMidnight } from "@/backend/shared/validators";
 
 const ACTIONS = ["CREATE", "UPDATE", "DELETE", "APPROVE", "REJECT", "REVOKE", "REISSUE", "PUBLISH", "LOGIN", "EXPORT"] as const;
 const inputClass =

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Download } from "lucide-react";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { PageHero, SectionTitle } from "@/components/public/page-hero";
-import { db } from "@/lib/db";
+import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
+import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = { title: "Magazine issue" };
 

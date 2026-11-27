@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
-import { requireActor } from "@/lib/admin-guard";
-import { db } from "@/lib/db";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { db } from "@/backend/shared/db";
 import { issueCertificatesAction, revokeCertificateAction } from "@/server/actions/certificates";
 
 export const metadata: Metadata = { title: "Certificates · Admin" };

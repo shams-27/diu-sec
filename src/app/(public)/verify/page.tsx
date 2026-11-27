@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import { PageHero } from "@/components/public/page-hero";
-import { certIdSchema } from "@/lib/validators";
+import { PageHero } from "@/frontend/shared/page-hero";
+import { certIdSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
   title: "Verify a certificate",

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { BookOpen } from "lucide-react";
 import { connection } from "next/server";
-import { requireActor } from "@/lib/admin-guard";
-import { db } from "@/lib/db";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { db } from "@/backend/shared/db";
 import { moderateArticleAction, saveMagazineIssueAction } from "@/server/actions/magazine";
 
 export const metadata: Metadata = { title: "Magazine · Admin" };

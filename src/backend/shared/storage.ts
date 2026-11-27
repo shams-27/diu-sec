@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { IMAGE_MIME, MAX_IMAGE_BYTES, MAX_PDF_BYTES } from "@/lib/validators";
+import { IMAGE_MIME, MAX_IMAGE_BYTES, MAX_PDF_BYTES } from "@/backend/shared/validators";
 
 const EXT: Record<string, string> = {
   "image/jpeg": "jpg",

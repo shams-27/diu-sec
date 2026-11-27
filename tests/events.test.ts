@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ForbiddenError } from "@/lib/rbac";
+import { ForbiddenError } from "@/backend/shared/rbac";
 
 const e = vi.hoisted(() => ({
   requireActor: vi.fn(),
@@ -12,11 +12,11 @@ const e = vi.hoisted(() => ({
   transaction: vi.fn(),
   rateLimited: vi.fn(),
 }));
-vi.mock("@/lib/rate-limit", () => ({ rateLimited: e.rateLimited }));
-vi.mock("@/lib/admin-guard", () => ({ requireActor: e.requireActor }));
-vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
+vi.mock("@/backend/shared/rate-limit", () => ({ rateLimited: e.rateLimited }));
+vi.mock("@/backend/shared/admin-guard", () => ({ requireActor: e.requireActor }));
+vi.mock("@/backend/shared/audit", () => ({ writeAudit: e.writeAudit }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
-vi.mock("@/lib/db", () => ({
+vi.mock("@/backend/shared/db", () => ({
   db: {
     event: { findUnique: e.findUnique, update: e.update, updateMany: e.updateMany },
     registration: { findUnique: e.findUnique, create: e.create, findFirst: e.findFirst, update: e.update },
@@ -35,7 +35,7 @@ import {
   eventSchema,
   registrationSchema,
   slugify,
-} from "@/lib/validators";
+} from "@/backend/shared/validators";
 import { checkInAction, registerForEventAction } from "@/server/actions/events";
 
 const EVENT = "cmwypjwbz0009sbfj0tu78g24";

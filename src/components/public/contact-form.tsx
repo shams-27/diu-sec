@@ -1,9 +1,9 @@
 "use client";
 
 import { useActionState, useState, type ChangeEvent } from "react";
-import { Button } from "@/components/ui/button";
-import { HoneypotField } from "@/components/public/honeypot-field";
-import type { ContactState } from "@/lib/validators";
+import { Button } from "@/frontend/shared/ui/button";
+import { HoneypotField } from "@/frontend/shared/form/honeypot-field";
+import type { ContactState } from "@/backend/shared/validators";
 import { submitContactAction } from "@/server/actions/contact";
 
 const fieldClass =

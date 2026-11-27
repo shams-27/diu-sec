@@ -2,11 +2,11 @@
 
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { writeAudit } from "@/lib/audit";
-import { db } from "@/lib/db";
-import { isBot } from "@/lib/honeypot";
-import { rateLimited } from "@/lib/rate-limit";
-import { contactSchema, type ContactState } from "@/lib/validators";
+import { writeAudit } from "@/backend/shared/audit";
+import { db } from "@/backend/shared/db";
+import { isBot } from "@/backend/shared/honeypot";
+import { rateLimited } from "@/backend/shared/rate-limit";
+import { contactSchema, type ContactState } from "@/backend/shared/validators";
 
 const TOO_MANY = "Too many submissions. Please try again in a few minutes.";
 

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { CommitteeReorder } from "@/components/admin/committee-reorder";
-import { requireActor } from "@/lib/admin-guard";
-import { db } from "@/lib/db";
-import { sessionFilterSchema } from "@/lib/validators";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { db } from "@/backend/shared/db";
+import { sessionFilterSchema } from "@/backend/shared/validators";
 import {
   createSessionAction,
   deleteCommitteeMemberAction,

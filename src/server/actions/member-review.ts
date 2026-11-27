@@ -2,12 +2,12 @@
 
 import { Prisma, type MemberStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { requireActor } from "@/lib/admin-guard";
-import { writeAudit } from "@/lib/audit";
-import { db } from "@/lib/db";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { writeAudit } from "@/backend/shared/audit";
+import { db } from "@/backend/shared/db";
 import { nextMemberCardNo } from "@/lib/idcard";
-import { can, ForbiddenError } from "@/lib/rbac";
-import { memberReviewSchema } from "@/lib/validators";
+import { can, ForbiddenError } from "@/backend/shared/rbac";
+import { memberReviewSchema } from "@/backend/shared/validators";
 
 export async function reviewMemberAction(formData: FormData): Promise<void> {
   const actor = await requireActor("members", "write");

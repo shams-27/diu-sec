@@ -1,5 +1,5 @@
 import type { Session } from "next-auth";
-import type { Actor } from "@/lib/rbac";
+import type { Actor } from "@/backend/shared/rbac";
 
 export function sessionToActor(session: Session | null): Actor {
   return {

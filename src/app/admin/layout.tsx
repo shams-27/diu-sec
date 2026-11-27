@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { auth } from "@/auth";
-import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import { auth } from "@/backend/shared/auth";
+import { AdminSidebar } from "@/frontend/shared/shell/admin-sidebar";
 
 // Auth is per-request, so this shell blocks instead of prerendering.
 export const instant = false;

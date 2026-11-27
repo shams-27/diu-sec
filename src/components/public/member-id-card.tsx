@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MemberStatus } from "@prisma/client";
 import { PDFDocument } from "pdf-lib";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/frontend/shared/ui/button";
 
 export interface CardMember {
   name: string;

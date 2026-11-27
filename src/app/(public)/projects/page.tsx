@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { ExternalLink, GitBranch } from "lucide-react";
-import { PageHero, SectionTitle } from "@/components/public/page-hero";
-import { db } from "@/lib/db";
-import { projectFilterSchema } from "@/lib/validators";
+import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
+import { db } from "@/backend/shared/db";
+import { projectFilterSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
   title: "Projects",

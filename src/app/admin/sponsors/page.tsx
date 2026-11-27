@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Handshake } from "lucide-react";
 import { connection } from "next/server";
-import { requireActor } from "@/lib/admin-guard";
-import { db } from "@/lib/db";
-import { SPONSOR_KINDS } from "@/lib/validators";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { db } from "@/backend/shared/db";
+import { SPONSOR_KINDS } from "@/backend/shared/validators";
 import { saveSponsorAction } from "@/server/actions/sponsors";
 
 export const metadata: Metadata = { title: "Sponsors · Admin" };

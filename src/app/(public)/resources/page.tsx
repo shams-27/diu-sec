@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { connection } from "next/server";
-import { PageHero, SectionTitle } from "@/components/public/page-hero";
-import { db } from "@/lib/db";
-import { RESOURCE_TYPES, resourceFilterSchema } from "@/lib/validators";
+import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
+import { db } from "@/backend/shared/db";
+import { RESOURCE_TYPES, resourceFilterSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
   title: "Resources",

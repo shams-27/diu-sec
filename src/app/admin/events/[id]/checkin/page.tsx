@@ -3,8 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { CheckInScanner } from "@/components/admin/check-in-scanner";
-import { requireActor } from "@/lib/admin-guard";
-import { db } from "@/lib/db";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = { title: "QR check-in · Admin" };
 

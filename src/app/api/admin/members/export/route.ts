@@ -1,7 +1,7 @@
 import { connection, type NextRequest } from "next/server";
-import { requireActor } from "@/lib/admin-guard";
-import { db } from "@/lib/db";
-import { memberFilterSchema } from "@/lib/validators";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { db } from "@/backend/shared/db";
+import { memberFilterSchema } from "@/backend/shared/validators";
 
 const COLUMNS = ["Name", "Student ID", "Email", "Batch", "Phone", "Preferred wing", "Status", "Card no.", "Applied at"];
 

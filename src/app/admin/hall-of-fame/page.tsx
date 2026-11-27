@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Trophy } from "lucide-react";
 import { connection } from "next/server";
-import { requireActor } from "@/lib/admin-guard";
-import { db } from "@/lib/db";
-import { HOF_CATEGORIES } from "@/lib/validators";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { db } from "@/backend/shared/db";
+import { HOF_CATEGORIES } from "@/backend/shared/validators";
 import { saveHallOfFameEntryAction } from "@/server/actions/hall-of-fame";
 
 export const metadata: Metadata = { title: "Hall of fame · Admin" };

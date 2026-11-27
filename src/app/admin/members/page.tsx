@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
-import { requireActor } from "@/lib/admin-guard";
-import { db } from "@/lib/db";
-import { memberFilterSchema } from "@/lib/validators";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { db } from "@/backend/shared/db";
+import { memberFilterSchema } from "@/backend/shared/validators";
 import { reviewMemberAction } from "@/server/actions/member-review";
 
 export const metadata: Metadata = { title: "Members · Admin" };

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { WingDistributionChart } from "@/components/admin/wing-distribution-chart";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { requireActor } from "@/lib/admin-guard";
+import { Card, CardContent, CardHeader, CardTitle } from "@/frontend/shared/ui/card";
+import { requireActor } from "@/backend/shared/admin-guard";
 import { dashboardData } from "@/lib/dashboard";
 
 export const metadata: Metadata = { title: "Dashboard · Admin" };

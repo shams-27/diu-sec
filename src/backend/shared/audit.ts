@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "@/backend/shared/db";
 import type { AuditAction, Prisma } from "@prisma/client";
 
 export interface AuditInput {

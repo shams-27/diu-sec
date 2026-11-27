@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { MemberIdCard } from "@/components/public/member-id-card";
-import { db } from "@/lib/db";
+import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = { title: "Digital member ID" };
 

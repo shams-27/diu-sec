@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { can } from "@/lib/rbac";
+import { can } from "@/backend/shared/rbac";
 
 describe("wing-scoped access", () => {
   it("denies a wing lead writing another wing's roster", () => {

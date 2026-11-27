@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ForbiddenError } from "@/lib/rbac";
+import { ForbiddenError } from "@/backend/shared/rbac";
 
 const e = vi.hoisted(() => ({
   requireActor: vi.fn(),
@@ -11,19 +11,19 @@ const e = vi.hoisted(() => ({
   saveUpload: vi.fn(),
   removeAsset: vi.fn(),
 }));
-vi.mock("@/lib/admin-guard", () => ({ requireActor: e.requireActor }));
-vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
-vi.mock("@/lib/db", () => ({
+vi.mock("@/backend/shared/admin-guard", () => ({ requireActor: e.requireActor }));
+vi.mock("@/backend/shared/audit", () => ({ writeAudit: e.writeAudit }));
+vi.mock("@/backend/shared/db", () => ({
   db: {
     galleryAlbum: { upsert: e.albumUpsert, findUnique: e.albumFind },
     galleryPhoto: { create: e.photoCreate },
     $transaction: e.transaction,
   },
 }));
-vi.mock("@/lib/storage", () => ({ saveUpload: e.saveUpload, removeUploadedAsset: e.removeAsset }));
+vi.mock("@/backend/shared/storage", () => ({ saveUpload: e.saveUpload, removeUploadedAsset: e.removeAsset }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
-import { galleryAlbumSchema, galleryFilterSchema, galleryPhotoSchema } from "@/lib/validators";
+import { galleryAlbumSchema, galleryFilterSchema, galleryPhotoSchema } from "@/backend/shared/validators";
 import { addGalleryPhotoAction, saveGalleryAlbumAction } from "@/server/actions/gallery";
 
 describe("gallery validators", () => {

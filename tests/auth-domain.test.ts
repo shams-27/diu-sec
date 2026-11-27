@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isDiuEmail } from "@/lib/validators";
+import { isDiuEmail } from "@/backend/shared/validators";
 
 describe("institutional domain check", () => {
   it("accepts a mixed-case DIU email", () => {

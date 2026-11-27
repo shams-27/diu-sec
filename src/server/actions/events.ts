@@ -4,19 +4,19 @@ import { Prisma } from "@prisma/client";
 import { randomUUID } from "node:crypto";
 import { revalidatePath, updateTag } from "next/cache";
 import QRCode from "qrcode";
-import { requireActor } from "@/lib/admin-guard";
-import { writeAudit } from "@/lib/audit";
-import { HOME_HIGHLIGHTS_TAG } from "@/lib/cache-tags";
-import { db } from "@/lib/db";
-import { rateLimited } from "@/lib/rate-limit";
-import { can, ForbiddenError } from "@/lib/rbac";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { writeAudit } from "@/backend/shared/audit";
+import { HOME_HIGHLIGHTS_TAG } from "@/backend/shared/cache-tags";
+import { db } from "@/backend/shared/db";
+import { rateLimited } from "@/backend/shared/rate-limit";
+import { can, ForbiddenError } from "@/backend/shared/rbac";
 import {
   checkInSchema,
   eventActionSchema,
   eventSchema,
   registrationSchema,
   slugify,
-} from "@/lib/validators";
+} from "@/backend/shared/validators";
 
 export type RegistrationState = { error?: string; qrToken?: string; qrDataUrl?: string };
 export type CheckInState = { error?: string; checkedIn?: string };

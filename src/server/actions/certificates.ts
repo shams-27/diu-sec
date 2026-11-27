@@ -2,18 +2,18 @@
 
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { requireActor } from "@/lib/admin-guard";
-import { writeAudit } from "@/lib/audit";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { writeAudit } from "@/backend/shared/audit";
 import { renderCertificatePdf } from "@/lib/certs";
-import { db } from "@/lib/db";
-import { can, ForbiddenError } from "@/lib/rbac";
-import { removeUploadedAsset, saveGeneratedPdf } from "@/lib/storage";
+import { db } from "@/backend/shared/db";
+import { can, ForbiddenError } from "@/backend/shared/rbac";
+import { removeUploadedAsset, saveGeneratedPdf } from "@/backend/shared/storage";
 import {
   certIssueSchema,
   certRevokeSchema,
   generateCertId,
   parseCertificateRecipients,
-} from "@/lib/validators";
+} from "@/backend/shared/validators";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 

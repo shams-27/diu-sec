@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Prisma } from "@prisma/client";
-import { ForbiddenError } from "@/lib/rbac";
+import { ForbiddenError } from "@/backend/shared/rbac";
 
 const e = vi.hoisted(() => ({
   requireActor: vi.fn(),
@@ -16,16 +16,16 @@ const e = vi.hoisted(() => ({
   transaction: vi.fn(),
   generateCertId: vi.fn(),
 }));
-vi.mock("@/lib/validators", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/lib/validators")>();
+vi.mock("@/backend/shared/validators", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/backend/shared/validators")>();
   return { ...actual, generateCertId: e.generateCertId };
 });
-vi.mock("@/lib/admin-guard", () => ({ requireActor: e.requireActor }));
-vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
+vi.mock("@/backend/shared/admin-guard", () => ({ requireActor: e.requireActor }));
+vi.mock("@/backend/shared/audit", () => ({ writeAudit: e.writeAudit }));
 vi.mock("@/lib/certs", () => ({ renderCertificatePdf: e.render }));
-vi.mock("@/lib/storage", () => ({ saveGeneratedPdf: e.savePdf, removeUploadedAsset: e.removeAsset }));
+vi.mock("@/backend/shared/storage", () => ({ saveGeneratedPdf: e.savePdf, removeUploadedAsset: e.removeAsset }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
-vi.mock("@/lib/db", () => ({
+vi.mock("@/backend/shared/db", () => ({
   db: {
     event: { findUnique: e.eventFindUnique },
     certificate: {
@@ -49,7 +49,7 @@ import {
   certIssueSchema,
   certRevokeSchema,
   parseCertificateRecipients,
-} from "@/lib/validators";
+} from "@/backend/shared/validators";
 import { issueCertificatesAction, revokeCertificateAction } from "@/server/actions/certificates";
 
 const EVENT = "cmwypjwbz0009sbfj0tu78g24";

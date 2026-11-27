@@ -1,4 +1,4 @@
-import { HONEYPOT_FIELD } from "@/lib/honeypot";
+import { HONEYPOT_FIELD } from "@/backend/shared/honeypot";
 
 export function HoneypotField({ id }: { id: string }) {
   return (

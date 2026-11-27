@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Trophy } from "lucide-react";
 import { connection } from "next/server";
-import { PageHero, SectionTitle } from "@/components/public/page-hero";
-import { db } from "@/lib/db";
-import { HOF_CATEGORIES, hallOfFameFilterSchema } from "@/lib/validators";
+import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
+import { db } from "@/backend/shared/db";
+import { HOF_CATEGORIES, hallOfFameFilterSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
   title: "Hall of Fame",

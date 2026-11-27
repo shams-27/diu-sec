@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ForbiddenError } from "@/lib/rbac";
+import { ForbiddenError } from "@/backend/shared/rbac";
 
 const m = vi.hoisted(() => ({
   requireActor: vi.fn(),
@@ -11,10 +11,10 @@ const m = vi.hoisted(() => ({
   transaction: vi.fn(),
 }));
 
-vi.mock("@/lib/admin-guard", () => ({ requireActor: m.requireActor }));
-vi.mock("@/lib/audit", () => ({ writeAudit: m.writeAudit }));
+vi.mock("@/backend/shared/admin-guard", () => ({ requireActor: m.requireActor }));
+vi.mock("@/backend/shared/audit", () => ({ writeAudit: m.writeAudit }));
 vi.mock("next/cache", () => ({ revalidatePath: m.revalidatePath, updateTag: vi.fn() }));
-vi.mock("@/lib/db", () => ({
+vi.mock("@/backend/shared/db", () => ({
   db: {
     $transaction: (fn: (tx: unknown) => Promise<unknown>) => m.transaction(fn),
   },

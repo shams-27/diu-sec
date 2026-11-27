@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Session } from "next-auth";
-import { can, ForbiddenError } from "@/lib/rbac";
-import { sessionToActor } from "@/lib/session";
+import { can, ForbiddenError } from "@/backend/shared/rbac";
+import { sessionToActor } from "@/backend/shared/session";
 
 const { authMock } = vi.hoisted(() => ({ authMock: vi.fn() }));
-vi.mock("@/auth", () => ({ auth: authMock }));
+vi.mock("@/backend/shared/auth", () => ({ auth: authMock }));
 
-import { requireActor } from "@/lib/admin-guard";
+import { requireActor } from "@/backend/shared/admin-guard";
 
 const session = {
   user: {

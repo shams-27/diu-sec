@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ForbiddenError } from "@/lib/rbac";
+import { ForbiddenError } from "@/backend/shared/rbac";
 
 const e = vi.hoisted(() => ({
   requireActor: vi.fn(),
@@ -7,14 +7,14 @@ const e = vi.hoisted(() => ({
   resourceUpsert: vi.fn(),
   transaction: vi.fn(),
 }));
-vi.mock("@/lib/admin-guard", () => ({ requireActor: e.requireActor }));
-vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
-vi.mock("@/lib/db", () => ({
+vi.mock("@/backend/shared/admin-guard", () => ({ requireActor: e.requireActor }));
+vi.mock("@/backend/shared/audit", () => ({ writeAudit: e.writeAudit }));
+vi.mock("@/backend/shared/db", () => ({
   db: { resource: { upsert: e.resourceUpsert }, $transaction: e.transaction },
 }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
-import { resourceFilterSchema, resourceSchema } from "@/lib/validators";
+import { resourceFilterSchema, resourceSchema } from "@/backend/shared/validators";
 import { saveResourceAction } from "@/server/actions/resources";
 
 const form = () => {

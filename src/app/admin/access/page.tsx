@@ -1,6 +1,6 @@
 import { connection } from "next/server";
-import { requireActor } from "@/lib/admin-guard";
-import { db } from "@/lib/db";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { db } from "@/backend/shared/db";
 import { setUserRoleAction } from "@/server/actions/access";
 
 const ROLES = ["SUPER_ADMIN", "GENERAL_SECRETARY", "WING_LEAD", "PUBLICATION_EDITOR"] as const;

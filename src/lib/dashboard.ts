@@ -1,5 +1,5 @@
-import { db } from "@/lib/db";
-import type { Actor } from "@/lib/rbac";
+import { db } from "@/backend/shared/db";
+import type { Actor } from "@/backend/shared/rbac";
 
 /** A wing lead only ever counts their own wing; an empty id matches nothing. */
 export function dashboardScopes(actor: Actor) {

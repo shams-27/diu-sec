@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Bell } from "lucide-react";
 import { connection } from "next/server";
-import { requireActor } from "@/lib/admin-guard";
-import { db } from "@/lib/db";
-import { NOTICE_CATEGORIES } from "@/lib/validators";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { db } from "@/backend/shared/db";
+import { NOTICE_CATEGORIES } from "@/backend/shared/validators";
 import { saveNoticeAction } from "@/server/actions/notices";
 
 export const metadata: Metadata = { title: "Notice board · Admin" };

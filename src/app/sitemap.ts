@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { connection } from "next/server";
-import { db } from "@/lib/db";
+import { db } from "@/backend/shared/db";
 
 const SITE = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 

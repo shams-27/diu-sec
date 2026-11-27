@@ -1,11 +1,11 @@
 "use server";
 
 import { Prisma } from "@prisma/client";
-import { writeAudit } from "@/lib/audit";
-import { db } from "@/lib/db";
-import { isBot } from "@/lib/honeypot";
-import { rateLimited } from "@/lib/rate-limit";
-import { memberApplicationSchema, type SubmitState } from "@/lib/validators";
+import { writeAudit } from "@/backend/shared/audit";
+import { db } from "@/backend/shared/db";
+import { isBot } from "@/backend/shared/honeypot";
+import { rateLimited } from "@/backend/shared/rate-limit";
+import { memberApplicationSchema, type SubmitState } from "@/backend/shared/validators";
 
 const DUPLICATE = "An application with that student ID or email already exists.";
 const TOO_MANY = "Too many submissions. Please try again in a few minutes.";

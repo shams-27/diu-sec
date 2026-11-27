@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { db } from "@/lib/db";
-import { isDiuEmail } from "@/lib/validators";
-import type { Role } from "@/lib/rbac";
+import { db } from "@/backend/shared/db";
+import { isDiuEmail } from "@/backend/shared/validators";
+import type { Role } from "@/backend/shared/rbac";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,

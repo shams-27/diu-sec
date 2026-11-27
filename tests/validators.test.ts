@@ -14,7 +14,7 @@ import {
   roleAssignmentSchema,
   studentIdSchema,
   utcDateTimeSchema,
-} from "@/lib/validators";
+} from "@/backend/shared/validators";
 
 describe("UTC datetime inputs", () => {
   it("parses datetime-local values as UTC", () => {

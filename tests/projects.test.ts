@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ForbiddenError } from "@/lib/rbac";
+import { ForbiddenError } from "@/backend/shared/rbac";
 
 const e = vi.hoisted(() => ({
   requireActor: vi.fn(),
@@ -8,14 +8,14 @@ const e = vi.hoisted(() => ({
   projectUpdate: vi.fn(),
   transaction: vi.fn(),
 }));
-vi.mock("@/lib/admin-guard", () => ({ requireActor: e.requireActor }));
-vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
-vi.mock("@/lib/db", () => ({
+vi.mock("@/backend/shared/admin-guard", () => ({ requireActor: e.requireActor }));
+vi.mock("@/backend/shared/audit", () => ({ writeAudit: e.writeAudit }));
+vi.mock("@/backend/shared/db", () => ({
   db: { project: { upsert: e.projectUpsert, update: e.projectUpdate }, $transaction: e.transaction },
 }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
 
-import { projectReviewSchema, projectSchema } from "@/lib/validators";
+import { projectReviewSchema, projectSchema } from "@/backend/shared/validators";
 import { reviewProjectAction, saveProjectAction } from "@/server/actions/projects";
 
 const fd = (entries: [string, string][]) => {

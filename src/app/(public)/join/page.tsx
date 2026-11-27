@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { MembershipForm } from "@/components/public/membership-form";
-import { db } from "@/lib/db";
+import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = {
   title: "Join DIU SEC",

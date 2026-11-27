@@ -2,12 +2,12 @@
 
 import { Prisma } from "@prisma/client";
 import { revalidatePath, updateTag } from "next/cache";
-import { requireActor } from "@/lib/admin-guard";
-import { writeAudit } from "@/lib/audit";
-import { HOME_HIGHLIGHTS_TAG } from "@/lib/cache-tags";
-import { db } from "@/lib/db";
-import { can, ForbiddenError } from "@/lib/rbac";
-import { wingRosterSchema, wingUpdateSchema } from "@/lib/validators";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { writeAudit } from "@/backend/shared/audit";
+import { HOME_HIGHLIGHTS_TAG } from "@/backend/shared/cache-tags";
+import { db } from "@/backend/shared/db";
+import { can, ForbiddenError } from "@/backend/shared/rbac";
+import { wingRosterSchema, wingUpdateSchema } from "@/backend/shared/validators";
 
 async function loadWing(tx: Prisma.TransactionClient, wingId: string) {
   const wing = await tx.wing.findUnique({ where: { id: wingId }, select: { id: true, slug: true } });

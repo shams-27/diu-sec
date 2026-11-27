@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { ArrowUpRight } from "lucide-react";
-import { PageHero, SectionTitle } from "@/components/public/page-hero";
-import { db } from "@/lib/db";
+import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
+import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = {
   title: "Wings",

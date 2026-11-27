@@ -3,10 +3,10 @@
 import { Prisma } from "@prisma/client";
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
-import { requireActor } from "@/lib/admin-guard";
-import { writeAudit } from "@/lib/audit";
-import { db } from "@/lib/db";
-import { noticeSchema } from "@/lib/validators";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { writeAudit } from "@/backend/shared/audit";
+import { db } from "@/backend/shared/db";
+import { noticeSchema } from "@/backend/shared/validators";
 
 export async function saveNoticeAction(formData: FormData): Promise<void> {
   const actor = await requireActor("notices", "write");

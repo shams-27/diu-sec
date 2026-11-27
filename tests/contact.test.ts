@@ -7,15 +7,15 @@ const e = vi.hoisted(() => ({
   rateLimited: vi.fn(),
   isBot: vi.fn(),
 }));
-vi.mock("@/lib/audit", () => ({ writeAudit: e.writeAudit }));
-vi.mock("@/lib/db", () => ({
+vi.mock("@/backend/shared/audit", () => ({ writeAudit: e.writeAudit }));
+vi.mock("@/backend/shared/db", () => ({
   db: { contactMessage: { create: e.contactCreate }, $transaction: e.transaction },
 }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }));
-vi.mock("@/lib/rate-limit", () => ({ rateLimited: e.rateLimited }));
-vi.mock("@/lib/honeypot", () => ({ isBot: e.isBot, HONEYPOT_FIELD: "website" }));
+vi.mock("@/backend/shared/rate-limit", () => ({ rateLimited: e.rateLimited }));
+vi.mock("@/backend/shared/honeypot", () => ({ isBot: e.isBot, HONEYPOT_FIELD: "website" }));
 
-import { contactSchema } from "@/lib/validators";
+import { contactSchema } from "@/backend/shared/validators";
 import { submitContactAction } from "@/server/actions/contact";
 
 const form = () => {

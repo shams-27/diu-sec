@@ -1,5 +1,5 @@
-import { SiteFooter } from "@/components/public/site-footer";
-import { SiteHeader } from "@/components/public/site-header";
+import { SiteFooter } from "@/frontend/shared/shell/site-footer";
+import { SiteHeader } from "@/frontend/shared/shell/site-header";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -8,7 +8,7 @@ const m = vi.hoisted(() => ({
   wingFindMany: vi.fn(),
 }));
 
-vi.mock("@/lib/db", () => ({
+vi.mock("@/backend/shared/db", () => ({
   db: {
     member: { count: m.memberCount, groupBy: m.memberGroupBy },
     registration: { count: m.registrationCount },

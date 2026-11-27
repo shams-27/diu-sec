@@ -16,7 +16,7 @@ const { findUnique, setConfig, getConfig } = vi.hoisted(() => {
   };
 });
 
-vi.mock("@/lib/db", () => ({ db: { user: { findUnique } } }));
+vi.mock("@/backend/shared/db", () => ({ db: { user: { findUnique } } }));
 vi.mock("next-auth/providers/google", () => ({ default: () => ({ id: "google" }) }));
 vi.mock("next-auth", () => ({
   default: (config: unknown) => {
@@ -27,7 +27,7 @@ vi.mock("next-auth", () => ({
 
 describe("JWT session claims", () => {
   it("refreshes the role from the database on every session read", async () => {
-    await import("@/auth");
+    await import("@/backend/shared/auth");
     findUnique.mockResolvedValue({ id: "u1", role: "WING_LEAD", wingId: "w1" });
 
     const token = { email: "Lead@DIU.edu.bd", role: "SUPER_ADMIN", wingId: null };
@@ -38,7 +38,7 @@ describe("JWT session claims", () => {
   });
 
   it("clears the role when the user row is gone", async () => {
-    await import("@/auth");
+    await import("@/backend/shared/auth");
     findUnique.mockResolvedValue(null);
 
     const next = await getConfig().callbacks.jwt({ token: { email: "gone@diu.edu.bd", role: "SUPER_ADMIN" } });

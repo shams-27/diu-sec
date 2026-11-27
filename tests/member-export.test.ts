@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ForbiddenError } from "@/lib/rbac";
+import { ForbiddenError } from "@/backend/shared/rbac";
 
 const m = vi.hoisted(() => ({ requireActor: vi.fn(), findMany: vi.fn(), connection: vi.fn() }));
-vi.mock("@/lib/admin-guard", () => ({ requireActor: m.requireActor }));
-vi.mock("@/lib/db", () => ({ db: { member: { findMany: m.findMany } } }));
+vi.mock("@/backend/shared/admin-guard", () => ({ requireActor: m.requireActor }));
+vi.mock("@/backend/shared/db", () => ({ db: { member: { findMany: m.findMany } } }));
 vi.mock("next/server", () => ({ connection: m.connection }));
 
 import { GET } from "@/app/api/admin/members/export/route";

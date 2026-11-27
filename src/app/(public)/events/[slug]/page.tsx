@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { EventRegistration } from "@/components/public/event-registration";
 import { SyllabusDialog } from "@/components/public/syllabus-dialog";
-import { PageHero } from "@/components/public/page-hero";
-import { db } from "@/lib/db";
+import { PageHero } from "@/frontend/shared/page-hero";
+import { db } from "@/backend/shared/db";
 
 export const metadata: Metadata = { title: "Event details" };
 

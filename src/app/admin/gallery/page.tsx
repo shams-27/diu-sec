@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Images } from "lucide-react";
 import { connection } from "next/server";
-import { requireActor } from "@/lib/admin-guard";
-import { db } from "@/lib/db";
-import { ALBUM_CATEGORIES } from "@/lib/validators";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { db } from "@/backend/shared/db";
+import { ALBUM_CATEGORIES } from "@/backend/shared/validators";
 import { addGalleryPhotoAction, saveGalleryAlbumAction } from "@/server/actions/gallery";
 
 export const metadata: Metadata = { title: "Gallery · Admin" };

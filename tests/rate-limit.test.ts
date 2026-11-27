@@ -3,8 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => ({ get: vi.fn() }));
 vi.mock("next/headers", () => ({ headers: async () => ({ get: m.get }) }));
 
-import { HONEYPOT_FIELD, isBot } from "@/lib/honeypot";
-import { rateLimited } from "@/lib/rate-limit";
+import { HONEYPOT_FIELD, isBot } from "@/backend/shared/honeypot";
+import { rateLimited } from "@/backend/shared/rate-limit";
 
 const LIMIT = 30;
 

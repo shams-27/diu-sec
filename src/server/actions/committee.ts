@@ -3,17 +3,17 @@
 import { Prisma } from "@prisma/client";
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
-import { requireActor } from "@/lib/admin-guard";
-import { writeAudit } from "@/lib/audit";
-import { db } from "@/lib/db";
-import { saveUpload } from "@/lib/storage";
+import { requireActor } from "@/backend/shared/admin-guard";
+import { writeAudit } from "@/backend/shared/audit";
+import { db } from "@/backend/shared/db";
+import { saveUpload } from "@/backend/shared/storage";
 import {
   committeeDeleteSchema,
   committeeMemberSchema,
   committeeReorderSchema,
   sessionActionSchema,
   sessionCreateSchema,
-} from "@/lib/validators";
+} from "@/backend/shared/validators";
 
 async function refresh() {
   revalidatePath("/admin/committee");

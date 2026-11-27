@@ -1,5 +1,5 @@
 import type { DefaultSession } from "next-auth";
-import type { Role } from "@/lib/rbac";
+import type { Role } from "@/backend/shared/rbac";
 
 declare module "next-auth" {
   interface Session {

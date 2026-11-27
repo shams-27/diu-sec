@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { ExternalLink } from "lucide-react";
 import { connection } from "next/server";
-import { PageHero, SectionTitle } from "@/components/public/page-hero";
-import { db } from "@/lib/db";
-import { SPONSOR_KINDS } from "@/lib/validators";
+import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
+import { db } from "@/backend/shared/db";
+import { SPONSOR_KINDS } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
   title: "Partners & Sponsors",

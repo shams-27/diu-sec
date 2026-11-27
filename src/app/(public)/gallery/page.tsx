@@ -3,9 +3,9 @@ import Link from "next/link";
 import { Images } from "lucide-react";
 import { connection } from "next/server";
 import { GalleryLightbox } from "@/components/public/gallery-lightbox";
-import { PageHero, SectionTitle } from "@/components/public/page-hero";
-import { db } from "@/lib/db";
-import { ALBUM_CATEGORIES, galleryFilterSchema } from "@/lib/validators";
+import { PageHero, SectionTitle } from "@/frontend/shared/page-hero";
+import { db } from "@/backend/shared/db";
+import { ALBUM_CATEGORIES, galleryFilterSchema } from "@/backend/shared/validators";
 
 export const metadata: Metadata = {
   title: "Gallery",

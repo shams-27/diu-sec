@@ -10,12 +10,12 @@ const m = vi.hoisted(() => ({
 }));
 const tx = { member: { create: m.create } };
 m.transaction.mockImplementation((fn: (tx: unknown) => Promise<unknown>) => fn(tx));
-vi.mock("@/lib/db", () => ({
+vi.mock("@/backend/shared/db", () => ({
   db: { member: { findFirst: m.findFirst }, $transaction: (fn: (tx: unknown) => Promise<unknown>) => m.transaction(fn) },
 }));
-vi.mock("@/lib/audit", () => ({ writeAudit: m.writeAudit }));
-vi.mock("@/lib/rate-limit", () => ({ rateLimited: m.rateLimited }));
-vi.mock("@/lib/honeypot", () => ({ isBot: m.isBot, HONEYPOT_FIELD: "website" }));
+vi.mock("@/backend/shared/audit", () => ({ writeAudit: m.writeAudit }));
+vi.mock("@/backend/shared/rate-limit", () => ({ rateLimited: m.rateLimited }));
+vi.mock("@/backend/shared/honeypot", () => ({ isBot: m.isBot, HONEYPOT_FIELD: "website" }));
 
 import { submitMembershipAction } from "@/server/actions/members";
 

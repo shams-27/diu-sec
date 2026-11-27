@@ -2,10 +2,10 @@
 
 import { useActionState, useEffect, useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { HoneypotField } from "@/components/public/honeypot-field";
+import { Button } from "@/frontend/shared/ui/button";
+import { HoneypotField } from "@/frontend/shared/form/honeypot-field";
 import { submitMembershipAction } from "@/server/actions/members";
-import type { SubmitState } from "@/lib/validators";
+import type { SubmitState } from "@/backend/shared/validators";
 
 const fieldClass =
   "mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
