@@ -297,8 +297,8 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 - [x] Resources, Partners/Sponsors/Faculty, Gallery, FAQ & Contact
 
 ### Phase 8 — Landing page & Dashboard (01 + A-01)
-- [ ] Intro page with metrics + CTAs
-- [ ] Dashboard cards and wing distribution chart
+- [x] Intro page with metrics + CTAs
+- [x] Dashboard cards and wing distribution chart
 
 ### Phase 9 — Hardening
 - [ ] Rate limiting on public forms, honeypot/captcha on `/join` and `/contact`

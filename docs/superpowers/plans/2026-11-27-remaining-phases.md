@@ -32,8 +32,8 @@ Each phase ends with `pnpm lint && pnpm typecheck && pnpm test && pnpm build`, a
 - [x] Admin `/admin/resources`, `/admin/sponsors`, `/admin/gallery`; seed data; verify + commit.
 
 ## Phase 8 — Landing page & Dashboard (01 + A-01)
-- [ ] Replace placeholder hero: mission, manifesto, 1,200+/25+/80+/150+ metrics, CTAs, live upcoming events/wings.
-- [ ] Add `recharts`; real dashboard counts + wing distribution chart, wing-scoped for WING_LEAD; verify + commit.
+- [x] Replace placeholder hero: mission, manifesto, 1,200+/25+/80+/150+ metrics, CTAs, live upcoming events/wings.
+- [x] Add `recharts`; real dashboard counts + wing distribution chart, wing-scoped for WING_LEAD; verify + commit.
 
 ## Phase 9 — Hardening
 - [ ] In-memory rate limit + honeypot on `/join` and `/contact`; document limitation.
