@@ -8,7 +8,7 @@ Regenerated 2026-11-27 with UI/UX Pro Max (`search.py "blue university engineeri
 
 - **Pattern:** Hero-centric, vibrant & block-based — bold, energetic, geometric blocks, high contrast. Fits a student club; keep contrast and focus rings explicit.
 - **Type:** Bebas Neue for large display headings only; Source Sans 3 for body; Geist Mono for eyebrow labels and numeric metadata. Aggressive scale: 36px+ section titles, 60px+ hero display.
-- **Motion:** 200–350ms transitions, 60ms stagger on card grids; `prefers-reduced-motion: reduce` removes non-essential motion. Use `.stagger-in` on repeated-content containers, `.link-underline` for header/footer links and `.pattern-surface` for low-contrast CSS texture; public page navigations crossfade through React `ViewTransition`. Never animate the home hero or LCP text.
+- **Motion:** 200–350ms transitions, 60ms stagger on card grids; `prefers-reduced-motion: reduce` removes non-essential motion. Use `.stagger-in` on repeated-content containers, `.link-underline` for side-drawer links and `.pattern-surface` for low-contrast CSS texture; public page navigations crossfade through React `ViewTransition`. Never animate the home hero or LCP text.
 - **Spacing:** 4/8px rhythm, 48px+ between major sections.
 
 ## Palette (light — bluish)
@@ -39,16 +39,17 @@ Regenerated 2026-11-27 with UI/UX Pro Max (`search.py "blue university engineeri
 - `.stat-value` — Bebas Neue, `text-4xl sm:text-5xl`, tabular numerals.
 - `.rise-in` — shared 350ms fade-up with reduced-motion opt-out; used by public heroes and the admin dashboard.
 - `.stagger-in` — applies the same fade-up to direct children with a 60ms step (capped after eight); use on repeated cards/lists, never on the hero.
-- `.link-underline` — transform-based underline that grows on hover/focus; use on nav and footer links.
+- `.link-underline` — transform-based underline that grows on hover/focus; use on side-drawer links.
 - `.page-fade` — auto-named enter/exit class from the public `template.tsx` `ViewTransition`; old content fades out in 120ms, new content fades up 6px in 200ms, both zeroed under reduced motion.
 - `.pattern-surface` — low-contrast CSS grid + radial glow built from semantic tokens; applied to a viewport-wide public wrapper so margins are textured without changing card/canvas contrast. Public header, main and footer share `px-6 sm:px-10 lg:px-16` gutters inside `max-w-6xl`.
+- `.nav-drawer` — native `<dialog>` side panel holding all 14 public routes; its `::backdrop` uses a translucent black scrim and it dismisses on close, Escape, backdrop click, or link click.
 - `.pill` — small uppercase metadata chip; `.card-lift` — hover/focus elevation; `.dot-grid`, `.hero-surface` and `.admin-banner` — decorative token-based patterns.
 
 ## Rules for every page
 
 1. Use semantic tokens (`bg-background`, `text-foreground`, `text-muted-foreground`, `border-border`) — no hard-coded hex in components.
 2. Mobile first (≥360px): single column, then `md:`/`lg:` grids; gutters grow at breakpoints.
-3. Keyboard: skip link on shells, visible focus ring from `--ring`, no keyboard trap in the mobile nav.
+3. Keyboard: skip link on shells, visible focus ring from `--ring`, native dialog semantics for the public side drawer.
 4. Icons: Lucide SVG only, `aria-hidden` when beside visible text, accessible name when standalone.
 5. Motion: 200–350ms, `motion-reduce:transition-none`, no auto-playing media. The home hero stays static so the LCP text paints immediately; `.rise-in` is used on the sections below it.
 6. Error/empty/loading states use the same tokens and keep text ≥4.5:1 contrast.

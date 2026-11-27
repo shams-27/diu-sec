@@ -21,6 +21,32 @@ test("keeps homepage layout shift below the Lighthouse threshold", async ({ page
   expect(cls).toBeLessThan(0.1);
 });
 
+test("keeps all quick links in an accessible drawer", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+  await expect(page.getByRole("navigation", { name: "Main navigation" })).toHaveCount(0);
+  await expect(page.locator("header").getByRole("link", { name: "Join Now" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Menu" }).click();
+  const dialog = page.getByRole("dialog", { name: "Quick links" });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("link")).toHaveCount(14);
+  await expect(dialog.getByRole("link", { name: "Committee" })).toBeVisible();
+  await expect(dialog.getByRole("link", { name: "Contact" })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  await dialog.getByRole("button", { name: "Close quick links" }).click();
+  await expect(dialog).toBeHidden();
+
+  await page.getByRole("button", { name: "Menu" }).click();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+
+  await page.getByRole("button", { name: "Menu" }).click();
+  await dialog.getByRole("link", { name: "Events" }).click();
+  await expect(page).toHaveURL(/\/events$/);
+  await expect(dialog).toBeHidden();
+});
+
 test("staggers cards, fills the viewport with pattern, scales type and disables motion", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
 
@@ -71,7 +97,7 @@ test("keeps larger page titles inside the viewport", async ({ page }) => {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
-test("runs a page transition when a header nav link is clicked", async ({ page }) => {
+test("runs a page transition when a drawer link is clicked", async ({ page }) => {
   await page.addInitScript(() => {
     const w = window as Window & {
       __viewTransitions?: number;
@@ -108,7 +134,11 @@ test("runs a page transition when a header nav link is clicked", async ({ page }
   const count = () => page.evaluate(() => (window as Window & { __viewTransitions?: number }).__viewTransitions ?? 0);
   const beforeNav = await count();
 
-  await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "Events" }).click();
+  await page.getByRole("button", { name: "Menu" }).click();
+  await page
+    .getByRole("dialog", { name: "Quick links" })
+    .getByRole("link", { name: "Events" })
+    .click();
   await expect(page).toHaveURL(/\/events$/);
   expect(await count()).toBeGreaterThan(beforeNav);
   await expect
