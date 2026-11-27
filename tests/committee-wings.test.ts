@@ -179,6 +179,7 @@ describe("committee and wing actions", () => {
         ["responsibilities", "Study group"],
       ]),
     );
+    expect(a.requireActor).toHaveBeenCalledWith("wings", "write", "own");
     expect(a.update).toHaveBeenCalled();
     expect(a.writeAudit).toHaveBeenCalledWith(expect.objectContaining({ entity: "Wing" }), tx);
   });

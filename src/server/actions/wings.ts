@@ -15,7 +15,7 @@ async function loadWing(tx: Prisma.TransactionClient, wingId: string) {
 }
 
 export async function saveWingAction(formData: FormData): Promise<void> {
-  const actor = await requireActor("wings", "write");
+  const actor = await requireActor("wings", "write", "own");
   const input = wingUpdateSchema.parse(Object.fromEntries(formData));
   let wingSlug: string | undefined;
   await db.$transaction(async (tx) => {
@@ -56,7 +56,7 @@ export async function saveWingAction(formData: FormData): Promise<void> {
 }
 
 export async function manageWingRosterAction(formData: FormData): Promise<void> {
-  const actor = await requireActor("wings", "write");
+  const actor = await requireActor("wings", "write", "own");
   const input = wingRosterSchema.parse(Object.fromEntries(formData));
   await db.$transaction(async (tx) => {
     const wing = await loadWing(tx, input.wingId);

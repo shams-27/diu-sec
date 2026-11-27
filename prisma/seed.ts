@@ -200,6 +200,39 @@ async function main() {
     },
     update: {},
   });
+  const pastEvent = await db.event.upsert({
+    where: { slug: "web-workshop-2026" },
+    create: {
+      type: "WORKSHOP",
+      slug: "web-workshop-2026",
+      title: "Modern Web Workshop 2026",
+      description: "A hands-on introduction to shipping accessible React applications.",
+      syllabus: { schedule: ["Morning: components", "Afternoon: project"] } as Prisma.InputJsonValue,
+      startsAt: new Date("2026-10-10T09:00:00Z"),
+      endsAt: new Date("2026-10-10T16:00:00Z"),
+      capacity: 20,
+      seatsTaken: 2,
+      status: "PUBLISHED",
+      wingId: wings["web-mobile-dev"].id,
+    },
+    update: { status: "PUBLISHED", startsAt: new Date("2026-10-10T09:00:00Z") },
+  });
+  for (const [i, registration] of [
+    { email: "lead.web@diu.edu.bd", name: "Web Wing Lead" },
+    { email: "core.ai@diu.edu.bd", name: "AI Core Member" },
+  ].entries()) {
+    await db.registration.upsert({
+      where: { eventId_email: { eventId: pastEvent.id, email: registration.email } },
+      create: {
+        eventId: pastEvent.id,
+        name: registration.name,
+        email: registration.email,
+        qrToken: `seed-qr-past-${i + 1}`,
+      },
+      update: {},
+    });
+  }
+
   await db.certificate.upsert({
     where: { certId: "DIU-SEC-CERT-A1B2C3" },
     create: {

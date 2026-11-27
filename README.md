@@ -284,8 +284,8 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 - [x] Wings CRUD, lead assignment, rosters, syllabi
 
 ### Phase 4 — Events & Attendance (05 + A-05)
-- [ ] Event CRUD/publish, seat counter, registration with transaction
-- [ ] QR generation and scan check-in
+- [x] Event CRUD/publish, seat counter, registration with transaction
+- [x] QR generation and scan check-in
 
 ### Phase 5 — Certification (09 + A-06)
 - [ ] ID generator, bulk PDF with QR, public verify page, revoke

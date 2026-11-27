@@ -171,3 +171,47 @@ export const wingRosterSchema = z.object({
   role: z.enum(["LEAD", "CORE", "MEMBER"]),
   decision: z.enum(["ADD", "UPDATE", "REMOVE"]).default("ADD"),
 });
+
+// ───────── Events & attendance (Phase 4) ─────────
+export function slugify(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80);
+}
+
+export const eventSchema = z
+  .object({
+    id: z.preprocess(emptyToUndefined, z.string().cuid().optional()),
+    type: z.enum(["HACKATHON", "WORKSHOP", "COURSE"]),
+    title: z.string().trim().min(3).max(150),
+    description: z.string().trim().min(10).max(3000),
+    startsAt: z.coerce.date(),
+    endsAt: z.preprocess(emptyToUndefined, z.coerce.date().optional()),
+    capacity: z.coerce.number().int().min(0).max(10_000),
+    status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
+    wingId: z.preprocess(emptyToUndefined, z.string().cuid().optional()),
+    syllabus: z.preprocess(parseJson, z.record(z.unknown()).optional()),
+  })
+  .refine((value) => !value.endsAt || value.endsAt >= value.startsAt, {
+    message: "End time must be after the start time",
+    path: ["endsAt"],
+  });
+
+export const eventActionSchema = z.object({
+  eventId: z.string().cuid(),
+  decision: z.enum(["PUBLISH", "ARCHIVE", "UNARCHIVE"]),
+});
+
+export const eventFilterSchema = z.object({
+  tab: z.preprocess(emptyToUndefined, z.enum(["upcoming", "past"]).optional()),
+});
+
+export const registrationSchema = z.object({
+  eventId: z.string().cuid(),
+  name: z.string().trim().min(2).max(100),
+  email: z.string().trim().toLowerCase().email().max(200),
+  memberId: z.preprocess(emptyToUndefined, z.string().cuid().optional()),
+});
+
+export const checkInSchema = z.object({
+  eventId: z.string().cuid(),
+  qrToken: z.string().trim().min(4).max(200),
+});
