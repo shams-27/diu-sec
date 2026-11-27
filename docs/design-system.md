@@ -43,6 +43,7 @@ Regenerated 2026-11-27 with UI/UX Pro Max (`search.py "blue university engineeri
 - `.page-fade` — auto-named enter/exit class from the public `template.tsx` `ViewTransition`; old content fades out in 120ms, new content fades up 6px in 200ms, both zeroed under reduced motion.
 - `.pattern-surface` — low-contrast CSS grid + radial glow built from semantic tokens; applied to a viewport-wide public wrapper so margins are textured without changing card/canvas contrast. Public header, main and footer share `px-6 sm:px-10 lg:px-16` gutters inside `max-w-[1440px]`.
 - `.nav-drawer` — native `<dialog>` side panel holding all 14 public routes, opened by a left-edge hamburger button with accessible name `Menu`; its `::backdrop` uses a translucent black scrim and it dismisses on close, Escape, backdrop click, or link click.
+- `.public-brutal` — scoped public wrapper: square corners, 2px foreground rules, hard primary offset shadows and heavier mono labels. Admin routes keep their original rounded surfaces.
 - `.pill` — small uppercase metadata chip; `.card-lift` — hover/focus elevation; `.dot-grid`, `.hero-surface` and `.admin-banner` — decorative token-based patterns.
 
 ## Rules for every page

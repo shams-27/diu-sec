@@ -53,6 +53,39 @@ test("keeps all quick links in an accessible drawer", async ({ page }) => {
   await expect(dialog).toBeHidden();
 });
 
+test("applies scoped editorial brutalism only to public pages", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  const hero = page.locator(".hero-surface").first();
+  expect(await hero.evaluate((el) => getComputedStyle(el).borderRadius)).toBe("0px");
+  expect(await hero.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe("6px");
+  expect(await hero.evaluate((el) => getComputedStyle(el).boxShadow)).toContain("6px 6px");
+
+  const stat = page.locator("dl.grid > div").first();
+  expect(await stat.evaluate((el) => getComputedStyle(el).borderRadius)).toBe("0px");
+
+  const title = page.locator(".section-title").first();
+  expect(await title.evaluate((el) => getComputedStyle(el).borderBottomWidth)).toBe("2px");
+
+  await page.getByRole("button", { name: "Menu" }).click();
+  const dialog = page.getByRole("dialog", { name: "Quick links" });
+  expect(await dialog.evaluate((el) => getComputedStyle(el).borderRadius)).toBe("0px");
+  expect(await dialog.evaluate((el) => getComputedStyle(el).borderRightWidth)).toBe("4px");
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+
+  await page.goto("/committee", { waitUntil: "networkidle" });
+  expect(await page.locator(".card-lift").first().evaluate((el) => getComputedStyle(el).borderRadius)).toBe("0px");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+  const cookie = await superAdminCookie();
+  await page.context().addCookies([{ name: "authjs.session-token", value: cookie, domain: "localhost", path: "/" }]);
+  await page.goto("/admin", { waitUntil: "networkidle" });
+  expect(await page.locator("main .admin-banner").first().evaluate((el) => getComputedStyle(el).borderRadius)).not.toBe(
+    "0px",
+  );
+});
+
 test("staggers cards, fills the viewport with pattern, scales type and disables motion", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
 

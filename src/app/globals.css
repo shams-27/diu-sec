@@ -273,3 +273,39 @@
     animation-delay: 0s !important;
   }
 }
+
+/* Public-only editorial brutalism: token colours, square surfaces, hard rules. */
+.public-brutal,
+.public-brutal * {
+  border-radius: 0;
+}
+.public-brutal :is(.hero-surface, .card-lift) {
+  border: 2px solid var(--foreground);
+  box-shadow: 6px 6px 0 var(--primary);
+}
+.public-brutal .hero-surface {
+  border-top-width: 6px;
+}
+.public-brutal .card-lift:hover,
+.public-brutal .card-lift:focus-within {
+  box-shadow: 8px 8px 0 var(--primary);
+}
+.public-brutal .section-title {
+  border-bottom: 2px solid var(--foreground);
+  padding-bottom: 0.25rem;
+}
+.public-brutal .eyebrow {
+  font-weight: 800;
+  letter-spacing: 0.24em;
+}
+.public-brutal .pill {
+  border-width: 2px;
+  border-color: var(--foreground);
+}
+.public-brutal [class*="bg-primary"] {
+  border: 2px solid var(--foreground);
+}
+.public-brutal .nav-drawer {
+  border-right: 4px solid var(--foreground);
+  box-shadow: 8px 0 0 var(--primary);
+}
