@@ -2,7 +2,7 @@ import { ViewTransition } from "react";
 
 export default function Template({ children }: { children: React.ReactNode }) {
   return (
-    <ViewTransition name="public-page" default="none" share="page-fade">
+    <ViewTransition enter="page-fade" exit="page-fade" default="none">
       <div>{children}</div>
     </ViewTransition>
   );

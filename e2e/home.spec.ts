@@ -41,46 +41,65 @@ test("staggers cards, fills the viewport with pattern, scales type and disables 
   const hasNoOverflow = () =>
     page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
 
-  const mainGutter = await paddingLeft("main");
-  expect(await paddingLeft("header > div")).toBe(mainGutter);
-  expect(await paddingLeft("footer > div:first-child")).toBe(mainGutter);
+  const expectFullWidthLayout = async () => {
+    const mainGutter = await paddingLeft("main");
+    expect(await paddingLeft("header > div")).toBe(mainGutter);
+    expect(await paddingLeft("footer > div:first-child")).toBe(mainGutter);
+    const patternWidth = await page.locator(".pattern-surface").evaluate((el) => el.getBoundingClientRect().width);
+    expect(patternWidth).toBe(await page.evaluate(() => window.innerWidth));
+    expect(await hasNoOverflow()).toBe(true);
+  };
+
   expect(await titleSize()).toBeGreaterThanOrEqual(60);
-  expect(await hasNoOverflow()).toBe(true);
+  await expectFullWidthLayout();
 
   await page.setViewportSize({ width: 1280, height: 900 });
   expect(await titleSize()).toBeGreaterThanOrEqual(96);
-  const patternWidth = await page.locator(".pattern-surface").evaluate((el) => el.getBoundingClientRect().width);
-  expect(patternWidth).toBe(await page.evaluate(() => window.innerWidth));
-  expect(await hasNoOverflow()).toBe(true);
+  await expectFullWidthLayout();
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.reload({ waitUntil: "networkidle" });
   expect(await firstCard.evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
 });
 
+test("keeps larger page titles inside the viewport", async ({ page }) => {
+  await page.goto("/committee", { waitUntil: "networkidle" });
+  await expect(page.locator(".page-title")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
 test("runs a page transition when a header nav link is clicked", async ({ page }) => {
   await page.addInitScript(() => {
     const w = window as Window & {
       __viewTransitions?: number;
-      __transitionNames?: string[];
       __transitionClasses?: string[];
+      __animations?: string[];
     };
     w.__viewTransitions = 0;
-    w.__transitionNames = [];
     w.__transitionClasses = [];
+    w.__animations = [];
     new MutationObserver((records) => {
       for (const record of records) {
-        const el = record.target as HTMLElement;
-        const name = el.style?.viewTransitionName;
-        const className = el.style?.viewTransitionClass;
-        if (name && name !== "none") w.__transitionNames?.push(name);
+        const className = (record.target as HTMLElement).style?.viewTransitionClass;
         if (className && className !== "none") w.__transitionClasses?.push(className);
       }
     }).observe(document, { attributes: true, attributeFilter: ["style"], subtree: true });
     const original = document.startViewTransition?.bind(document);
     document.startViewTransition = ((callback: () => void) => {
       w.__viewTransitions = (w.__viewTransitions ?? 0) + 1;
-      return original ? original(callback) : Promise.resolve();
+      const result = original ? original(callback) : Promise.resolve();
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          for (const animation of document.getAnimations()) {
+            const name = (animation as CSSAnimation).animationName;
+            if (name) w.__animations?.push(name);
+          }
+        }),
+      );
+      return result;
     }) as typeof document.startViewTransition;
   });
 
@@ -92,13 +111,19 @@ test("runs a page transition when a header nav link is clicked", async ({ page }
   await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "Events" }).click();
   await expect(page).toHaveURL(/\/events$/);
   expect(await count()).toBeGreaterThan(beforeNav);
+  await expect
+    .poll(() =>
+      page.evaluate(() => (window as Window & { __animations?: string[] }).__animations?.includes("page-fade-in") ?? false),
+    )
+    .toBe(true);
 
   const observed = await page.evaluate(() => {
-    const w = window as Window & { __transitionNames?: string[]; __transitionClasses?: string[] };
-    return { names: w.__transitionNames ?? [], classes: w.__transitionClasses ?? [] };
+    const w = window as Window & { __transitionClasses?: string[]; __animations?: string[] };
+    return { classes: w.__transitionClasses ?? [], animations: w.__animations ?? [] };
   });
-  expect(observed.names).toContain("public-page");
   expect(observed.classes).toContain("page-fade");
+  expect(observed.animations).toContain("page-fade-in");
+  expect(observed.animations).not.toContain("-ua-view-transition-group-anim-public-page");
 });
 
 test("zeroes page transition animations for reduced-motion users", async ({ page }) => {
