@@ -86,6 +86,11 @@ test("staggers cards, fills the viewport with pattern, scales type and disables 
   await expectFullWidthLayout();
 
   await page.setViewportSize({ width: 1280, height: 900 });
+  const mainContentWidth = await page.locator("main").evaluate((el) => {
+    const styles = getComputedStyle(el);
+    return el.getBoundingClientRect().width - parseFloat(styles.paddingLeft) - parseFloat(styles.paddingRight);
+  });
+  expect(mainContentWidth).toBeGreaterThanOrEqual(1100);
   expect(await titleSize()).toBeGreaterThanOrEqual(96);
   await expectFullWidthLayout();
 
