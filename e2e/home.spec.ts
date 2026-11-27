@@ -86,22 +86,28 @@ test("applies scoped editorial brutalism only to public pages", async ({ page })
   );
 });
 
-test("adds an asymmetric hero callout and ruled impact grid", async ({ page }) => {
+test("shows a bigger upcoming-event banner in the hero", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
 
-  const callout = page.getByRole("complementary", { name: "Club snapshot" });
-  await expect(callout).toBeHidden();
+  const banner = page.getByRole("complementary", { name: "Next event" });
+  await expect(banner).toBeVisible();
+  await expect(banner).toContainText("DIU SEC Freshers Hackathon 2026");
+  await expect(banner.getByRole("link", { name: /Event details/ })).toBeVisible();
   expect(await page.locator(".brutal-stats > div").first().evaluate((el) => getComputedStyle(el).borderLeftWidth)).toBe(
     "6px",
   );
 
   await page.setViewportSize({ width: 1280, height: 900 });
-  await expect(callout).toBeVisible();
-  const calloutBox = await callout.boundingBox();
-  const titleBox = await page.locator(".display-title").first().boundingBox();
-  expect(calloutBox).not.toBeNull();
-  expect(titleBox).not.toBeNull();
-  expect(calloutBox!.x).toBeGreaterThan(titleBox!.x + titleBox!.width);
+  const bannerBox = await banner.boundingBox();
+  // The h1 block spans the whole text column; measure its rendered text instead.
+  const titleTextRight = await page.locator(".display-title").first().evaluate((el) => {
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    return range.getBoundingClientRect().right;
+  });
+  expect(bannerBox).not.toBeNull();
+  expect(bannerBox!.width).toBeGreaterThanOrEqual(300);
+  expect(bannerBox!.x).toBeGreaterThan(titleTextRight);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 

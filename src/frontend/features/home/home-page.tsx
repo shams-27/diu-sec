@@ -11,6 +11,9 @@ const IMPACT = [
   { value: "150+", label: "Projects" },
 ];
 
+const HERO_BANNER_CLASS =
+  "brutal-callout mt-8 min-h-60 w-full max-w-3xl bg-primary p-5 text-primary-foreground xl:absolute xl:right-10 xl:top-10 xl:mt-0 xl:w-80";
+
 const MANIFESTO = [
   {
     title: "Learn by building",
@@ -25,6 +28,49 @@ const MANIFESTO = [
     body: "Seniors mentor freshers, share roadmaps and open-source everything we can, so nobody starts alone.",
   },
 ];
+
+async function HeroEventBanner() {
+  const { nextEvent, nowIso } = await getHomeHighlights();
+  const ongoing = nextEvent ? nextEvent.startsAt.getTime() <= Date.parse(nowIso) : false;
+  const linkClass =
+    "mt-4 inline-block border-t-2 border-current pt-2 font-mono text-xs font-bold uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  return (
+    <aside aria-label="Next event" className={HERO_BANNER_CLASS}>
+      <p className="font-mono text-xs font-bold uppercase tracking-[0.2em]">Next event</p>
+      {nextEvent ? (
+        <>
+          <p className="mt-3 line-clamp-2 font-heading text-3xl leading-tight xl:text-4xl">{nextEvent.title}</p>
+          <p className="mt-3 font-mono text-xs font-bold uppercase tracking-widest">
+            {ongoing ? "Happening now" : nextEvent.type.replace("_", " ")}
+          </p>
+          <p className="mt-2 text-sm tabular-nums">
+            {nextEvent.startsAt.toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+              timeZone: "UTC",
+            })}
+          </p>
+          <p className="mt-1 text-sm tabular-nums">
+            {nextEvent.capacity > nextEvent.seatsTaken
+              ? `${nextEvent.capacity - nextEvent.seatsTaken} seats left`
+              : "Full"}
+          </p>
+          <Link href={`/events/${nextEvent.slug}`} className={linkClass}>
+            Event details →
+          </Link>
+        </>
+      ) : (
+        <>
+          <p className="mt-6 font-heading text-3xl leading-none">Nothing scheduled</p>
+          <Link href="/events" className={linkClass}>
+            Browse events →
+          </Link>
+        </>
+      )}
+    </aside>
+  );
+}
 
 async function HomeHighlights() {
   const { upcoming, wings } = await getHomeHighlights();
@@ -135,19 +181,15 @@ export function HomePage() {
             </Link>
           </div>
         </div>
-        <aside
-          aria-label="Club snapshot"
-          className="brutal-callout absolute right-10 top-10 hidden w-48 bg-primary p-4 text-primary-foreground xl:block"
+        <Suspense
+          fallback={
+            <div role="status" aria-live="polite" className={HERO_BANNER_CLASS}>
+              <span className="sr-only">Loading next event</span>
+            </div>
+          }
         >
-          <p className="font-mono text-xs font-bold uppercase tracking-[0.2em]">Next up</p>
-          <p className="mt-6 font-heading text-4xl leading-none">05 wings</p>
-          <Link
-            href="/wings"
-            className="mt-6 inline-block border-t-2 border-current pt-2 font-mono text-xs font-bold uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            Explore →
-          </Link>
-        </aside>
+          <HeroEventBanner />
+        </Suspense>
       </section>
 
       <section aria-labelledby="impact-heading" className="space-y-5">
