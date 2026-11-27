@@ -1,13 +1,14 @@
 import { expect, test } from "@playwright/test";
-import { openEvent, superAdminCookie, uniqueId } from "./helpers";
+import { createFlowTestEvent, deleteFlowTestEvents, superAdminCookie, uniqueId } from "./helpers";
+
+test.beforeEach(deleteFlowTestEvents);
+test.afterEach(deleteFlowTestEvents);
 
 test("reserves a seat and checks in with the generated QR token", async ({ page, browser }) => {
-  const event = await openEvent();
-  test.skip(!event, "No published event has open seats");
-  if (!event) return;
+  const event = await createFlowTestEvent();
 
   const email = `e2e-event-${uniqueId()}@example.com`;
-  await page.goto(`/events/${event!.slug}`);
+  await page.goto(`/events/${event.slug}`);
   await page.getByRole("textbox", { name: "Full name" }).fill("E2E Attendee");
   await page.getByRole("textbox", { name: "Email" }).fill(email);
   await page.getByRole("button", { name: /reserve seat/i }).click();
@@ -20,7 +21,7 @@ test("reserves a seat and checks in with the generated QR token", async ({ page,
   const cookie = await superAdminCookie();
   await admin.addCookies([{ name: "authjs.session-token", value: cookie, domain: "localhost", path: "/" }]);
   const adminPage = await admin.newPage();
-  await adminPage.goto(`/admin/events/${event!.id}/checkin`);
+  await adminPage.goto(`/admin/events/${event.id}/checkin`);
   await adminPage.getByRole("textbox", { name: "QR token" }).fill(token);
   await adminPage.getByRole("button", { name: "Check in" }).click();
 

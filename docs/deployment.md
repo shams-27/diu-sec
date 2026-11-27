@@ -26,48 +26,42 @@ Never commit `.env` or secrets.
 ```bash
 pnpm install --frozen-lockfile
 pnpm prisma migrate deploy
-BOOTSTRAP_ONLY=true SUPER_ADMIN_EMAIL=...@diu.edu.bd pnpm prisma db seed
+SUPER_ADMIN_EMAIL=...@diu.edu.bd pnpm prisma db seed
 pnpm build
 ```
 
-`BOOTSTRAP_ONLY=true` creates only the super admin and the five wings. The default `pnpm prisma db seed` adds demo members, events, certificates and content; use it for local/demo databases, not production. The initial migration installs the `AuditLog` update/delete trigger; keep it in place—audit rows are append-only.
+The default seed creates only the super admin and the five wings; it never overwrites an existing admin or wing. Set `SEED_DEMO=true` to add demo members, events, certificates and content on a local/demo database. The migrations install the `AuditLog` update/delete/truncate triggers; keep them in place—audit rows are append-only.
 
 Subsequent deploys run `pnpm prisma migrate deploy` then `pnpm build`. Do not run `prisma db push` in production; it bypasses migration history and the trigger.
 
-## Vercel
+## Vercel (not supported yet)
 
-1. Import the repo and set the environment variables above.
-2. Point `DATABASE_URL` at the managed Postgres instance (pooled URL for the app; direct URL for migrations if the provider separates them).
-3. Build command `pnpm build`; output preset is detected by Next.js.
-4. Add the Google redirect URI for the deployed origin and verify sign-in with an `@diu.edu.bd` account.
-5. Check `/sitemap.xml`, `/robots.txt` and `/opengraph-image` after the first deploy.
+Do not deploy this app to Vercel or any serverless/ephemeral host. Uploads and generated certificate PDFs go to `public/uploads` through `src/backend/shared/storage.ts`, and those files would vanish between invocations. `STORAGE_DRIVER`/`S3_*` are documented but not wired up. Homepage `use cache` data is also invalidated per process, so multiple instances would serve stale events. Both need shared storage and a shared cache handler before serverless or horizontal scaling is supported.
 
-**Storage limitation:** uploads and generated certificate PDFs currently go to `public/uploads` through `src/backend/shared/storage.ts`. On Vercel's read-only/ephemeral filesystem those files will not persist. Deploy on a host with persistent storage until an S3-compatible adapter replaces `writeAsset()`; `STORAGE_DRIVER`/`S3_*` are not wired up yet.
-
-## Self-hosted / persistent host
+## Self-hosted / persistent host (supported)
 
 ```bash
 pnpm start --port 3000
 ```
 
-Serve behind a TLS reverse proxy that **overwrites** `x-forwarded-for` with the real client address; the rate limiter reads it for public form submissions and a client-supplied value would bypass the limit. Keep `public/uploads` on a persistent volume with write access for the app user.
+Run **one** app instance. Uploads live on the local filesystem and homepage cache invalidation is per process, so horizontal scaling is not supported yet. Keep `public/uploads` on a persistent volume with write access for the app user. Serve behind a TLS reverse proxy that **overwrites** `x-forwarded-for` with the real client address; the rate limiter reads it for public form submissions and a client-supplied value would bypass the limit.
 
 ## Operational notes
 
-- Rate limiting is **per process**: 30 submissions per 10 minutes per IP on `/join`, `/contact` and event registration, with at most 5,000 tracked IPs per process. Multiple instances need a shared store (Redis or equivalent) before horizontal scaling.
-- Homepage events/wings use the `minutes` cache profile (5-minute client stale, 1-minute server revalidation, 1-hour expiry) and are invalidated by event/wing changes; its Suspense fallback reserves space so revalidation does not shift the page.
+- Rate limiting uses a shared Postgres `RateLimitBucket` table: 30 submissions per 10 minutes per IP on `/join`, `/contact` and event registration. Stale buckets are pruned hourly from each process.
+- Homepage events/wings use the `minutes` cache profile (5-minute client stale, 1-minute server revalidation, 1-hour expiry) and are invalidated by event/wing changes; invalidation is process-local, which is why only one instance is supported. Its Suspense fallback reserves space so revalidation does not shift the page.
 - Honeypot fields are hidden from users and keyboard focus; bots that fill them are rejected silently.
 - RBAC is enforced in server actions and the `/admin` proxy; roles come from the `User` table on every JWT callback, so demotions take effect on the next request.
-- Audit logs are read-only in the UI and blocked by a database trigger; do not grant the app role `UPDATE`/`DELETE` on `AuditLog` beyond what migrations create.
+- Audit logs are read-only in the UI and blocked by database triggers for `UPDATE`, `DELETE` and `TRUNCATE`; do not grant those operations on `AuditLog` beyond what migrations create.
 - Verify a generated certificate end to end after deploy: issue from `/admin/certificates`, scan/open the QR URL, confirm VALID, then revoke and confirm REVOKED.
 
 ## Local verification
 
 ```bash
 pnpm lint && pnpm typecheck && pnpm test && pnpm build
+SEED_DEMO=true pnpm prisma db seed
 pnpm exec playwright install chromium
-pnpm start --port 3003
 pnpm e2e
 ```
 
-E2E assumes a demo-seeded database and a server on port 3003; `playwright.config.ts` reuses an existing server locally and starts its own in CI.
+E2E assumes a demo-seeded database. `playwright.config.ts` builds the app and starts its own server on port 3003, never reusing a stale listener.

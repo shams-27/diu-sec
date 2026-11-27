@@ -53,15 +53,37 @@ export async function deleteJoinTestMembers() {
   }
 }
 
-export async function openEvent() {
+export async function createFlowTestEvent() {
+  const db = new PrismaClient();
+  try {
+    const id = uniqueId();
+    return await db.event.create({
+      data: {
+        title: `E2E Flow Event ${id}`,
+        slug: `e2e-flow-event-${id}`,
+        type: "WORKSHOP",
+        description: "Temporary published event for end-to-end tests",
+        startsAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        capacity: 10,
+        status: "PUBLISHED",
+      },
+      select: { id: true, slug: true },
+    });
+  } finally {
+    await db.$disconnect();
+  }
+}
+
+export async function deleteFlowTestEvents() {
   const db = new PrismaClient();
   try {
     const events = await db.event.findMany({
-      where: { status: "PUBLISHED", startsAt: { gt: new Date() } },
-      select: { id: true, slug: true, capacity: true, seatsTaken: true },
-      orderBy: { startsAt: "asc" },
+      where: { title: { startsWith: "E2E Flow Event " } },
+      select: { id: true },
     });
-    return events.find((event) => event.capacity > event.seatsTaken);
+    const ids = events.map((event) => event.id);
+    await db.certificate.deleteMany({ where: { eventId: { in: ids } } });
+    await db.event.deleteMany({ where: { id: { in: ids } } });
   } finally {
     await db.$disconnect();
   }

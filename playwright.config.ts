@@ -16,9 +16,9 @@ export default defineConfig({
     ...devices["Desktop Chrome"],
   },
   webServer: {
-    command: "pnpm start --port 3003",
+    command: "pnpm build && pnpm start --port 3003",
     url: "http://localhost:3003",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120_000,
   },
 });

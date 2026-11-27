@@ -88,7 +88,7 @@ git clone <repo-url> diu-sec && cd diu-sec
 pnpm install
 cp .env.example .env            # fill values (Section 4)
 pnpm prisma migrate dev
-pnpm prisma db seed
+SEED_DEMO=true pnpm prisma db seed   # omit SEED_DEMO for admin+wings only
 pnpm dev                        # http://localhost:3000
 ```
 

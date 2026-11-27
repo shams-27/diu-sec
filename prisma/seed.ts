@@ -54,12 +54,12 @@ const WINGS = [
 ] as const;
 
 async function main() {
-  const bootstrap = process.env.BOOTSTRAP_ONLY === "true";
+  const demo = process.env.SEED_DEMO === "true";
   const adminEmail = (process.env.SUPER_ADMIN_EMAIL || "president@diu.edu.bd").toLowerCase();
   await db.user.upsert({
     where: { email: adminEmail },
     create: { email: adminEmail, name: "DIU SEC President", role: "SUPER_ADMIN" },
-    update: bootstrap ? {} : { role: "SUPER_ADMIN" },
+    update: demo ? { role: "SUPER_ADMIN" } : {},
   });
 
   const wings: Record<string, Wing> = {};
@@ -67,15 +67,15 @@ async function main() {
     const row = await db.wing.upsert({
       where: { slug: wing.slug },
       create: { ...wing, responsibilities: [...wing.responsibilities] },
-      update: bootstrap
-        ? {}
-        : { name: wing.name, description: wing.description, responsibilities: [...wing.responsibilities] },
+      update: demo
+        ? { name: wing.name, description: wing.description, responsibilities: [...wing.responsibilities] }
+        : {},
     });
     wings[wing.slug] = row;
   }
 
-  // Production bootstrap: real admin account plus wing structure, no demo content.
-  if (bootstrap) return;
+  // Default seed: real admin account plus wing structure, no demo content.
+  if (!demo) return;
 
   const current = await db.execSession.upsert({
     where: { year: 2026 },
@@ -565,7 +565,7 @@ async function main() {
 }
 
 main()
-  .then(() => console.log(process.env.BOOTSTRAP_ONLY === "true" ? "Bootstrap complete" : "Seed complete"))
+  .then(() => console.log(process.env.SEED_DEMO === "true" ? "Seed complete" : "Bootstrap complete"))
   .catch((error) => {
     console.error(error);
     process.exitCode = 1;

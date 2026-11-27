@@ -1,10 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { openEvent, superAdminCookie, uniqueId } from "./helpers";
+import { createFlowTestEvent, deleteFlowTestEvents, superAdminCookie, uniqueId } from "./helpers";
+
+test.beforeEach(deleteFlowTestEvents);
+test.afterEach(deleteFlowTestEvents);
 
 test("issues a certificate and verifies it publicly", async ({ page, browser }) => {
-  const event = await openEvent();
-  test.skip(!event, "No published event available for issuance");
-  if (!event) return;
+  const event = await createFlowTestEvent();
 
   const email = `e2e-cert-${uniqueId()}@diu.edu.bd`;
   const cookie = await superAdminCookie();
@@ -12,7 +13,7 @@ test("issues a certificate and verifies it publicly", async ({ page, browser }) 
 
   await page.goto("/admin/certificates");
   await page.getByLabel("Type").selectOption("PARTICIPANT");
-  await page.getByLabel("Event").selectOption(event!.id);
+  await page.getByLabel("Event").selectOption(event.id);
   await page.getByLabel("Recipients").fill(`E2E Recipient, ${email}`);
   await page.getByRole("button", { name: "Issue certificates" }).click();
 

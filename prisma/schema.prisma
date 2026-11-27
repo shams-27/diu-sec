@@ -406,3 +406,12 @@ model AuditLog {
   @@index([entity, entityId])
   @@index([actorId, createdAt])
 }
+
+// Shared across app instances so a public form cannot be flooded by rotating processes.
+model RateLimitBucket {
+  key         String   @id
+  windowStart DateTime
+  count       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

@@ -1,35 +1,38 @@
 import { headers } from "next/headers";
+import { db } from "@/backend/shared/db";
 
 const WINDOW_MS = 10 * 60 * 1000;
 const LIMIT = 30;
-const MAX_ENTRIES = 5000;
-const buckets = new Map<string, { start: number; count: number }>();
+let lastCleanup = 0;
 
-/** Per-process, in-memory limiting; a multi-instance deployment needs a shared store.
- *  Only trust x-forwarded-for when the edge overwrites it; clients can spoof it otherwise.
+/**
+ * Shared Postgres counter: every app instance sees the same bucket. Deployments must
+ * have the edge overwrite x-forwarded-for; a client-supplied value can bypass any IP limit.
  */
 export async function rateLimited(bucket: string): Promise<boolean> {
   const requestHeaders = await headers();
   const forwarded = requestHeaders.get("x-forwarded-for");
   const ip = forwarded?.split(",")[0]?.trim() || requestHeaders.get("x-real-ip") || "unknown";
   const key = `${bucket}:${ip}`;
-  const now = Date.now();
-  let entry = buckets.get(key);
+  const now = new Date();
+  const cutoff = new Date(now.getTime() - WINDOW_MS);
 
-  if (!entry || now - entry.start >= WINDOW_MS) entry = { start: now, count: 0 };
-  if (entry.count >= LIMIT) return true;
-  entry.count++;
-  buckets.set(key, entry);
+  const rows = await db.$queryRaw<{ count: number }[]>`
+    WITH input AS (SELECT ${key} AS key, ${now} AS now, ${cutoff} AS cutoff)
+    INSERT INTO "RateLimitBucket" ("key", "windowStart", "count", "createdAt", "updatedAt")
+    SELECT key, now, 1, now, now FROM input
+    ON CONFLICT ("key") DO UPDATE SET
+      "windowStart" = CASE WHEN "RateLimitBucket"."windowStart" <= (SELECT cutoff FROM input) THEN (SELECT now FROM input) ELSE "RateLimitBucket"."windowStart" END,
+      "count" = CASE WHEN "RateLimitBucket"."windowStart" <= (SELECT cutoff FROM input) THEN 1 ELSE "RateLimitBucket"."count" + 1 END,
+      "updatedAt" = (SELECT now FROM input)
+    RETURNING "count"
+  `;
 
-  if (buckets.size > MAX_ENTRIES) {
-    for (const [storedKey, stored] of buckets) {
-      if (now - stored.start >= WINDOW_MS) buckets.delete(storedKey);
-    }
-    while (buckets.size > MAX_ENTRIES) {
-      const oldest = buckets.keys().next().value;
-      if (!oldest) break;
-      buckets.delete(oldest);
-    }
+  // Bound table growth without a scheduler; a shared cleanup job can replace this at scale.
+  if (now.getTime() - lastCleanup > 60 * 60 * 1000) {
+    lastCleanup = now.getTime();
+    await db.$executeRaw`DELETE FROM "RateLimitBucket" WHERE "windowStart" < ${new Date(now.getTime() - 24 * 60 * 60 * 1000)}`;
   }
-  return false;
+
+  return Number(rows[0].count) > LIMIT;
 }
