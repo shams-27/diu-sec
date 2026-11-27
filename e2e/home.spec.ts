@@ -29,18 +29,45 @@ test("keeps all quick links in an accessible drawer", async ({ page }) => {
   await expect(page.locator("header a, header button").first()).toHaveAttribute("aria-label", "Menu");
   await expect(menuButton.locator("svg")).toBeVisible();
 
+  const recordTransitions = () =>
+    page.evaluate(() => {
+      const w = window as Window & {
+        drawerTransitions?: { property: string; pseudo: string }[];
+        drawerRecorded?: boolean;
+      };
+      w.drawerTransitions = [];
+      if (w.drawerRecorded) return;
+      w.drawerRecorded = true;
+      document.querySelector("dialog.nav-drawer")!.addEventListener("transitionstart", (event) => {
+        const transition = event as TransitionEvent;
+        w.drawerTransitions!.push({ property: transition.propertyName, pseudo: transition.pseudoElement });
+      });
+    });
+  const transitions = () =>
+    page.evaluate(() => (window as Window & { drawerTransitions?: unknown[] }).drawerTransitions ?? []);
+
+  await recordTransitions();
   await page.getByRole("button", { name: "Menu" }).click();
   const dialog = page.getByRole("dialog", { name: "Quick links" });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("link")).toHaveCount(14);
   await expect(dialog.getByRole("link", { name: "Committee" })).toBeVisible();
   await expect(dialog.getByRole("link", { name: "Contact" })).toBeVisible();
+  expect(await transitions()).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ property: "transform" }),
+      { property: "background-color", pseudo: "::backdrop" },
+    ]),
+  );
+  await expect.poll(() => dialog.evaluate((el) => getComputedStyle(el).transform)).toBe("matrix(1, 0, 0, 1, 0, 0)");
   const dialogBox = await dialog.boundingBox();
   expect(dialogBox?.y).toBe(0);
   expect(dialogBox && Math.round(dialogBox.y + dialogBox.height)).toBe(await page.evaluate(() => innerHeight));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
+  await recordTransitions();
   await dialog.getByRole("button", { name: "Close quick links" }).click();
+  expect(await transitions()).toEqual(expect.arrayContaining([expect.objectContaining({ property: "transform" })]));
   await expect(dialog).toBeHidden();
 
   await page.getByRole("button", { name: "Menu" }).click();
@@ -50,6 +77,15 @@ test("keeps all quick links in an accessible drawer", async ({ page }) => {
   await page.getByRole("button", { name: "Menu" }).click();
   await dialog.getByRole("link", { name: "Events" }).click();
   await expect(page).toHaveURL(/\/events$/);
+  await expect(dialog).toBeHidden();
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await recordTransitions();
+  await page.getByRole("button", { name: "Menu" }).click();
+  await expect(dialog).toBeVisible();
+  expect(await transitions()).toEqual([]);
+  expect(await dialog.evaluate((el) => getComputedStyle(el).transitionDuration)).toBe("0s");
+  await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
 });
 

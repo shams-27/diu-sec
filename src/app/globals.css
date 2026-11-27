@@ -264,8 +264,35 @@
   pointer-events: none;
 }
 
+.nav-drawer {
+  transform: translateX(-100%);
+  transition:
+    transform 220ms ease-out,
+    display 220ms allow-discrete,
+    overlay 220ms allow-discrete;
+}
+.nav-drawer[open] {
+  transform: translateX(0);
+}
+@starting-style {
+  .nav-drawer[open] {
+    transform: translateX(-100%);
+  }
+}
 .nav-drawer::backdrop {
+  background: rgb(0 0 0 / 0);
+  transition:
+    background-color 220ms ease-out,
+    display 220ms allow-discrete,
+    overlay 220ms allow-discrete;
+}
+.nav-drawer[open]::backdrop {
   background: rgb(0 0 0 / 0.45);
+}
+@starting-style {
+  .nav-drawer[open]::backdrop {
+    background: rgb(0 0 0 / 0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -273,6 +300,10 @@
   .stagger-in > *,
   .pattern-surface {
     animation: none;
+  }
+  .nav-drawer,
+  .nav-drawer::backdrop {
+    transition: none;
   }
   .link-underline::after {
     transition: none;
