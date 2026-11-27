@@ -15,17 +15,17 @@ Two apps in one repo:
 
 | Layer | Choice |
 |---|---|
-| Framework | Next.js 14+ (App Router), TypeScript (strict) |
-| Styling | Tailwind CSS + shadcn/ui |
+| Framework | Next.js 16 (App Router), React 19, TypeScript (strict) |
+| Styling | Tailwind CSS 4 + shadcn/ui-style local components (`src/frontend/shared/ui`) |
 | Database | PostgreSQL |
-| ORM | Prisma |
-| Auth | Auth.js (NextAuth) — Google OAuth, restricted to `@diu.edu.bd` |
-| Validation | Zod (shared between client and server) |
-| Forms | React Hook Form + `@hookform/resolvers/zod` |
-| PDFs | `pdf-lib` (certificates), `@react-pdf/renderer` optional (ID cards) |
+| ORM | Prisma 6 |
+| Auth | Auth.js v5 (NextAuth) — Google OAuth, restricted to `@diu.edu.bd` |
+| Validation | Zod 3 (shared between client and server) |
+| Forms | Native `<form>` + server actions + `useActionState`; Zod-validated on the server |
+| PDFs | `pdf-lib` (certificate PDFs and ID-card PDF export; PNG via canvas) |
 | QR | `qrcode` (generate), `html5-qrcode` (scan) |
 | Charts | Recharts |
-| Storage | S3-compatible (Cloudflare R2 / Supabase Storage); local `./uploads` in dev |
+| Storage | Local filesystem (`public/uploads`) only; single-instance self-hosted (S3 adapter not wired up) |
 | Tests | Vitest (unit), Playwright (e2e) |
 | Package manager | pnpm |
 
@@ -35,11 +35,11 @@ Stack is a default. If you change it, update this table and `docs/DECISIONS.md`.
 
 ## 1b. OpenCode Plugins, Skills & MCP
 
-Configured in `opencode.json` and `.opencode/skills/`:
+Configured in `opencode.json`:
 
 - **superpowers** plugin (`obra/superpowers`): brainstorm, plan, TDD, debugging and verification skills.
 - **ponytail** plugin (`@dietrichgebert/ponytail`): minimal-code discipline; `/ponytail`, `/ponytail-review`, `/ponytail-audit`.
-- **UI/UX Pro Max** skill + `design-system`, `ui-styling`, `brand` skills: design system generation for every UI phase.
+- **UI/UX Pro Max** skill + `design-system`, `ui-styling`, `brand` skills: design system generation for every UI phase. The repo-local `.opencode/skills/` path is absent, so the global skill is used (decision #7).
 - **context7** MCP (live library docs) and **playwright** MCP (browser verification).
 
 Requirements: Node 20+, Python 3 (UI/UX Pro Max search script), git. Restart OpenCode after cloning so plugins install.
@@ -55,18 +55,24 @@ diu-sec/
 ├── AGENTS.md                 # copy of Section 12 (agent rules) for OpenCode
 ├── docs/
 │   ├── DECISIONS.md          # log of every assumption/decision
+│   ├── design-system.md
+│   ├── deployment.md
 │   ├── requirements/         # website.md, admin-panel.md (source of truth)
+│   ├── superpowers/plans/
 │   └── archive/              # original PDFs (humans only)
 ├── prisma/
 │   ├── schema.prisma
+│   ├── migrations/
+│   ├── sql/                  # append-only audit trigger source
 │   └── seed.ts
 ├── src/
+│   ├── proxy.ts              # Next 16 request guard for /admin/*
 │   ├── app/                  # routing shell: thin page.tsx files with metadata + re-export
 │   │   ├── (public)/
 │   │   ├── admin/
 │   │   └── api/
 │   ├── frontend/
-│   │   ├── shared/           # ui/, shell/, form/, utils.ts, page-hero.tsx
+│   │   ├── shared/           # ui/, shell/, form/, page-hero.tsx
 │   │   └── features/         # one folder per domain: page bodies + components
 │   │       └── <domain>/     # e.g. membership/, events/, certificates/
 │   └── backend/
@@ -74,6 +80,7 @@ diu-sec/
 │       └── features/         # one folder per domain
 │           └── <domain>/     # actions, queries.ts, generators
 ├── tests/
+├── e2e/
 └── .env.example
 ```
 
@@ -102,6 +109,8 @@ pnpm dev                        # http://localhost:3000
 | `pnpm e2e` | Playwright |
 | `pnpm prisma studio` | DB browser |
 
+Production setup is in [docs/deployment.md](docs/deployment.md). Only single-instance self-hosting is supported right now; Vercel/serverless is not.
+
 ---
 
 ## 4. Environment Variables (`.env.example`)
@@ -129,7 +138,7 @@ Never commit `.env`.
 |---|---|
 | DIU SWE Student ID | Format `XXX-35-XXX`: `^\d{3}-35-\d{3,4}$` (the middle `35` is the SWE department code). Keep the regex in one constant so it is easy to adjust. |
 | Institutional email | Must end with `@diu.edu.bd` (case-insensitive) |
-| Certificate ID | `DIU-SEC-CERT-XXXX` → `^DIU-SEC-CERT-[0-9A-Z]{4,}$`, unique, non-sequential-guessable (random suffix) |
+| Certificate ID | `DIU-SEC-CERT-` + 6 random chars (A-Z, 2-9); validator accepts 4+: `^DIU-SEC-CERT-[0-9A-Z]{4,}$`, unique and non-sequential |
 | Member ID card number | Generated, unique, e.g. `SEC-<year>-<seq>` |
 | GitHub URL | Must match `https://github.com/<owner>/<repo>` |
 | Uploads | Images ≤ 5 MB (jpg/png/webp); PDFs ≤ 25 MB |
@@ -138,11 +147,11 @@ Never commit `.env`.
 
 ## 6. Data Model (Prisma — implement in `schema.prisma`)
 
-Core entities and key fields. Add `createdAt`, `updatedAt` to all.
+Core entities and key fields. Most models carry `createdAt`/`updatedAt`; see `schema.prisma` for exact timestamps.
 
 - **User** — id, email (`@diu.edu.bd`), name, role (`SUPER_ADMIN | GENERAL_SECRETARY | WING_LEAD | PUBLICATION_EDITOR`), wingId?
 - **Member** — studentId (unique), name, email (unique), batch, phone?, wingPreference, status (`PENDING | APPROVED | REJECTED | REVOKED`), memberCardNo?, cardIssuedAt?
-- **Session** — year (unique), label, isCurrent, archived
+- **ExecSession** — year (unique), label, isCurrent, archived
 - **CommitteeMember** — sessionId, name, title, batch, photoUrl, socialLinks (JSON), order
 - **Wing** — slug, name, description, responsibilities, syllabusUrl?, leadId?
 - **WingMember** — wingId, memberId, role (`LEAD | CORE | MEMBER`)
@@ -159,7 +168,8 @@ Core entities and key fields. Add `createdAt`, `updatedAt` to all.
 - **GalleryAlbum / GalleryPhoto** — album category (`ORIENTATION | CONTEST | TECH_FEST | OTHER`)
 - **Faq** — question, answer, order
 - **ContactMessage** — name, email, message, status
-- **AuditLog** — actorId, action (`CREATE | UPDATE | DELETE | APPROVE | REVOKE ...`), entity, entityId, before (JSON), after (JSON), ip, createdAt. **Append-only** (no update/delete endpoints; add a DB-level rule or trigger that blocks UPDATE/DELETE).
+- **AuditLog** — actorId/actorEmail, action (`CREATE | UPDATE | DELETE | APPROVE | REVOKE ...`), entity, entityId, before/after (JSON), createdAt. **Append-only**: no edit/delete endpoints; DB triggers block UPDATE, DELETE and TRUNCATE.
+- **RateLimitBucket** — key, windowStart, count; shared Postgres counter for public-form rate limits.
 
 ---
 
@@ -223,7 +233,7 @@ Global: responsive, accessible (WCAG AA), SEO metadata + OpenGraph, sitemap, `lo
 Rules:
 - SSO via Google, **only `@diu.edu.bd`** accounts; reject all others at sign-in.
 - A user with no assigned role gets no admin access.
-- Enforce permissions **on the server** (middleware + inside every server action). Hiding UI is not enough.
+- Enforce permissions **on the server** (`src/proxy.ts` + inside every server action). Hiding UI is not enough.
 - **Every** create/update/delete/approve/revoke must call `writeAudit()`. Audit log is read-only for everyone.
 
 ---
@@ -241,8 +251,8 @@ Rules:
 3. Admin scans QR at `/admin/events/[id]/checkin` → sets `checkedInAt`, prevents double check-in.
 
 **Certificate issuance**
-1. Admin selects event + recipients (or CSV) → bulk generate `DIU-SEC-CERT-XXXX` IDs.
-2. Render PDF with name, type, date, ID, and QR pointing to `${SITE_URL}/verify/<certId>`; store PDF.
+1. Admin selects an event (or event-less issuance) and pastes `Name, email` lines → bulk generate `DIU-SEC-CERT-` + 6 random chars.
+2. Render PDF with name, type, date, ID, and QR pointing to `${NEXT_PUBLIC_SITE_URL}/verify/<certId>`; store PDF.
 3. Public verify page shows VALID/REVOKED/NOT FOUND. Revocation is instant and audited.
 
 ---
@@ -254,13 +264,13 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 ### Phase 0 — Foundation
 - [x] Init Next.js + TS + Tailwind + shadcn/ui, ESLint, Prettier, pnpm scripts
 - [x] Generate design system with UI/UX Pro Max → `docs/design-system.md`; define Tailwind tokens from it
-- [x] Prisma schema (Section 6), first migration, `seed.ts` (super admin, 5 wings, sample session, sample data)
+- [x] Prisma schema (Section 6), migrations, `seed.ts` (super admin + 5 wings; demo content opt-in via `SEED_DEMO=true`)
 - [x] `validators.ts` with ID/email/cert regexes + unit tests
 - [x] Layouts: public shell (nav/footer) and admin shell (sidebar)
 
 ### Phase 1 — Auth, RBAC, Audit
 - [x] Auth.js Google SSO, domain restriction, session with role
-- [x] `rbac.ts` + route middleware for `/admin/*`
+- [x] `rbac.ts` + `src/proxy.ts` route guard for `/admin/*`
 - [x] `audit.ts` + append-only enforcement
 - [x] A-12 pages (roles, audit viewer with filters)
 
@@ -290,10 +300,10 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 - [x] Dashboard cards and wing distribution chart
 
 ### Phase 9 — Hardening
-- [x] Rate limiting on public forms, honeypot/captcha on `/join` and `/contact`
+- [x] Shared Postgres rate limiting on public forms; honeypot on `/join` and `/contact`
 - [x] SEO, sitemap, OG images, a11y pass, Lighthouse ≥ 90
 - [x] Playwright e2e for: join flow, registration + check-in, cert issue + verify, RBAC denial
-- [x] Deployment docs (Vercel + managed Postgres)
+- [x] Deployment docs (single-instance self-hosted + managed Postgres)
 
 ---
 
@@ -305,7 +315,7 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 4. Loading, empty, and error states handled.
 5. Mobile-responsive (≥ 360px) and keyboard accessible.
 6. `pnpm lint && pnpm typecheck && pnpm test` pass.
-7. Seed data lets the feature be demoed without manual setup.
+7. `SEED_DEMO=true pnpm prisma db seed` lets the feature be demoed without manual setup.
 
 ---
 
@@ -315,7 +325,7 @@ Work in phases. Finish each phase (it builds, lints, typechecks, and works) befo
 - Use only the stack in Section 1. Do not add major dependencies without logging why in `docs/DECISIONS.md`.
 - Keep ID/email/cert regexes in `src/backend/shared/validators.ts` only — never duplicate them.
 - All mutations go through server actions in `src/backend/features/<domain>/*`, which must: (1) authenticate, (2) authorize via `rbac.ts`, (3) validate via Zod, (4) write, (5) call `writeAudit()`.
-- Never hard-delete audit logs; never expose an edit/delete path for them.
+- Never hard-delete audit logs (including `TRUNCATE`); never expose an edit/delete path for them.
 - Never commit secrets. Use `.env.example` for new variables.
 - Fix the whole class of a bug, not just one instance (e.g., if a permission check is missing in one action, check all actions).
 - After each phase: run lint, typecheck, tests; fix failures; then commit.
