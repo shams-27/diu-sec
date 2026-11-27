@@ -74,7 +74,7 @@ export default async function GalleryPage({
               : "No albums have been added yet. Check back soon."}
           </p>
         ) : (
-          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="stagger-in grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {albums.map((album) => {
               const cover = album.coverUrl ?? album.photos[0]?.url;
               return (

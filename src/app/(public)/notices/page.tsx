@@ -80,7 +80,7 @@ export default async function NoticesPage({
             There are no active notices in this category. Check back soon.
           </p>
         ) : (
-          <ul className="space-y-4">
+          <ul className="stagger-in space-y-4">
             {notices.map((notice) => (
               <li key={notice.id} className="card-lift rounded-2xl border border-border bg-card p-5 shadow-sm">
                 <div className="flex flex-wrap items-center gap-2">

@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { uniqueId } from "./helpers";
+import { deleteJoinTestMembers, uniqueId } from "./helpers";
+
+test.beforeEach(deleteJoinTestMembers);
+test.afterEach(deleteJoinTestMembers);
 
 test("applies for membership and shows a pending digital ID card", async ({ page }) => {
   const stamp = uniqueId();

@@ -79,7 +79,7 @@ export default async function ProjectsPage({
               : `No approved projects match ${tag}. Try another filter.`}
           </p>
         ) : (
-          <ul className="grid gap-5 md:grid-cols-2">
+          <ul className="stagger-in grid gap-5 md:grid-cols-2">
             {visible.map((project) => (
               <li key={project.id} className="card-lift rounded-2xl border border-border bg-card p-5 shadow-sm">
                 <div className="flex flex-wrap gap-2">

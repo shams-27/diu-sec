@@ -37,7 +37,7 @@ export default async function WingsPage() {
             No wings have been published yet.
           </p>
         ) : (
-          <ul className="grid gap-5 md:grid-cols-2">
+          <ul className="stagger-in grid gap-5 md:grid-cols-2">
             {wings.map((wing, index) => {
               const lead = wing.members.find((entry) => entry.role === "LEAD");
               const cores = wing.members.filter((entry) => entry.role === "CORE");

@@ -44,6 +44,15 @@ export async function deleteHomeTestEvents() {
   }
 }
 
+export async function deleteJoinTestMembers() {
+  const db = new PrismaClient();
+  try {
+    await db.member.deleteMany({ where: { email: { startsWith: "e2e-join-" } } });
+  } finally {
+    await db.$disconnect();
+  }
+}
+
 export async function openEvent() {
   const db = new PrismaClient();
   try {

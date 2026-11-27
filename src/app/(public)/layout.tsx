@@ -11,7 +11,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         Skip to content
       </a>
       <SiteHeader />
-      <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-10">
+      <main id="main" className="pattern-surface mx-auto w-full max-w-6xl flex-1 px-4 py-10">
         {children}
       </main>
       <SiteFooter />

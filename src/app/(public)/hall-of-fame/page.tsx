@@ -81,7 +81,7 @@ export default async function HallOfFamePage({
             No verified entries in this category yet. Check back soon.
           </p>
         ) : (
-          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="stagger-in grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {entries.map((entry) => (
               <li key={entry.id} className="card-lift rounded-2xl border border-border bg-card p-5 shadow-sm">
                 <div className="flex items-start gap-4">

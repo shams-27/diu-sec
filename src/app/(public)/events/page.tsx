@@ -71,7 +71,7 @@ export default async function EventsPage({
             No {tab} events yet. Check back soon.
           </p>
         ) : (
-          <ul className="grid gap-5 md:grid-cols-2">
+          <ul className="stagger-in grid gap-5 md:grid-cols-2">
             {visible.map((event) => {
               const percent = event.capacity > 0 ? Math.min(100, Math.round((event.seatsTaken / event.capacity) * 100)) : 0;
               const full = event.capacity === 0 || event.seatsTaken >= event.capacity;

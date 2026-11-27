@@ -30,7 +30,7 @@ export default async function FaqPage() {
             No questions have been posted yet. Check back soon.
           </p>
         ) : (
-          <div className="space-y-4">
+          <div className="stagger-in space-y-4">
             {faqs.map((faq) => (
               <details key={faq.id} className="card-lift rounded-xl border border-border bg-card p-5 shadow-sm">
                 <summary className="cursor-pointer rounded-md font-heading text-xl leading-tight tracking-wide marker:text-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">

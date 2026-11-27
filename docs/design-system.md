@@ -8,7 +8,7 @@ Regenerated 2026-11-27 with UI/UX Pro Max (`search.py "blue university engineeri
 
 - **Pattern:** Hero-centric, vibrant & block-based — bold, energetic, geometric blocks, high contrast. Fits a student club; keep contrast and focus rings explicit.
 - **Type:** Bebas Neue for large display headings only; Source Sans 3 for body; Geist Mono for eyebrow labels and numeric metadata. Aggressive scale: 32px+ section titles, 48px+ hero display.
-- **Motion:** 200–350ms transitions, 60ms stagger on card grids; `prefers-reduced-motion: reduce` removes non-essential motion.
+- **Motion:** 200–350ms transitions, 60ms stagger on card grids; `prefers-reduced-motion: reduce` removes non-essential motion. Use `.stagger-in` on repeated-content containers, `.link-underline` for header/footer links and `.pattern-surface` for low-contrast CSS texture; never animate the home hero or LCP text.
 - **Spacing:** 4/8px rhythm, 48px+ between major sections.
 
 ## Palette (light — bluish)
@@ -38,6 +38,9 @@ Regenerated 2026-11-27 with UI/UX Pro Max (`search.py "blue university engineeri
 - `.lead-text` — Source Sans 3, `text-lg sm:text-xl`, muted foreground, max 65ch.
 - `.stat-value` — Bebas Neue, `text-4xl sm:text-5xl`, tabular numerals.
 - `.rise-in` — shared 350ms fade-up with reduced-motion opt-out; used by public heroes and the admin dashboard.
+- `.stagger-in` — applies the same fade-up to direct children with a 60ms step (capped after eight); use on repeated cards/lists, never on the hero.
+- `.link-underline` — transform-based underline that grows on hover/focus; use on nav and footer links.
+- `.pattern-surface` — low-contrast CSS grid + radial glow built from semantic tokens; applied to the public `<main>` so pages are not flat without changing card/canvas contrast.
 - `.pill` — small uppercase metadata chip; `.card-lift` — hover/focus elevation; `.dot-grid`, `.hero-surface` and `.admin-banner` — decorative token-based patterns.
 
 ## Rules for every page

@@ -40,7 +40,7 @@ export default async function MagazinePage() {
             No magazine issues have been published yet. Check back soon.
           </p>
         ) : (
-          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="stagger-in grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {issues.map((issue) => (
               <li key={issue.id} className="card-lift overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
                 {issue.coverUrl ? (

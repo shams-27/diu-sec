@@ -71,7 +71,7 @@ async function HomeHighlights() {
             No upcoming events published yet. Check back soon.
           </p>
         ) : (
-          <ul className="grid gap-4 md:grid-cols-3">
+          <ul className="stagger-in grid gap-4 md:grid-cols-3">
             {upcoming.map((event) => (
               <li key={event.id} className="card-lift rounded-2xl border border-border bg-card p-5">
                 <div className="flex flex-wrap items-center gap-2">
@@ -116,7 +116,7 @@ async function HomeHighlights() {
             Wings are being set up. Check back soon.
           </p>
         ) : (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="stagger-in grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {wings.map((wing) => (
               <li key={wing.id} className="card-lift rounded-2xl border border-border bg-card p-5">
                 <h3 className="font-heading text-2xl tracking-wide">{wing.name}</h3>
@@ -173,7 +173,7 @@ export default function HomePage() {
 
       <section aria-labelledby="impact-heading" className="space-y-5">
         <SectionTitle id="impact-heading">Our impact</SectionTitle>
-        <dl className="rise-in grid grid-cols-2 gap-4 md:grid-cols-4" style={{ animationDelay: "80ms" }}>
+        <dl className="stagger-in grid grid-cols-2 gap-4 md:grid-cols-4">
           {IMPACT.map((item) => (
             <div key={item.label} className="card-lift rounded-2xl border border-border bg-card p-5 shadow-sm">
               <dt className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{item.label}</dt>
@@ -185,7 +185,7 @@ export default function HomePage() {
 
       <section aria-labelledby="manifesto-heading" className="space-y-5">
         <SectionTitle id="manifesto-heading">What we stand for</SectionTitle>
-        <div className="rise-in grid gap-4 md:grid-cols-3" style={{ animationDelay: "160ms" }}>
+        <div className="stagger-in grid gap-4 md:grid-cols-3">
           {MANIFESTO.map((item, index) => (
             <article key={item.title} className="card-lift rounded-2xl border border-border bg-card p-6">
               <p className="font-mono text-xs font-semibold text-primary tabular-nums">0{index + 1}</p>

@@ -67,7 +67,7 @@ export default async function ResourcesPage({
               : "No resources have been added yet. Check back soon."}
           </p>
         ) : (
-          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="stagger-in grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {resources.map((resource) => (
               <li key={resource.id} className="card-lift rounded-2xl border border-border bg-card p-5 shadow-sm">
                 <span className="pill">{resource.type}</span>

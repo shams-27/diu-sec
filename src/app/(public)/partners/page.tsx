@@ -43,7 +43,7 @@ export default async function PartnersPage() {
             return (
               <section key={kind} aria-labelledby={`sponsors-${kind.toLowerCase()}`} className="space-y-5">
                 <SectionTitle id={`sponsors-${kind.toLowerCase()}`}>{kindLabels[kind]}</SectionTitle>
-                <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <ul className="stagger-in grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {group.map((sponsor) => (
                     <li key={sponsor.id} className="card-lift rounded-2xl border border-border bg-card p-5 shadow-sm">
                       <div className="flex items-start gap-4">

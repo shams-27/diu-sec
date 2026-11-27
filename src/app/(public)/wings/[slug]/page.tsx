@@ -61,7 +61,7 @@ export default async function WingDetailPage({ params }: { params: Promise<{ slu
             Responsibilities will be announced soon.
           </p>
         ) : (
-          <ul className="grid gap-3 sm:grid-cols-2">
+          <ul className="stagger-in grid gap-3 sm:grid-cols-2">
             {wing.responsibilities.map((item) => (
               <li key={item} className="rounded-xl border border-border bg-card px-4 py-3 text-sm">
                 {item}

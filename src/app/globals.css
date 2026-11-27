@@ -174,6 +174,37 @@
     /* backwards only: after the animation, hover transforms must still work. */
     animation: rise-in 350ms ease-out backwards;
   }
+  .stagger-in > * {
+    /* backwards only: after the animation, hover transforms must still work. */
+    animation: rise-in 350ms ease-out backwards;
+  }
+  .stagger-in > :nth-child(1) { animation-delay: 0ms; }
+  .stagger-in > :nth-child(2) { animation-delay: 60ms; }
+  .stagger-in > :nth-child(3) { animation-delay: 120ms; }
+  .stagger-in > :nth-child(4) { animation-delay: 180ms; }
+  .stagger-in > :nth-child(5) { animation-delay: 240ms; }
+  .stagger-in > :nth-child(6) { animation-delay: 300ms; }
+  .stagger-in > :nth-child(7) { animation-delay: 360ms; }
+  .stagger-in > :nth-child(n + 8) { animation-delay: 420ms; }
+  .link-underline {
+    @apply relative inline-block;
+  }
+  .link-underline::after {
+    content: "";
+    @apply absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-200;
+  }
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after {
+    @apply scale-x-100;
+  }
+  .pattern-surface {
+    background-image:
+      radial-gradient(circle at 82% 12%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 55%),
+      radial-gradient(circle at 8% 88%, color-mix(in oklab, var(--secondary) 8%, transparent), transparent 50%),
+      linear-gradient(to right, color-mix(in oklab, var(--border) 22%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--border) 22%, transparent) 1px, transparent 1px);
+    background-size: auto, auto, 28px 28px, 28px 28px;
+  }
   .display-title {
     @apply font-heading text-5xl leading-[1.05] tracking-wide sm:text-7xl;
   }
@@ -192,7 +223,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rise-in {
+  .rise-in,
+  .stagger-in > * {
     animation: none;
+  }
+  .link-underline::after {
+    transition: none;
   }
 }

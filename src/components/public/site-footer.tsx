@@ -39,7 +39,7 @@ export function SiteFooter() {
             <ul className="space-y-2 text-sm">
               {group.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="rounded text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <Link href={link.href} className="link-underline rounded text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                     {link.label}
                   </Link>
                 </li>
