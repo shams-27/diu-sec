@@ -361,3 +361,52 @@
   border: 2px solid var(--foreground);
   box-shadow: 6px 6px 0 var(--foreground);
 }
+
+/* Admin uses the public brutalist layer with denser mono labels. */
+.admin-surface {
+  font-family: var(--font-source-sans), sans-serif;
+  color: var(--foreground);
+}
+.admin-surface :is(h1, h2, h3) {
+  font-family: var(--font-bebas), sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--foreground);
+}
+.admin-surface h1 {
+  font-size: clamp(2.25rem, 4vw, 3.5rem);
+  line-height: 1.05;
+}
+.admin-surface h2 {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.15;
+}
+.admin-surface h3 {
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+.admin-surface th {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  background-color: color-mix(in oklab, var(--muted) 65%, var(--card));
+}
+.admin-surface .pill {
+  font-family: var(--font-geist-mono), monospace;
+  letter-spacing: 0.16em;
+}
+.admin-surface .dot-grid {
+  background-image: radial-gradient(color-mix(in oklab, var(--primary) 12%, transparent) 1px, transparent 1px);
+}
+.admin-surface .admin-banner {
+  border: 2px solid var(--foreground);
+  box-shadow: 6px 6px 0 var(--primary);
+}
+/* The 4px active-nav bar would lose all blue fill to the blanket bg-primary rule. */
+.admin-surface nav span[class*="bg-primary"] {
+  border: 0;
+}

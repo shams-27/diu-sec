@@ -53,6 +53,23 @@ export async function deleteJoinTestMembers() {
   }
 }
 
+export async function createStyleTestMember() {
+  const db = new PrismaClient();
+  try {
+    const id = uniqueId();
+    return await db.member.create({
+      data: {
+        studentId: `999-35-${id.slice(-3)}`,
+        name: "E2E Style Member",
+        email: `e2e-join-style-${id}@diu.edu.bd`,
+      },
+      select: { id: true },
+    });
+  } finally {
+    await db.$disconnect();
+  }
+}
+
 export async function createFlowTestEvent() {
   const db = new PrismaClient();
   try {

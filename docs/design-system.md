@@ -56,13 +56,15 @@ Regenerated 2026-11-27 with UI/UX Pro Max (`search.py "blue university engineeri
 4. Icons: Lucide SVG only, `aria-hidden` when beside visible text, accessible name when standalone.
 5. Motion: 200–350ms, `motion-reduce:transition-none`, no auto-playing media. The home hero stays static so the LCP text paints immediately; `.rise-in` is used on the sections below it.
 6. Error/empty/loading states use the same tokens and keep text ≥4.5:1 contrast.
-7. Admin shell and dashboard use the shared type scale and patterns; no separate red theme.
+7. All admin screens (A-01…A-12) use the shared type scale and patterns; no separate red theme.
 
-## Admin shell & dashboard (A-01)
+## Admin shell & all A-01…A-12 screens
 
-- The header and dashboard title use `.admin-banner`: a token-coloured dot grid plus a soft primary radial glow. Patterns are CSS backgrounds only, never content.
-- The sidebar brand block reuses `.dot-grid`; active links get a primary tint and a left accent bar instead of a solid fill, so the label stays readable in both themes.
+- Every admin screen inherits `.admin-surface` and `.public-brutal` from the shell. It shares the public palette, Source Sans 3 body and Bebas Neue headings; labels and table headers use Geist Mono uppercase tracking. The header and sidebar use the same `/sec_logo.png` as the public shell, with a white wrapper in dark mode.
+- Surfaces use the full brutalist language: square corners, 2px ink rules and hard offset shadows. Tables stay readable at 360px through rules and mono labels, not per-row shadows.
+- The header and dashboard title use `.admin-banner`: 2px ink border, 6px primary offset shadow and a primary dot grid. The sidebar active link keeps its primary tint and solid blue left accent bar in both themes.
 - Metric cards use `.stat-value`, `.card-lift` and `.rise-in` (350ms fade-up, 60ms stagger). `.rise-in` uses `animation-fill-mode: backwards` so hover lift still works, and is disabled under reduced motion.
+- Focus rings from the existing utilities are unchanged; destructive status pills keep their red token. No new motion or dependency was added.
 
 ## Anti-patterns
 

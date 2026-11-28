@@ -14,7 +14,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!session?.user?.role) redirect("/");
 
   return (
-    <div className="flex min-h-screen flex-col lg:flex-row">
+    <div className="admin-surface public-brutal flex min-h-screen flex-col lg:flex-row">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
@@ -25,8 +25,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="admin-banner flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
-            <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary font-heading text-xl tracking-wide text-primary-foreground shadow-sm">
-              SEC
+            <span className="shrink-0 bg-transparent dark:bg-white">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/sec_logo.png" alt="DIU SEC" width={82} height={40} className="h-10 w-auto" />
             </span>
             <div>
               <p className="font-heading text-xl leading-none tracking-wide">Administration</p>

@@ -33,7 +33,7 @@ export async function AdminGalleryPage() {
 
       <section className="rounded-2xl border border-border bg-card p-4 card-lift sm:p-5">
         <h2 className="font-heading text-2xl tracking-wide">New album</h2>
-        <form action={saveGalleryAlbumAction} encType="multipart/form-data" className="mt-4 grid gap-3 sm:grid-cols-2">
+        <form action={saveGalleryAlbumAction} className="mt-4 grid gap-3 sm:grid-cols-2">
           <label className="text-xs font-medium">
             Title
             <input name="title" required minLength={3} maxLength={150} className={inputClass} />
@@ -98,7 +98,7 @@ export async function AdminGalleryPage() {
                   )}
                   <details className="mt-3">
                     <summary className={summaryClass}>Add a photo</summary>
-                    <form action={addGalleryPhotoAction} encType="multipart/form-data" className="mt-3 grid gap-2 sm:grid-cols-2">
+                    <form action={addGalleryPhotoAction} className="mt-3 grid gap-2 sm:grid-cols-2">
                       <input type="hidden" name="albumId" value={album.id} />
                       <label className="text-xs font-medium sm:col-span-2">
                         Photo
@@ -119,7 +119,7 @@ export async function AdminGalleryPage() {
 
                 <details className="mt-4 border-t border-border pt-3">
                   <summary className={summaryClass}>Edit album</summary>
-                  <form action={saveGalleryAlbumAction} encType="multipart/form-data" className="mt-3 grid gap-2 sm:grid-cols-2">
+                  <form action={saveGalleryAlbumAction} className="mt-3 grid gap-2 sm:grid-cols-2">
                     <input type="hidden" name="id" value={album.id} />
                     {album.coverUrl ? <input type="hidden" name="coverUrl" value={album.coverUrl} /> : null}
                     <label className="text-xs font-medium">

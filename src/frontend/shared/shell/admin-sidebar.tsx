@@ -84,7 +84,10 @@ export function AdminSidebar() {
       </details>
       <aside className="hidden w-64 shrink-0 border-r border-border bg-card p-4 lg:block">
         <div className="dot-grid mb-6 rounded-xl border border-border bg-muted/40 p-4">
-          <p className="font-heading text-3xl leading-none tracking-wide">DIU SEC</p>
+          <span className="inline-block bg-transparent dark:bg-white">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/sec_logo.png" alt="DIU SEC" width={82} height={40} className="h-10 w-auto" />
+          </span>
           <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-primary">Admin panel</p>
         </div>
         {links}

@@ -89,7 +89,7 @@ test("keeps all quick links in an accessible drawer", async ({ page }) => {
   await expect(dialog).toBeHidden();
 });
 
-test("applies scoped editorial brutalism only to public pages", async ({ page }) => {
+test("applies editorial brutalism to public pages and the admin shell", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
 
   const hero = page.locator(".hero-surface").first();
@@ -117,9 +117,10 @@ test("applies scoped editorial brutalism only to public pages", async ({ page })
   const cookie = await superAdminCookie();
   await page.context().addCookies([{ name: "authjs.session-token", value: cookie, domain: "localhost", path: "/" }]);
   await page.goto("/admin", { waitUntil: "networkidle" });
-  expect(await page.locator("main .admin-banner").first().evaluate((el) => getComputedStyle(el).borderRadius)).not.toBe(
-    "0px",
-  );
+  const adminBanner = page.locator("main .admin-banner").first();
+  expect(await adminBanner.evaluate((el) => getComputedStyle(el).borderRadius)).toBe("0px");
+  expect(await adminBanner.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe("2px");
+  expect(await adminBanner.evaluate((el) => getComputedStyle(el).boxShadow)).toContain("6px 6px");
 });
 
 test("shows a bigger upcoming-event banner in the hero", async ({ page }) => {
@@ -464,4 +465,31 @@ test("uses the club logo instead of text branding in the public shell", async ({
   await page.evaluate(() => document.documentElement.classList.add("dark"));
   const chip = await headerLogo.evaluate((el) => getComputedStyle(el.parentElement!).backgroundColor);
   expect(chip).toBe("rgb(255, 255, 255)");
+});
+
+test("uses the SEC logo as the browser tab icon", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  const icons = page.locator('link[rel~="icon"]');
+  await expect(icons).toHaveCount(1);
+  await expect(icons.first()).toHaveAttribute("href", /\/favicon\.ico/);
+
+  const icon = await icons.first().evaluate(async (element) => {
+    const image = new Image();
+    image.src = (element as HTMLLinkElement).href;
+    await image.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    canvas.getContext("2d")!.drawImage(image, 0, 0);
+    const { data } = canvas.getContext("2d")!.getImageData(0, 0, canvas.width, canvas.height);
+    let blue = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] > 100 && data[i + 2] > data[i] && data[i + 2] > data[i + 1]) blue += 1;
+    }
+    return { width: canvas.width, height: canvas.height, blue };
+  });
+
+  expect(icon.width).toBe(icon.height);
+  expect(icon.blue).toBeGreaterThan(20);
 });

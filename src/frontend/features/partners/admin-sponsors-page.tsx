@@ -31,7 +31,7 @@ export async function AdminSponsorsPage() {
 
       <section className="rounded-2xl border border-border bg-card p-4 card-lift sm:p-5">
         <h2 className="font-heading text-2xl tracking-wide">Add an entry</h2>
-        <form action={saveSponsorAction} encType="multipart/form-data" className="mt-4 grid gap-3 sm:grid-cols-2">
+        <form action={saveSponsorAction} className="mt-4 grid gap-3 sm:grid-cols-2">
           <label className="text-xs font-medium">
             Kind
             <select name="kind" defaultValue="PARTNER" className={inputClass}>
@@ -117,7 +117,7 @@ export async function AdminSponsorsPage() {
                         <summary className="cursor-pointer text-xs font-semibold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                           Edit entry
                         </summary>
-                        <form action={saveSponsorAction} encType="multipart/form-data" className="mt-3 grid gap-2 sm:grid-cols-2">
+                        <form action={saveSponsorAction} className="mt-3 grid gap-2 sm:grid-cols-2">
                           <input type="hidden" name="id" value={sponsor.id} />
                           {sponsor.logoUrl ? <input type="hidden" name="logoUrl" value={sponsor.logoUrl} /> : null}
                           <label className="text-xs font-medium">

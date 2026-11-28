@@ -31,7 +31,7 @@ export async function AdminMagazinePage() {
 
       <section className="rounded-2xl border border-border bg-card p-4 card-lift sm:p-5">
         <h2 className="font-heading text-2xl tracking-wide">New issue</h2>
-        <form action={saveMagazineIssueAction} encType="multipart/form-data" className="mt-4 grid gap-3 sm:grid-cols-2">
+        <form action={saveMagazineIssueAction} className="mt-4 grid gap-3 sm:grid-cols-2">
           <label className="text-xs font-medium">
             Issue number
             <input name="number" type="number" min={1} max={999} required className={inputClass} />

@@ -97,4 +97,13 @@ describe("frontend/backend layers", () => {
       expect(source, file).not.toContain("prisma.");
     }
   });
+
+  it("opts every admin page out of instant-navigation validation", () => {
+    const pages = filesIn("src/app/admin").filter((file) => file.endsWith("page.tsx"));
+    expect(pages.length).toBeGreaterThan(0);
+    for (const file of pages) {
+      const source = readFileSync(join(root, file), "utf8");
+      expect(source, file).toContain("export const instant = false");
+    }
+  });
 });

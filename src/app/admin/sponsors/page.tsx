@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+export const instant = false;
+
 export const metadata: Metadata = { title: "Sponsors · Admin" };
 
 export { AdminSponsorsPage as default } from "@/frontend/features/partners/admin-sponsors-page";
